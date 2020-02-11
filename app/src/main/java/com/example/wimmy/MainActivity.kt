@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.TabHost
 import android.widget.TabWidget
@@ -55,14 +56,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-/*
-        val go_intent = findViewById(R.id.mapbtn) as TabItem
+
+        val go_intent = findViewById(R.id.menu_map) as View
         go_intent.setOnClickListener {
             val intent = Intent(this@MainActivity, MapActivity::class.java)
             startActivity(intent)
         }
 
- */
+
 
         val recyclerView = findViewById<RecyclerView>(R.id.mRecycleView)
         val mainAdapter = MainAdapter(this, photoList)
