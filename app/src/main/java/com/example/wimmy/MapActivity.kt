@@ -22,9 +22,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        val sydney = LatLng(35.241615, 128.695587)
-        mMap.addMarker(MarkerOptions().position(sydney).title("Marker LAB"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        val marker = LatLng(35.241615, 128.695587)
+        mMap.addMarker(MarkerOptions().position(marker).title("Marker LAB"))
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(marker))
     }
 
 
