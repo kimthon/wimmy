@@ -5,8 +5,12 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import android.widget.TabHost
+import android.widget.TabWidget
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.tabs.TabItem
+import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -51,12 +55,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
-        val go_intent = findViewById(R.id.testbtn) as Button
+/*
+        val go_intent = findViewById(R.id.mapbtn) as TabItem
         go_intent.setOnClickListener {
             val intent = Intent(this@MainActivity, MapActivity::class.java)
             startActivity(intent)
         }
+
+ */
 
         val recyclerView = findViewById<RecyclerView>(R.id.mRecycleView)
         val mainAdapter = MainAdapter(this, photoList)
