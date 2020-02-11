@@ -8,4 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>        <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@drawable/loding</item>
+    </style>
 </resources>
