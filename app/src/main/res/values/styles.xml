@@ -13,4 +13,13 @@
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@drawable/loding</item>
     </style>
+
+    <style name="TabTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+
+        <item name="colorPrimary">#33B5E5</item>                                <!-- 배경 -->
+        <item name="android:textColorPrimary">@android:color/holo_purple</item>       <!-- 탭바 선택된 텍스트 -->
+        <item name="android:textColorSecondary">@android:color/black</item>     <!-- 탭바 텍스트 -->
+
+        <item name="colorAccent">@android:color/holo_purple</item>                    <!-- 상단 움직이는 바 색-->
+    </style>
 </resources>

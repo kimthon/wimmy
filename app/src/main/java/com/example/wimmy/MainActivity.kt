@@ -3,12 +3,24 @@ package com.example.wimmy
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+
+import android.view.View
+import android.widget.Button
+import android.widget.TabHost
+import android.widget.TabWidget
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.tabs.TabItem
+import com.google.android.material.tabs.TabLayout
+import kotlinx.android.synthetic.main.activity_main.*
+
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+
 
 class MainActivity : AppCompatActivity() {
     var photoList = arrayListOf<PhotoData>(
@@ -52,17 +64,22 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
 
-        val go_intent = findViewById(R.id.testbtn) as Button
+        val go_intent = findViewById(R.id.menu_map) as View
         go_intent.setOnClickListener {
             val intent = Intent(this@MainActivity, MapActivity::class.java)
             startActivity(intent)
         }
+
+
+
+
 
         SetView()
         SetHeader()
     }
 
     fun SetView() {
+
         val recyclerView = findViewById<RecyclerView>(R.id.mRecycleView)
         val mainAdapter = MainAdapter(this, photoList)
         recyclerView.adapter = mainAdapter
