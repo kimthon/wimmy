@@ -23,4 +23,10 @@
         android:layout_height="wrap_content"
         android:entries="@array/search_option_array"
         />
+    <androidx.appcompat.widget.SearchView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:layout_marginRight="40dp"
+        />
 </androidx.appcompat.widget.Toolbar>
