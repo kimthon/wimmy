@@ -16,10 +16,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Button
 import androidx.appcompat.widget.Toolbar
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+
 
 
 class MainActivity : AppCompatActivity() {
