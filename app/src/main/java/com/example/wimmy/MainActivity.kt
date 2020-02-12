@@ -18,8 +18,6 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
 
-
-
 class MainActivity : AppCompatActivity() {
     var photoList = arrayListOf<PhotoData>(
         PhotoData("dummy", "dummy", "dummy", false),
@@ -56,21 +54,15 @@ class MainActivity : AppCompatActivity() {
         PhotoData("dummy", "dummy", "dummy", false)
     )
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
 
         val go_intent = findViewById(R.id.menu_map) as View
         go_intent.setOnClickListener {
             val intent = Intent(this@MainActivity, MapActivity::class.java)
             startActivity(intent)
         }
-
-
-
-
 
         SetView()
         SetHeader()
