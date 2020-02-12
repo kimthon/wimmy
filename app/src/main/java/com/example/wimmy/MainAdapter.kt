@@ -29,6 +29,4 @@ class MainAdapter(val context: Context, val list : ArrayList<PhotoData>) :
     override fun onBindViewHolder(holder: Holder, position: Int) {
         holder.bind(list[position], context)
     }
-
-
 }

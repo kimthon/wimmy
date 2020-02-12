@@ -58,6 +58,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
         val go_intent = findViewById(R.id.menu_map) as View
         go_intent.setOnClickListener {
             val intent = Intent(this@MainActivity, MapActivity::class.java)
@@ -69,7 +70,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun SetView() {
-
         val recyclerView = findViewById<RecyclerView>(R.id.mRecycleView)
         val mainAdapter = MainAdapter(this, photoList)
         recyclerView.adapter = mainAdapter
