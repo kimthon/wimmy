@@ -1,9 +1,12 @@
 <resources>
-    <string name="app_name">Wimmy</string>
     <string name="main">Main</string>
     <string name="tag">Tag</string>
     <string name="like">Like</string>
     <string name="when">When</string>
     <string name="where">Where</string>
     <string name="map">Map</string>
+    <string name="app_name">Wimmy</string>
+    <string name="favorate">즐겨 찾기</string>
+    <string name="searchbar">검색</string>
+    <string name="setting">설정</string>
 </resources>
