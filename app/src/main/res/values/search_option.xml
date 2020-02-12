@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="search_option_array">
+        <item>이름 검색</item>
+        <item>위치 검색</item>
+        <item>날짜 검색</item>
+        <item>태그 검색</item>
+    </string-array>
+</resources>
