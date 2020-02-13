@@ -1,6 +1,7 @@
 package com.example.wimmy
 
 import MainFragmentStatePagerAdapter
+import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -26,8 +27,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationPresenter
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-@Suppress("CAST_NEVER_SUCCEEDS")
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
     /*var photoList = arrayListOf<PhotoData>(
         PhotoData("dummy", "dummy", "dummy", false),
         PhotoData("dummy", "dummy", "dummy", false),
@@ -67,9 +67,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        configureBottomNavigation()
+        val bottomNavigationView = findViewById<View>(R.id.bottomNavigationView) as BottomNavigationView
+        bottomNavigationView.setOnNavigationItemSelectedListener(this)
+        val tb: Toolbar = findViewById(R.id.main_toolbar)
+        tb.bringToFront()
+
 /*
-        val go_intent = findViewById(R.id.menu_map) as View
+        val go_intent = findViewById(R.id.activity_main) as View
         go_intent.setOnClickListener {
             val intent = Intent(this@MainActivity, MapActivity::class.java)
             startActivity(intent)
@@ -77,6 +81,7 @@ class MainActivity : AppCompatActivity() {
         SetView()
         SetHeader()*/
     }
+
 /*
     fun SetView() {
 
@@ -106,14 +111,15 @@ class MainActivity : AppCompatActivity() {
         return super .onOptionsItemSelected(item)
     }
 */
-
+/*
+    @SuppressLint("ResourceType")
     private fun configureBottomNavigation(){
         val view1: ViewPager = findViewById(R.id.vp_ac_main_frag_pager)
-        val view2: TabLayout = findViewById(R.id.tl_ac_main_bottom_menu)
+        val view2: BottomNavigationView = findViewById(R.id.bottomNavigationView)
         view1.adapter = MainFragmentStatePagerAdapter(supportFragmentManager, 5)
         view2.setupWithViewPager(view1)
 
-        val bottomNaviLayout: View = this.layoutInflater.inflate(R.layout.bottom_navigation_tab, null, false)
+        val bottomNaviLayout: View = this.layoutInflater.inflate(R.menu.menu_bottom, null, false)
 
         view2.getTabAt(0)!!.customView = bottomNaviLayout.findViewById(R.id.menu_name) as RelativeLayout
         view2.getTabAt(1)!!.customView = bottomNaviLayout.findViewById(R.id.menu_tag) as RelativeLayout
@@ -122,7 +128,37 @@ class MainActivity : AppCompatActivity() {
         view2.getTabAt(4)!!.customView = bottomNaviLayout.findViewById(R.id.menu_map) as RelativeLayout
 
 
+    }*/
+
+    override fun onNavigationItemSelected(p0: MenuItem): Boolean {
+        when(p0.itemId){
+            R.id.menu_name ->{
+                val fragmentA = NameFragment()
+                supportFragmentManager.beginTransaction().replace(R.id.frame_layout,fragmentA).commit()
+            }
+            R.id.menu_tag -> {
+                val fragmentB = TagFragment()
+                supportFragmentManager.beginTransaction().replace(R.id.frame_layout,fragmentB).commit()
+            }
+            R.id.menu_cal -> {
+                val fragmentC = CalFragment()
+                supportFragmentManager.beginTransaction().replace(R.id.frame_layout,fragmentC).commit()
+            }
+            R.id.menu_location -> {
+                val fragmentD = LocationFragment()
+                supportFragmentManager.beginTransaction().replace(R.id.frame_layout,fragmentD).commit()
+            }
+            R.id.menu_map -> {
+                val fragmentE = MapFragment()
+                supportFragmentManager.beginTransaction().replace(R.id.frame_layout,fragmentE).commit()
+            }
+        }
+        return true
     }
+
+
+
+
 
 }
 

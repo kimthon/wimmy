@@ -1,14 +1,133 @@
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+
     xmlns:tools="http://schemas.android.com/tools"
+
+    android:id="@+id/ScrollView1"
+
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".CalFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    android:layout_height="match_parent">
+
+    <LinearLayout
+
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
 
-</FrameLayout>
+        android:layout_height="match_parent"
+
+        android:orientation="vertical" >
+
+        <Button
+
+            android:id="@+id/button2"
+
+            android:layout_width="match_parent"
+
+            android:layout_height="100dp"
+
+            android:text="Button 1" />
+
+        <Button
+
+            android:id="@+id/button3"
+
+            android:layout_width="match_parent"
+
+            android:layout_height="100dp"
+
+            android:text="Button 2" />
+
+        <!-- 중간 생략 버튼 4개-->
+
+        <Button
+
+            android:layout_width="match_parent"
+
+            android:layout_height="100dp"
+
+            android:text="Button 6" />
+        <Button
+
+            android:layout_width="match_parent"
+
+            android:layout_height="100dp"
+
+            android:text="Button 6" />
+        <Button
+
+            android:layout_width="match_parent"
+
+            android:layout_height="100dp"
+
+            android:text="Button 6" />
+        <Button
+
+            android:layout_width="match_parent"
+
+            android:layout_height="100dp"
+
+            android:text="Button 6" />
+        <Button
+
+            android:layout_width="match_parent"
+
+            android:layout_height="100dp"
+
+            android:text="Button 6" />
+        <Button
+
+            android:layout_width="match_parent"
+
+            android:layout_height="100dp"
+
+            android:text="Button 6" />
+        <Button
+
+            android:layout_width="match_parent"
+
+            android:layout_height="100dp"
+
+            android:text="Button 6" />
+        <Button
+
+            android:layout_width="match_parent"
+
+            android:layout_height="100dp"
+
+            android:text="Button 6" />
+        <Button
+
+            android:layout_width="match_parent"
+
+            android:layout_height="100dp"
+
+            android:text="Button 6" />
+        <Button
+
+            android:layout_width="match_parent"
+
+            android:layout_height="100dp"
+
+            android:text="Button 6" />
+        <Button
+
+            android:layout_width="match_parent"
+
+            android:layout_height="100dp"
+
+            android:text="Button 6" />
+        <Button
+
+            android:layout_width="match_parent"
+
+            android:layout_height="100dp"
+
+            android:text="Button 6" />
+
+    </LinearLayout>
+
+</ScrollView>
+
+
+

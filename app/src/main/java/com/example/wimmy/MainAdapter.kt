@@ -15,6 +15,7 @@ class MainAdapter(val context: Context, val list : ArrayList<PhotoData>) :
         //photo_view 변수 받아오기
 
         fun bind(data : PhotoData, context: Context) {
+
             //photo_view의 내부 값 설정
         }
     }
