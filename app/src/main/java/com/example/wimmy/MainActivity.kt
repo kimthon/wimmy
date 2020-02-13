@@ -6,17 +6,14 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.*
+import android.widget.*
 
-import android.widget.Button
-import android.widget.TabHost
-import android.widget.TabWidget
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.tabs.TabItem
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.activity_main.*
 
-import android.widget.RelativeLayout
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
@@ -71,6 +68,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         bottomNavigationView.setOnNavigationItemSelectedListener(this)
         val tb: Toolbar = findViewById(R.id.main_toolbar)
         tb.bringToFront()
+
 
 /*
         val go_intent = findViewById(R.id.activity_main) as View
