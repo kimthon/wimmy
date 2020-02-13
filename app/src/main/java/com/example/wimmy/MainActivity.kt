@@ -1,21 +1,15 @@
 package com.example.wimmy
 
 import android.content.Intent
+import android.hardware.display.DisplayManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.DisplayMetrics
+import android.view.*
 
-import android.view.View
-import android.widget.Button
-import android.widget.TabHost
-import android.widget.TabWidget
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.tabs.TabItem
-import com.google.android.material.tabs.TabLayout
-import kotlinx.android.synthetic.main.activity_main.*
 
-import android.view.Menu
-import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
 
 class MainActivity : AppCompatActivity() {
@@ -54,6 +48,9 @@ class MainActivity : AppCompatActivity() {
         PhotoData("dummy", "dummy", "dummy", false)
     )
 
+    private var recyclerViewer : RecyclerView ?= null
+    private var mainAdapter : MainAdapter ?= null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -66,21 +63,38 @@ class MainActivity : AppCompatActivity() {
         }
 
         SetView()
+        SetRecyclerViewRow(3, 10)
         SetHeader()
     }
 
-    fun SetView() {
-        val recyclerView = findViewById<RecyclerView>(R.id.mRecycleView)
-        val mainAdapter = MainAdapter(this, photoList)
-        recyclerView.adapter = mainAdapter
+    private fun SetView() {
+        recyclerViewer = findViewById(R.id.mRecycleView)
+        mainAdapter = MainAdapter(this, photoList)
+        recyclerViewer!!.adapter = mainAdapter
         val lm = GridLayoutManager(this, 3)
-        recyclerView.layoutManager = lm
+        recyclerViewer!!.layoutManager = lm
     }
 
-    fun SetHeader() {
+    private fun SetHeader() {
         val toolbar = findViewById<Toolbar>(R.id.main_toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setTitle(null)
+    }
+
+    private fun SetRecyclerViewRow(span : Int, padding : Int) {
+        //get width
+        val displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+
+        //set span
+        var lm = recyclerViewer!!.layoutManager as GridLayoutManager
+        lm.spanCount = span
+
+        //calculate each_size
+        var width = displayMetrics.widthPixels - (span + 1)*padding
+        val eachSize = (width / span)
+
+        mainAdapter?.SetPhotoSize(eachSize, padding)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

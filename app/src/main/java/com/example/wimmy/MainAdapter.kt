@@ -4,16 +4,27 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.RelativeLayout
+import androidx.core.view.marginBottom
 import androidx.recyclerview.widget.RecyclerView
 
 class MainAdapter(val context: Context, val list : ArrayList<PhotoData>) :
     RecyclerView.Adapter<MainAdapter.Holder>()
 {
-    inner class Holder(itemView: View?) : RecyclerView.ViewHolder(itemView!!) {
-        //photo_view 변수 받아오기
+    private var size : Int = 200
+    private var padding_size = 200
 
-        fun bind(data : PhotoData, context: Context) {
+    inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView!!) {
+        //photo_view 변수 받아오기
+        var photo = itemView?.findViewById<ImageView>(R.id.photo)
+
+        fun bind(data : PhotoData) {
             //photo_view의 내부 값 설정
+            val layoutParam = photo.layoutParams as ViewGroup.MarginLayoutParams
+            photo.layoutParams.width = size
+            photo.layoutParams.height = size
+            layoutParam.setMargins(padding_size, padding_size, padding_size, padding_size)
         }
     }
 
@@ -27,6 +38,12 @@ class MainAdapter(val context: Context, val list : ArrayList<PhotoData>) :
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        holder.bind(list[position], context)
+        holder.bind(list[position])
+    }
+
+    fun SetPhotoSize(size : Int, padding_size : Int) {
+        this.size = size
+        this.padding_size = padding_size
+        notifyDataSetChanged()
     }
 }
