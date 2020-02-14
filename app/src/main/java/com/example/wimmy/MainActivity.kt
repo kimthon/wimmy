@@ -23,8 +23,11 @@ import com.google.android.gms.dynamic.SupportFragmentWrapper
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationPresenter
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.android.synthetic.main.fragment_map.*
+import java.lang.NullPointerException
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
+
     /*var photoList = arrayListOf<PhotoData>(
         PhotoData("dummy", "dummy", "dummy", false),
         PhotoData("dummy", "dummy", "dummy", false),
@@ -68,7 +71,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         bottomNavigationView.setOnNavigationItemSelectedListener(this)
         val tb: Toolbar = findViewById(R.id.main_toolbar)
         tb.bringToFront()
-
 
 /*
         val go_intent = findViewById(R.id.activity_main) as View
@@ -129,6 +131,8 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }*/
 
     override fun onNavigationItemSelected(p0: MenuItem): Boolean {
+        val tb: Toolbar = findViewById(R.id.main_toolbar)
+        tb.visibility = View.VISIBLE
         when(p0.itemId){
             R.id.menu_name ->{
                 val fragmentA = NameFragment()
@@ -149,6 +153,8 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             R.id.menu_map -> {
                 val fragmentE = MapFragment()
                 supportFragmentManager.beginTransaction().replace(R.id.frame_layout,fragmentE).commit()
+                tb.visibility = View.GONE
+
             }
         }
         return true
