@@ -1,42 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-
-        <SearchView
-            android:id="@+id/search_map"
-            android:layout_width="355dp"
-            android:layout_height="wrap_content"
-            android:text="요기 입력"
-            tools:targetApi="honeycomb" />
-
-        <Button
-            android:id="@+id/button_menu"
+    <!--
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="메뉴" />
+            android:orientation="horizontal">
 
-    </LinearLayout>
 
-    <fragment
-        android:id="@+id/mapview"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="711dp"
-        tools:layout="@layout/abc_search_view" />
+            <SearchView
+                android:id="@+id/search_map"
+                android:layout_width="355dp"
+                android:layout_height="wrap_content"
+                android:text="요기 입력"
+                tools:targetApi="honeycomb" />
 
-    <include
-        android:id="@+id/main_footer"
-        layout="@layout/main_footer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/mRecycleView" />
+            <Button
+                android:id="@+id/button_menu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="메뉴" />
+
+        </LinearLayout>
+
+        <fragment
+            android:id="@+id/mapview1"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="711dp"
+            tools:layout="@layout/abc_search_view" />
+
+        <include
+            android:id="@+id/main_footer"
+            layout="@layout/main_footer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/mRecycleView" />
+            -->
 
 </LinearLayout>

@@ -1,14 +1,12 @@
 package com.example.wimmy
 
 import android.content.Context
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 
-class MainAdapter(val context: Context, val list : ArrayList<PhotoData>) :
+class MainAdapter(val context: MainActivity, val list: ArrayList<PhotoData>) :
     RecyclerView.Adapter<MainAdapter.Holder>()
 {
     inner class Holder(itemView: View?) : RecyclerView.ViewHolder(itemView!!) {
