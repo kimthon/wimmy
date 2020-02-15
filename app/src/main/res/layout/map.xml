@@ -9,7 +9,6 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-
             <SearchView
                 android:id="@+id/search_map"
                 android:layout_width="355dp"
