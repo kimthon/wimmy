@@ -87,7 +87,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 transaction.replace(R.id.frame_layout,fragmentC)
             }
             R.id.menu_location -> {
-                transaction.addToBackStack(null)
                 val fragmentD = LocationFragment()
                 transaction.replace(R.id.frame_layout,fragmentD)
             }
