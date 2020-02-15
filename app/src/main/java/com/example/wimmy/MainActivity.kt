@@ -7,45 +7,56 @@ import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.*
 
+import android.view.View
+import android.widget.Button
+import android.widget.TabHost
+import android.widget.TabWidget
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.tabs.TabItem
+import com.google.android.material.tabs.TabLayout
+import kotlinx.android.synthetic.main.activity_main.*
 
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
+
+
 
 class MainActivity : AppCompatActivity() {
     var photoList = arrayListOf<PhotoData>(
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false)
+        PhotoData("dummy", "dummy", "dummy",0,  false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false),
+        PhotoData("dummy", "dummy", "dummy", 0, false)
     )
 
     private var recyclerViewer : RecyclerView ?= null
@@ -62,8 +73,10 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        var db = DBHelper(this)
+
         SetView()
-        SetRecyclerViewRow(3, 10)
+        SetPhotoSize(3, 10)
         SetHeader()
     }
 
@@ -77,26 +90,20 @@ class MainActivity : AppCompatActivity() {
 
     private fun SetHeader() {
         val toolbar = findViewById<Toolbar>(R.id.main_toolbar)
+        toolbar.bringToFront()
         setSupportActionBar(toolbar)
         supportActionBar?.setTitle(null)
     }
 
-    private fun SetRecyclerViewRow(span : Int, padding : Int) {
-        //get width
+    private fun SetPhotoSize(row : Int, padding : Int) {
         val displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics)
 
-        //set span
-        var lm = recyclerViewer!!.layoutManager as GridLayoutManager
-        lm.spanCount = span
+        var width = displayMetrics.widthPixels
+        var size = width / row - 2*padding
 
-        //calculate each_size
-        var width = displayMetrics.widthPixels - (span + 1)*padding
-        val eachSize = (width / span)
-
-        mainAdapter?.SetPhotoSize(eachSize, padding)
+        mainAdapter!!.SetPhotoSize(size, padding)
     }
-
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
         return super.onCreateOptionsMenu(menu)
