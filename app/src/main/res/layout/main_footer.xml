@@ -15,7 +15,7 @@
         android:layout_gravity="bottom"
         android:layout_marginStart="0dp"
         android:layout_marginEnd="0dp"
-        android:background="#B71C1C"
+        android:background="#FFFFFF"
         app:itemBackground="@color/cardview_light_background"
         app:itemTextColor="@color/cardview_dark_background"
         app:labelVisibilityMode="unlabeled"
