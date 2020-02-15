@@ -1,72 +1,14 @@
 package com.example.wimmy
 
-import MainFragmentStatePagerAdapter
-import android.annotation.SuppressLint
-import android.content.Intent
-import android.hardware.display.DisplayManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.view.*
-import android.widget.*
-
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.tabs.TabItem
-import com.google.android.material.tabs.TabLayout
-import kotlinx.android.synthetic.main.activity_main.*
 
 import androidx.appcompat.widget.Toolbar
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import androidx.viewpager.widget.ViewPager
-import com.google.android.gms.dynamic.SupportFragmentWrapper
-import com.google.android.material.bottomnavigation.BottomNavigationItemView
-import com.google.android.material.bottomnavigation.BottomNavigationPresenter
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.android.synthetic.main.fragment_map.*
-import java.lang.NullPointerException
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
-    var photoList = arrayListOf<PhotoData>(
-        PhotoData("dummy", "dummy", "dummy",0,  false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false)
-    )
-
-    private var recyclerViewer : RecyclerView ?= null
-    private var mainAdapter : MainAdapter ?= null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,26 +26,16 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         }*/
       
         var db = DBHelper(this)
-        SetPhtoSize(3, 10)
         SetHeader()
     }
 
     private fun SetHeader() {
         val toolbar = findViewById<Toolbar>(R.id.main_toolbar)
-        toolbar.bringToFront()
         setSupportActionBar(toolbar)
         supportActionBar?.setTitle(null)
     }
   
-    private fun SetPhotoSize(row : Int, padding : Int) {
-        val displayMetrics = DisplayMetrics()
-        windowManager.defaultDisplay.getMetrics(displayMetrics)
 
-        var width = displayMetrics.widthPixels
-        var size = width / row - 2*padding
-
-        mainAdapter!!.SetPhotoSize(size, padding)
-    }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
         return super.onCreateOptionsMenu(menu)

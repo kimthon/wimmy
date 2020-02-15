@@ -1,12 +1,9 @@
 package com.example.wimmy
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.RelativeLayout
-import androidx.core.view.marginBottom
 import androidx.recyclerview.widget.RecyclerView
 
 class MainAdapter(val context: MainActivity, val list: ArrayList<PhotoData>) :
@@ -19,7 +16,7 @@ class MainAdapter(val context: MainActivity, val list: ArrayList<PhotoData>) :
         //photo_view 변수 받아오기
         var photo = itemView?.findViewById<ImageView>(R.id.photo)
 
-        fun bind(data : PhotoData, context: Context) {
+        fun bind(data : PhotoData) {
 
             //photo_view의 내부 값 설정
             val layoutParam = photo.layoutParams as ViewGroup.MarginLayoutParams
