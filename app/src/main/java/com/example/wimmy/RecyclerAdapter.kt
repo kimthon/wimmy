@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.example.wimmy.db.PhotoData
 
 class RecyclerAdapter(val context: FragmentActivity?, val list: ArrayList<PhotoData>) :
     RecyclerView.Adapter<RecyclerAdapter.Holder>()

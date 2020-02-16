@@ -7,6 +7,7 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.wimmy.db.PhotoData
 
 /**
  * A simple [Fragment] subclass.
@@ -14,40 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 class NameFragment : Fragment() {
     private var recyclerAdapter : RecyclerAdapter ?= null
 
-    private var photoList = arrayListOf<PhotoData>(
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false)
-    )
+    private var photoList = arrayListOf<PhotoData>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

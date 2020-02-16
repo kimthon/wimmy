@@ -25,7 +25,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             startActivity(intent)
         }*/
       
-        var db = DBHelper(this)
         SetHeader()
     }
 

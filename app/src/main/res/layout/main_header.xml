@@ -19,11 +19,13 @@
         android:src="@mipmap/ic_launcher"
         android:padding="0dp"
         />
+
     <androidx.appcompat.widget.AppCompatSpinner
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:entries="@array/search_option_array"
         />
+
     <androidx.appcompat.widget.SearchView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
