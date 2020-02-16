@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
       
         var db = DBHelper(this)
         SetHeader()
+        init()
     }
 
     private fun SetHeader() {
@@ -82,6 +83,16 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
 
 
+        transaction.commit()
+        return true
+    }
+
+    fun init(): Boolean{
+        val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
+        val fragmentA = NameFragment()
+        transaction.replace(R.id.frame_layout,fragmentA)
+        transaction.addToBackStack(null)
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
         transaction.commit()
         return true
     }
