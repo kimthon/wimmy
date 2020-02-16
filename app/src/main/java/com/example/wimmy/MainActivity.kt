@@ -12,22 +12,19 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.main_activity)
         val bottomNavigationView = findViewById<View>(R.id.bottomNavigationView) as BottomNavigationView
         bottomNavigationView.setOnNavigationItemSelectedListener(this)
         val tb: Toolbar = findViewById(R.id.main_toolbar)
         tb.bringToFront()
 
 
-     /*   val go_intent = findViewById(R.id.activity_main) as View
-        go_intent.setOnClickListener {
-            val intent = Intent(this@MainActivity, MapActivity::class.java)
-            startActivity(intent)
-        }*/
+
       
         var db = DBHelper(this)
         SetHeader()
         init()
+
     }
 
     private fun SetHeader() {

@@ -73,7 +73,7 @@ class NameFragment : Fragment() {
         recyclerView?.adapter = recyclerAdapter
 
         val lm = GridLayoutManager(MainActivity(), 3)
-        recyclerView?.layoutManager = lm
+        recyclerView?.layoutManager = lm as RecyclerView.LayoutManager?
     }
 
     fun SetPhotoSize(view : View, row : Int, padding : Int) {
