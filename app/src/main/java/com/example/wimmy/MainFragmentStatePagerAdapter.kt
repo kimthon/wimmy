@@ -8,11 +8,11 @@ import com.example.wimmy.*
 
 class MainFragmentStatePagerAdapter(fm : FragmentManager, val fragmentCount : Int) : FragmentStatePagerAdapter(fm) {
     override fun getItem(position: Int): Fragment {
-         return when (position) {
+        return when (position) {
             0 -> return NameFragment()
-             1 -> return TagFragment()
-             2 -> return LocationFragment()
-             3 -> return CalFragment()
+            1 -> return TagFragment()
+            2 -> return LocationFragment()
+            3 -> return CalFragment()
             4 -> return MapFragment()
             else -> return NameFragment()
         }

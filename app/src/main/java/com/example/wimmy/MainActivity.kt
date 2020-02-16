@@ -1,32 +1,12 @@
 package com.example.wimmy
 
-import MainFragmentStatePagerAdapter
-import android.annotation.SuppressLint
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.*
-import android.widget.*
-
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.tabs.TabItem
-import com.google.android.material.tabs.TabLayout
-import kotlinx.android.synthetic.main.activity_main.*
 
 import androidx.appcompat.widget.Toolbar
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import androidx.viewpager.widget.ViewPager
-import com.google.android.gms.dynamic.SupportFragmentWrapper
-import com.google.android.material.bottomnavigation.BottomNavigationItemView
-import com.google.android.material.bottomnavigation.BottomNavigationPresenter
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.android.synthetic.main.fragment_map.*
-import java.lang.NullPointerException
-
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
 
@@ -43,18 +23,18 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         go_intent.setOnClickListener {
             val intent = Intent(this@MainActivity, MapActivity::class.java)
             startActivity(intent)
-
         }*/
+      
+        var db = DBHelper(this)
         SetHeader()
     }
 
-
-
-    fun SetHeader() {
+    private fun SetHeader() {
         val toolbar = findViewById<Toolbar>(R.id.main_toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setTitle(null)
     }
+  
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
