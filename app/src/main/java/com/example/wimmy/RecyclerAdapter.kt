@@ -4,10 +4,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 
-class MainAdapter(val context: MainActivity, val list: ArrayList<PhotoData>) :
-    RecyclerView.Adapter<MainAdapter.Holder>()
+class RecyclerAdapter(val context: FragmentActivity?, val list: ArrayList<PhotoData>) :
+    RecyclerView.Adapter<RecyclerAdapter.Holder>()
 {
     private var size : Int = 200
     private var padding_size = 200
