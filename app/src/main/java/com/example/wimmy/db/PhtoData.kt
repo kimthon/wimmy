@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "photo_data")
 class PhotoData(@PrimaryKey(autoGenerate = true) var photo_id: Int,
+                @ColumnInfo(name = "name") var name : String,
                 @ColumnInfo(name = "file_path") var file_path : String,
                 @ColumnInfo(name = "thumbnail_path") var thumbnail_path : String,
                 @ColumnInfo(name = "location_info") var location_info : String,
