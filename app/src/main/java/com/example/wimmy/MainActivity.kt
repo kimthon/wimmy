@@ -1,8 +1,12 @@
 package com.example.wimmy
 
+import android.content.Intent
+import android.content.Intent.ACTION_CHOOSER
+import android.content.Intent.ACTION_VIEW
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.widget.SearchView
 
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.FragmentTransaction
@@ -23,6 +27,13 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         SetHeader()
         init()
 
+        /*val go_intent = findViewById(R.id.search) as SearchView
+        go_intent.setOnClickListener {
+            val intent = Intent(this, com.example.wimmy.SearchView::class.java)
+            startActivity(intent)
+        }*/
+
+
     }
 
     private fun SetHeader() {
@@ -36,6 +47,8 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         menuInflater.inflate(R.menu.main_menu, menu)
         return super.onCreateOptionsMenu(menu)
     }
+
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item?.itemId) {
@@ -72,7 +85,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 val fragmentE = MapFragment()
                 transaction.replace(R.id.frame_layout,fragmentE)
                 tb.visibility = View.GONE
-
             }
         }
         transaction.addToBackStack(null)
@@ -85,8 +97,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
         val fragmentA = NameFragment()
         transaction.replace(R.id.frame_layout,fragmentA)
-        transaction.addToBackStack(null)
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
         transaction.commit()
         return true
     }

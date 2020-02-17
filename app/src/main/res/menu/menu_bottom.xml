@@ -26,6 +26,8 @@
         android:id="@+id/menu_map"
         android:icon="@drawable/ic_map"
         android:title="지도" />
+
+
 </menu>
 
 
