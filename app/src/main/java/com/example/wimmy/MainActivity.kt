@@ -12,21 +12,17 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.main_activity)
         val bottomNavigationView = findViewById<View>(R.id.bottomNavigationView) as BottomNavigationView
         bottomNavigationView.setOnNavigationItemSelectedListener(this)
         val tb: Toolbar = findViewById(R.id.main_toolbar)
         tb.bringToFront()
-
-
-     /*   val go_intent = findViewById(R.id.activity_main) as View
-        go_intent.setOnClickListener {
-            val intent = Intent(this@MainActivity, MapActivity::class.java)
-            startActivity(intent)
-        }*/
+        setSupportActionBar(tb)
       
         var db = DBHelper(this)
         SetHeader()
+        init()
+
     }
 
     private fun SetHeader() {
@@ -52,6 +48,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     override fun onNavigationItemSelected(p0: MenuItem): Boolean {
         val tb: Toolbar = findViewById(R.id.main_toolbar)
+        val bottombar_color: BottomNavigationView = findViewById(R.id.bottomNavigationView)
         tb.visibility = View.VISIBLE
         val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
         when(p0.itemId){
@@ -80,8 +77,16 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         }
         transaction.addToBackStack(null)
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+        transaction.commit()
+        return true
+    }
 
-
+    fun init(): Boolean{
+        val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
+        val fragmentA = NameFragment()
+        transaction.replace(R.id.frame_layout,fragmentA)
+        transaction.addToBackStack(null)
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
         transaction.commit()
         return true
     }
