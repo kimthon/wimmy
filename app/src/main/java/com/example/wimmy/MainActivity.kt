@@ -1,47 +1,97 @@
 package com.example.wimmy
 
-import android.app.Activity
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.activity_main.*
+import android.view.*
 
+import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.FragmentTransaction
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class MainActivity : AppCompatActivity() {
-    var photoList = arrayListOf<PhotoData>(
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false),
-        PhotoData("dummy", "dummy", "dummy", false)
-    )
-
+class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.main_activity)
+        val bottomNavigationView = findViewById<View>(R.id.bottomNavigationView) as BottomNavigationView
+        bottomNavigationView.setOnNavigationItemSelectedListener(this)
+        val tb: Toolbar = findViewById(R.id.main_toolbar)
+        tb.bringToFront()
+        setSupportActionBar(tb)
+      
+        var db = DBHelper(this)
+        SetHeader()
+        init()
 
+    }
 
-        val go_intent = findViewById(R.id.testbtn) as Button
-        go_intent.setOnClickListener {
-            val intent = Intent(this@MainActivity, MapActivity::class.java)
-            startActivity(intent)
+    private fun SetHeader() {
+        val toolbar = findViewById<Toolbar>(R.id.main_toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setTitle(null)
+    }
+  
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item?.itemId) {
+            //R.id.favorate_menu =>
+            //
         }
+        return super .onOptionsItemSelected(item)
+    }
 
-        val recyclerView = findViewById<RecyclerView>(R.id.mRecycleView)
-        val mainAdapter = MainAdapter(this, photoList)
-        recyclerView.adapter = mainAdapter
-        val lm = GridLayoutManager(this, 3)
-        recyclerView.layoutManager = lm
 
+    override fun onNavigationItemSelected(p0: MenuItem): Boolean {
+        val tb: Toolbar = findViewById(R.id.main_toolbar)
+        val bottombar_color: BottomNavigationView = findViewById(R.id.bottomNavigationView)
+        tb.visibility = View.VISIBLE
+        val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
+        when(p0.itemId){
+            R.id.menu_name ->{
+                val fragmentA = NameFragment()
+                transaction.replace(R.id.frame_layout,fragmentA)
+            }
+            R.id.menu_tag -> {
+                val fragmentB = TagFragment()
+                transaction.replace(R.id.frame_layout,fragmentB)
+            }
+            R.id.menu_cal -> {
+                val fragmentC = CalFragment()
+                transaction.replace(R.id.frame_layout,fragmentC)
+            }
+            R.id.menu_location -> {
+                val fragmentD = LocationFragment()
+                transaction.replace(R.id.frame_layout,fragmentD)
+            }
+            R.id.menu_map -> {
+                val fragmentE = MapFragment()
+                transaction.replace(R.id.frame_layout,fragmentE)
+                tb.visibility = View.GONE
+
+            }
+        }
+        transaction.addToBackStack(null)
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+        transaction.commit()
+        return true
+    }
+
+    fun init(): Boolean{
+        val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
+        val fragmentA = NameFragment()
+        transaction.replace(R.id.frame_layout,fragmentA)
+        transaction.addToBackStack(null)
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+        transaction.commit()
+        return true
     }
 
 
 
 }
+
