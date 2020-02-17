@@ -1,135 +1,24 @@
-<ScrollView
-
-    xmlns:android="http://schemas.android.com/apk/res/android"
-
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-
-
-    android:id="@+id/ScrollView1"
-
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".NameFragment">
 
-    android:layout_height="match_parent">
+    <!-- TODO: Update blank fragment layout -->
+    <androidx.recyclerview.widget.RecyclerView
 
-    <LinearLayout
-
+        android:id="@+id/calRecycleView"
         android:layout_width="match_parent"
-
         android:layout_height="match_parent"
+        android:scrollbars="vertical">
 
-        android:orientation="vertical" >
 
-        <Button
 
-            android:id="@+id/button2"
+    </androidx.recyclerview.widget.RecyclerView>
 
-            android:layout_width="match_parent"
 
-            android:layout_height="100dp"
-
-            android:text="Button 1" />
-
-        <Button
-
-            android:id="@+id/button3"
-
-            android:layout_width="match_parent"
-
-            android:layout_height="100dp"
-
-            android:text="Button 2" />
-
-        <!-- 중간 생략 버튼 4개-->
-
-        <Button
-
-            android:layout_width="match_parent"
-
-            android:layout_height="100dp"
-
-            android:text="Button 6" />
-        <Button
-
-            android:layout_width="match_parent"
-
-            android:layout_height="100dp"
-
-            android:text="Button 6" />
-        <Button
-
-            android:layout_width="match_parent"
-
-            android:layout_height="100dp"
-
-            android:text="Button 6" />
-        <Button
-
-            android:layout_width="match_parent"
-
-            android:layout_height="100dp"
-
-            android:text="Button 6" />
-        <Button
-
-            android:layout_width="match_parent"
-
-            android:layout_height="100dp"
-
-            android:text="Button 6" />
-        <Button
-
-            android:layout_width="match_parent"
-
-            android:layout_height="100dp"
-
-            android:text="Button 6" />
-        <Button
-
-            android:layout_width="match_parent"
-
-            android:layout_height="100dp"
-
-            android:text="Button 6" />
-        <Button
-
-            android:layout_width="match_parent"
-
-            android:layout_height="100dp"
-
-            android:text="Button 6" />
-        <Button
-
-            android:layout_width="match_parent"
-
-            android:layout_height="100dp"
-
-            android:text="Button 6" />
-        <Button
-
-            android:layout_width="match_parent"
-
-            android:layout_height="100dp"
-
-            android:text="Button 6" />
-        <Button
-
-            android:layout_width="match_parent"
-
-            android:layout_height="100dp"
-
-            android:text="Button 6" />
-        <Button
-
-            android:layout_width="match_parent"
-
-            android:layout_height="100dp"
-
-            android:text="Button 6" />
-
-    </LinearLayout>
-
-</ScrollView>
-
+</FrameLayout>
 
 

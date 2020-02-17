@@ -17,9 +17,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         bottomNavigationView.setOnNavigationItemSelectedListener(this)
         val tb: Toolbar = findViewById(R.id.main_toolbar)
         tb.bringToFront()
-
-
-
+        setSupportActionBar(tb)
       
         var db = DBHelper(this)
         SetHeader()
@@ -50,6 +48,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     override fun onNavigationItemSelected(p0: MenuItem): Boolean {
         val tb: Toolbar = findViewById(R.id.main_toolbar)
+        val bottombar_color: BottomNavigationView = findViewById(R.id.bottomNavigationView)
         tb.visibility = View.VISIBLE
         val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
         when(p0.itemId){
@@ -78,8 +77,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         }
         transaction.addToBackStack(null)
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-
-
         transaction.commit()
         return true
     }
