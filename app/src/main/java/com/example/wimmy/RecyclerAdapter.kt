@@ -6,8 +6,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.example.wimmy.db.PhotoData
+import com.example.wimmy.db.thumbnailData
 
-class RecyclerAdapter(val context: FragmentActivity?, val list: ArrayList<PhotoData>) :
+class RecyclerAdapter(val context: FragmentActivity?, var list: List<thumbnailData>) :
     RecyclerView.Adapter<RecyclerAdapter.Holder>()
 {
     private var size : Int = 200
@@ -17,7 +19,7 @@ class RecyclerAdapter(val context: FragmentActivity?, val list: ArrayList<PhotoD
         //photo_view 변수 받아오기
         var photo = itemView?.findViewById<ImageView>(R.id.photo)
 
-        fun bind(data : PhotoData) {
+        fun bind(data : thumbnailData) {
 
             //photo_view의 내부 값 설정
             val layoutParam = photo.layoutParams as ViewGroup.MarginLayoutParams
@@ -40,9 +42,14 @@ class RecyclerAdapter(val context: FragmentActivity?, val list: ArrayList<PhotoD
         holder.bind(list[position])
     }
 
-    fun SetPhotoSize(size : Int, padding_size : Int) {
+    fun setPhotoSize(size : Int, padding_size : Int) {
         this.size = size
         this.padding_size = padding_size
+        notifyDataSetChanged()
+    }
+
+    fun setThumbnailList(list : List<thumbnailData>) {
+        this.list = list
         notifyDataSetChanged()
     }
 }

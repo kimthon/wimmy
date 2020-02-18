@@ -5,52 +5,24 @@ import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.*
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.example.wimmy.db.PhotoDB
+import com.example.wimmy.db.PhotoData
+import com.example.wimmy.db.PhotoViewModel
+import com.example.wimmy.db.thumbnailData
 
 /**
  * A simple [Fragment] subclass.
  */
 class NameFragment : Fragment() {
     private var recyclerAdapter : RecyclerAdapter ?= null
-    var recyclerView: RecyclerView? = null
     var bottomNavigationView: BottomNavigationView? = null
-
-    private var photoList = arrayListOf<PhotoData>(
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false),
-        PhotoData("dummy", "dummy", "dummy", 0, false)
-    )
+    private var thumbnailList = listOf<thumbnailData>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,31 +31,43 @@ class NameFragment : Fragment() {
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle? ): View? {
         var view : View = inflater.inflate(R.layout.fragment_name, container, false)
-        SetView(view)
-        SetPhotoSize(view, 3, 10)
-       // recyclerView?.addOnScrollListener(Scroll())
-
+        setView(view)
+        setPhotoSize(view, 3, 10)
         // Inflate the layout for this fragment
+
+        var vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+        vm.getNameDir().observe(this,
+            Observer<List<thumbnailData>> { t -> recyclerAdapter!!.setThumbnailList(t)})
+
+        vm.Insert(PhotoData(0, "dump", "dump1", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump1", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump1", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump2", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump2", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump2", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump3", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump3", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump4", "dump", "dump", 0, false))
         return view
     }
 
-    fun SetView(view : View) {
-        recyclerView = view.findViewById<RecyclerView>(R.id.nameRecycleView)
-        recyclerAdapter = RecyclerAdapter(activity, photoList)
+    private fun setView(view : View) {
+        val recyclerView = view.findViewById<RecyclerView>(R.id.nameRecycleView)
+        recyclerAdapter = RecyclerAdapter(activity, thumbnailList)
         recyclerView?.adapter = recyclerAdapter
 
         val lm = GridLayoutManager(MainActivity(), 3)
         recyclerView?.layoutManager = lm as RecyclerView.LayoutManager?
     }
 
-    fun SetPhotoSize(view : View, row : Int, padding : Int) {
+    private fun setPhotoSize(view : View, row : Int, padding : Int) {
         val displayMetrics = DisplayMetrics()
         activity!!.windowManager.defaultDisplay.getMetrics(displayMetrics)
 
         var width = displayMetrics.widthPixels
         var size = width / row - 2*padding
 
-        recyclerAdapter!!.SetPhotoSize(size, padding)
+        recyclerAdapter!!.setPhotoSize(size, padding)
     }
 /*
     inner class Scroll : RecyclerView.OnScrollListener() {
