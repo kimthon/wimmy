@@ -22,7 +22,6 @@ import com.example.wimmy.db.thumbnailData
 class NameFragment : Fragment() {
     private var recyclerAdapter : RecyclerAdapter ?= null
     var bottomNavigationView: BottomNavigationView? = null
-
     private var thumbnailList = listOf<thumbnailData>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
