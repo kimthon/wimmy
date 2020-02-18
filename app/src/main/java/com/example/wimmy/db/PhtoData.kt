@@ -1,5 +1,6 @@
 package com.example.wimmy.db
 
+import androidx.annotation.ColorLong
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -16,6 +17,7 @@ class PhotoData(@PrimaryKey(autoGenerate = true) var photo_id: Int,
 
 
 @Entity(tableName = "tag_data",
+    primaryKeys = ["photo_id", "tag"],
     foreignKeys = arrayOf(
         ForeignKey(entity = PhotoData::class,
             parentColumns = arrayOf("photo_id"),
@@ -23,7 +25,10 @@ class PhotoData(@PrimaryKey(autoGenerate = true) var photo_id: Int,
             )
     )
 )
-class TagData(@PrimaryKey var photo_id: Int,
-              @PrimaryKey var tag : String,
+class TagData(var photo_id: Int,
+              var tag : String,
               @ColumnInfo var type : String)
+
+data class thumbnailData( var thumbnail_path: String,
+                             var data : String )
 

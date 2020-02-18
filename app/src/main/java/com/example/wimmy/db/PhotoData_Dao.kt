@@ -1,5 +1,6 @@
 package com.example.wimmy.db
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
 
@@ -15,24 +16,29 @@ interface PhotoData_Dao {
     @Update
     fun update(tagData: TagData)
 
-    @Delete
-    fun delete(photoData: PhotoData)
-    @Delete
-    fun delete(tagData: TagData)
+    @Query("DELETE FROM photo_data WHERE photo_id = :photo_id")
+    fun deleteById(photo_id : Int)
+    @Query("DELETE FROM tag_data WHERE photo_id = :photo_id")
+    fun deleteTagById(photo_id: Int)
 
-    @Query("SELECT thumbnail_path, file_path FROM photo_data LIMIT 1")
-    fun getNameDir()
-    @Query("SELECT thumbnail_path, location_info FROM photo_data group by location_info")
-    fun getLocationDir()
-    @Query("SELECT thumbnail_path, date_info FROM photo_data group by date_info")
-    fun getDateDir()
-    @Query("SELECT thumbnail_path, tag FROM photo_data, tag_data group by tag")
-    fun getTagDir()
+    @Query("DELETE FROM tag_data WHERE photo_id = :photo_id AND tag = :tag")
+    fun delete(photo_id : Int, tag : String)
+
+    @Query("SELECT thumbnail_path, file_path as data FROM photo_data WHERE photo_id IN (SELECT MAX(photo_id) FROM photo_data GROUP BY file_path)")
+    fun getNameDir() : LiveData<List<thumbnailData>>
+    @Query("SELECT thumbnail_path, location_info as data FROM photo_data WHERE photo_id IN (SELECT MAX(photo_id) FROM photo_data GROUP BY location_info)")
+    fun getLocationDir() : LiveData<List<thumbnailData>>
+    @Query("SELECT thumbnail_path, date_info as data FROM photo_data WHERE photo_id IN (SELECT MAX(photo_id) FROM photo_data GROUP BY date_info)")
+    fun getDateDir() : LiveData<List<thumbnailData>>
+    @Query("SELECT thumbnail_path, tag as data FROM photo_data, (SELECT MAX(photo_id) as photo_id, tag FROM tag_data GROUP BY tag) tag_data WHERE photo_data.photo_id = tag_data.photo_id")
+    fun getTagDir() : LiveData<List<thumbnailData>>
 
     @Query("SELECT * FROM photo_data where name = :name")
-    fun getNameDir(name : String)
+    fun getNameDir(name : String) : LiveData<List<PhotoData>>
+    @Query("SELECT * FROM photo_data where name = :loc")
+    fun getLocationDir(loc : String) : LiveData<List<PhotoData>>
     @Query("SELECT * FROM photo_data where date_info = :date")
-    fun getDateDir(date : Int)
+    fun getDateDir(date : Int) : LiveData<List<PhotoData>>
     @Query("SELECT * FROM photo_data where name = :tag")
-    fun getTagDir(tag : String)
+    fun getTagDir(tag : String) : LiveData<List<PhotoData>>
 }

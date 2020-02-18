@@ -6,9 +6,27 @@ import android.view.*
 
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.FragmentTransaction
+import com.example.wimmy.db.PhotoDB
+import com.example.wimmy.db.PhotoData
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.photo_view.*
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
+
+    private var photoList = arrayListOf<PhotoData>(
+        PhotoData(0, "dump", "dump1", "dump", "dump1", 0, false),
+        PhotoData(0, "dump", "dump1", "dump", "dump1", 0, false),
+        PhotoData(0, "dump", "dump1", "dump", "dump1", 0, false),
+        PhotoData(0, "dump", "dump2", "dump", "dump2", 1, false),
+        PhotoData(0, "dump", "dump2", "dump", "dump2", 1, false),
+        PhotoData(0, "dump", "dump2", "dump", "dump2", 1, false),
+        PhotoData(0, "dump", "dump2", "dump", "dump2", 1, false),
+        PhotoData(0, "dump", "dump3", "dump", "dump3", 2, false),
+        PhotoData(0, "dump", "dump3", "dump", "dump3", 2, false),
+        PhotoData(0, "dump", "dump3", "dump", "dump3", 2, false),
+        PhotoData(0, "dump", "dump4", "dump", "dump3", 2, false)
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
