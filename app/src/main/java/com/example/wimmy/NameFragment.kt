@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.example.wimmy.db.PhotoDB
 import com.example.wimmy.db.PhotoData
 import com.example.wimmy.db.PhotoViewModel
@@ -20,6 +21,7 @@ import com.example.wimmy.db.thumbnailData
  */
 class NameFragment : Fragment() {
     private var recyclerAdapter : RecyclerAdapter ?= null
+    var bottomNavigationView: BottomNavigationView? = null
 
     private var thumbnailList = listOf<thumbnailData>()
 
@@ -56,7 +58,7 @@ class NameFragment : Fragment() {
         recyclerView?.adapter = recyclerAdapter
 
         val lm = GridLayoutManager(MainActivity(), 3)
-        recyclerView?.layoutManager = lm
+        recyclerView?.layoutManager = lm as RecyclerView.LayoutManager?
     }
 
     private fun setPhotoSize(view : View, row : Int, padding : Int) {
@@ -68,4 +70,22 @@ class NameFragment : Fragment() {
 
         recyclerAdapter!!.setPhotoSize(size, padding)
     }
+/*
+    inner class Scroll : RecyclerView.OnScrollListener() {
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int){
+            bottomNavigationView = view!!.findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+            if (dy > 0 && bottomNavigationView!!.isShown()) {
+                bottomNavigationView!!.setVisibility(View.GONE);
+            } else if (dy < 0 ) {
+                bottomNavigationView!!.setVisibility(View.VISIBLE);
+            }
+        }
+
+        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+            super.onScrollStateChanged(recyclerView, newState)
+        }
+    }*/
 }
+
+
+
