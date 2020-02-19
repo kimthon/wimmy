@@ -24,13 +24,13 @@ interface PhotoData_Dao {
     @Query("DELETE FROM tag_data WHERE photo_id = :photo_id AND tag = :tag")
     fun delete(photo_id : Int, tag : String)
 
-    @Query("SELECT thumbnail_path, file_path as data FROM photo_data WHERE photo_id IN (SELECT MAX(photo_id) FROM photo_data GROUP BY file_path)")
+    @Query("SELECT thumbnail_path, file_path as data FROM photo_data WHERE photo_id IN (SELECT MAX(photo_id) FROM photo_data GROUP BY file_path) ORDER BY data")
     fun getNameDir() : LiveData<List<thumbnailData>>
-    @Query("SELECT thumbnail_path, location_info as data FROM photo_data WHERE photo_id IN (SELECT MAX(photo_id) FROM photo_data GROUP BY location_info)")
+    @Query("SELECT thumbnail_path, location_info as data FROM photo_data WHERE photo_id IN (SELECT MAX(photo_id) FROM photo_data GROUP BY location_info) ORDER BY data")
     fun getLocationDir() : LiveData<List<thumbnailData>>
-    @Query("SELECT thumbnail_path, date_info as data FROM photo_data WHERE photo_id IN (SELECT MAX(photo_id) FROM photo_data GROUP BY date_info)")
+    @Query("SELECT thumbnail_path, date_info as data FROM photo_data WHERE photo_id IN (SELECT MAX(photo_id) FROM photo_data GROUP BY date_info) ORDER BY data")
     fun getDateDir() : LiveData<List<thumbnailData>>
-    @Query("SELECT thumbnail_path, tag as data FROM photo_data, (SELECT MAX(photo_id) as photo_id, tag FROM tag_data GROUP BY tag) tag_data WHERE photo_data.photo_id = tag_data.photo_id")
+    @Query("SELECT thumbnail_path, tag as data FROM photo_data, (SELECT MAX(photo_id) as photo_id, tag FROM tag_data GROUP BY tag) tag_data WHERE photo_data.photo_id = tag_data.photo_id ORDER BY data")
     fun getTagDir() : LiveData<List<thumbnailData>>
 
     @Query("SELECT * FROM photo_data where name = :name")
