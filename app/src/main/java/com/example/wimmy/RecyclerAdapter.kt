@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.db.PhotoData
@@ -16,21 +17,23 @@ class RecyclerAdapter(val context: FragmentActivity?, var list: List<thumbnailDa
     private var padding_size = 200
 
     inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView!!) {
-        //photo_view 변수 받아오기
-        var photo = itemView?.findViewById<ImageView>(R.id.photo)
+        //thumbnail_view 변수 받아오기
+        var thumbnail = itemView?.findViewById<ImageView>(R.id.thumbnail)
+        var text = itemView?.findViewById<TextView>(R.id.thumbnail_text)
 
         fun bind(data : thumbnailData) {
-
             //photo_view의 내부 값 설정
-            val layoutParam = photo.layoutParams as ViewGroup.MarginLayoutParams
-            photo.layoutParams.width = size
-            photo.layoutParams.height = size
+            val layoutParam = thumbnail.layoutParams as ViewGroup.MarginLayoutParams
+            thumbnail.layoutParams.width = size
+            thumbnail.layoutParams.height = size
             layoutParam.setMargins(padding_size, padding_size, padding_size, padding_size)
+
+            text.text = data.data
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
-        val view = LayoutInflater.from(context).inflate(R.layout.photo_view, parent, false)
+        val view = LayoutInflater.from(context).inflate(R.layout.thumbnail_view, parent, false)
         return Holder(view)
     }
 
