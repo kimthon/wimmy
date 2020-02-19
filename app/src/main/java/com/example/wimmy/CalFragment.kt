@@ -30,22 +30,13 @@ class CalFragment : Fragment() {
                                savedInstanceState: Bundle? ): View? {
         var view : View = inflater.inflate(R.layout.fragment_name, container, false)
         setView(view)
-        setPhotoSize(view, 3, 10)
+        setPhotoSize(3, 10)
         // Inflate the layout for this fragment
 
         var vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-        vm.getNameDir().observe(this,
+        vm.getLocationDir().observe(this,
             Observer<List<thumbnailData>> { t -> recyclerAdapter!!.setThumbnailList(t)})
 
-        vm.Insert(PhotoData(0, "dump", "dump1", "dump", "dump", 0, false))
-        vm.Insert(PhotoData(0, "dump", "dump1", "dump", "dump", 0, false))
-        vm.Insert(PhotoData(0, "dump", "dump1", "dump", "dump", 0, false))
-        vm.Insert(PhotoData(0, "dump", "dump2", "dump", "dump", 0, false))
-        vm.Insert(PhotoData(0, "dump", "dump2", "dump", "dump", 0, false))
-        vm.Insert(PhotoData(0, "dump", "dump2", "dump", "dump", 0, false))
-        vm.Insert(PhotoData(0, "dump", "dump3", "dump", "dump", 0, false))
-        vm.Insert(PhotoData(0, "dump", "dump3", "dump", "dump", 0, false))
-        vm.Insert(PhotoData(0, "dump", "dump4", "dump", "dump", 0, false))
         return view
     }
 
@@ -58,7 +49,7 @@ class CalFragment : Fragment() {
         recyclerView?.layoutManager = lm as RecyclerView.LayoutManager?
     }
 
-    private fun setPhotoSize(view : View, row : Int, padding : Int) {
+    private fun setPhotoSize(row : Int, padding : Int) {
         val displayMetrics = DisplayMetrics()
         activity!!.windowManager.defaultDisplay.getMetrics(displayMetrics)
 

@@ -8,6 +8,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.ViewModelProviders
+import com.example.wimmy.db.PhotoData
+import com.example.wimmy.db.PhotoViewModel
+import com.example.wimmy.db.thumbnailData
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
@@ -31,6 +35,25 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             startActivity(intent)
         }*/
 
+        var vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+        vm.Insert(PhotoData(0, "dump", "dump1", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump1", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump1", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump2", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump2", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump2", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump3", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump3", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump4", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump5", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump5", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump5", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump6", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump6", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump6", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump7", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump7", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump7", "dump", "dump", 0, false))
     }
 
     private fun SetHeader() {
