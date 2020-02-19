@@ -22,14 +22,17 @@ class LocationFragment : Fragment() {
         savedInstanceState: Bundle?
 
     ): View? {
+        val view = inflater.inflate(R.layout.fragment_location, null)
         val test = view?.findViewById<Button>(R.id.test_button)
-        test?.setOnClickListener {
+        test!!.setOnClickListener ( object :View.OnClickListener {
+            override fun onClick(v: View?){
             val intent = Intent(context, Main_PhotoView::class.java)
             startActivity(intent)
         }
+    })
 
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_location, container, false)
+        return view
     }
 
 

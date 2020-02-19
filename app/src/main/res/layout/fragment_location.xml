@@ -7,10 +7,21 @@
 
     <!-- TODO: Update blank fragment layout -->
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
     <Button
         android:id="@+id/test_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="눌러봐" />
 
+    <Button
+        android:id="@+id/test_button2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="누르지마" />
+    </LinearLayout>
 </FrameLayout>

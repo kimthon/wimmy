@@ -19,22 +19,18 @@ class Main_PhotoView: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_photoview)
-
-        val view: View = findViewById(R.id.frame_layout2)
-        val tb: Toolbar = findViewById(R.id.main_toolbar2)
-        tb.bringToFront()
-        setSupportActionBar(tb)
+        val view: View = findViewById(R.id.photo_recyclerView)
         setView(view)
+        SetHeader()
         setPhotoSize(3, 10)
         // Inflate the layout for this fragment
-
         var vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
         vm.getNameDir().observe(this,
             Observer<List<thumbnailData>> { t -> recyclerAdapter?.setThumbnailList(t) })
-
     }
+
     private fun setView(view : View) {
-        val recyclerView = view.findViewById<RecyclerView>(R.id.frame_layout2)
+        val recyclerView = view.findViewById<RecyclerView>(R.id.photo_recyclerView)
         recyclerAdapter =
             RecyclerAdapter(this, thumbnailList)
         recyclerView?.adapter = recyclerAdapter
@@ -51,5 +47,12 @@ class Main_PhotoView: AppCompatActivity() {
         var size = width / row - 2*padding
 
         recyclerAdapter!!.setPhotoSize(size, padding)
+    }
+
+    private fun SetHeader() {
+        val toolbar = findViewById<Toolbar>(R.id.photo_toolbar)
+        toolbar.bringToFront()
+        setSupportActionBar(toolbar)
+        supportActionBar?.setTitle(null)
     }
 }

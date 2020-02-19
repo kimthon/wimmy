@@ -9,7 +9,7 @@
 
     <!-- 프레임 -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/frame_layout2"
+        android:id="@+id/photo_recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
@@ -17,25 +17,24 @@
 
     <!-- 상단바 -->
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appbar"
+        android:id="@+id/appbar2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/main_toolbar2"
+            android:id="@+id/photo_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="35dp"
+            android:minHeight="35dp"
             android:background="?attr/colorPrimary"
             android:theme="@style/AppTheme"
-            app:layout_scrollFlags="scroll|enterAlways"
-            app:contentInsetStart="0dp"
-            >
+            app:layout_scrollFlags="scroll|enterAlways">
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="TagName"
-                android:textSize="30sp"/>
+                android:textSize="20sp"/>
 
 
         </androidx.appcompat.widget.Toolbar>

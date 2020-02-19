@@ -16,7 +16,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
-
+    var toolbar_check: Boolean? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
@@ -51,6 +51,39 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         vm.Insert(PhotoData(0, "dump", "dump7", "dump", "dump", 0, false))
         vm.Insert(PhotoData(0, "dump", "dump7", "dump", "dump", 0, false))
         vm.Insert(PhotoData(0, "dump", "dump7", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump8", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump9", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump12", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump23", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump45", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump76", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump69", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "23", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "df", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "sdf", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "ddfs", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "jght", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "jyt", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "yjp6", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dumyjp6", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dumpte7", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dumpwet7", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump7wet", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "d234ump8", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump359", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump1265", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump23765", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump47895", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump7635", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump69636", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "237657", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "d52f", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "sd654f", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "ddf124s", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "jghwetbt", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "jyetmyt", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "yjp6tyt", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dumyjpty6", "dump", "dump", 0, false))
     }
 
     private fun SetHeader() {
@@ -84,7 +117,11 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }*/
     override fun onNavigationItemSelected(p0: MenuItem): Boolean {
         val tb: Toolbar = findViewById(R.id.main_toolbar)
-        tb.visibility = View.VISIBLE
+        if(toolbar_check == false) {
+            toolbar_check = true
+            tb.visibility = View.VISIBLE
+        }
+
         val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
 
         when(p0.itemId){
@@ -107,12 +144,15 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             R.id.menu_map -> {
                 val fragmentE = MapFragment()
                 transaction.replace(R.id.frame_layout,fragmentE, "map")
-                tb.visibility = View.GONE
             }
         }
         transaction.addToBackStack(null)
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
         transaction.commit()
+        if(p0.itemId == R.id.menu_map) {
+            toolbar_check = false
+            tb.visibility = View.GONE
+        }
         return true
     }
 
