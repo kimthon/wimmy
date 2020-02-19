@@ -27,7 +27,6 @@ class RecyclerAdapter(val context: FragmentActivity?, var list: List<thumbnailDa
             thumbnail.layoutParams.width = size
             thumbnail.layoutParams.height = size
             layoutParam.setMargins(padding_size, padding_size, padding_size, padding_size)
-
             text.text = data.data
         }
     }

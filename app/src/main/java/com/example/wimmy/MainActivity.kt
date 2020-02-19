@@ -11,7 +11,7 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProviders
 import com.example.wimmy.db.PhotoData
 import com.example.wimmy.db.PhotoViewModel
-import com.example.wimmy.db.thumbnailData
+import com.example.wimmy.fragment.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
@@ -22,9 +22,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         setContentView(R.layout.main_activity)
         val bnv = findViewById<View>(R.id.bottomNavigationView) as BottomNavigationView
         bnv.setOnNavigationItemSelectedListener(this)
-        val tb: Toolbar = findViewById(R.id.main_toolbar)
-        tb.bringToFront()
-        setSupportActionBar(tb)
 
         SetHeader()
         init()
@@ -58,6 +55,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     private fun SetHeader() {
         val toolbar = findViewById<Toolbar>(R.id.main_toolbar)
+        toolbar.bringToFront()
         setSupportActionBar(toolbar)
         supportActionBar?.setTitle(null)
     }
