@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import com.example.wimmy.MainActivity
 import com.example.wimmy.Main_PhotoView
+import com.example.wimmy.PhotoViewPager
 import com.example.wimmy.R
 
 /**
@@ -23,6 +24,7 @@ class LocationFragment : Fragment() {
 
     ): View? {
         val view = inflater.inflate(R.layout.fragment_location, null)
+
         val test = view?.findViewById<Button>(R.id.test_button)
         test!!.setOnClickListener ( object :View.OnClickListener {
             override fun onClick(v: View?){
@@ -30,6 +32,14 @@ class LocationFragment : Fragment() {
             startActivity(intent)
         }
     })
+
+        val test2 = view?.findViewById<Button>(R.id.test_button2)
+        test2!!.setOnClickListener ( object :View.OnClickListener {
+            override fun onClick(v: View?){
+                val intent = Intent(context, PhotoViewPager::class.java)
+                startActivity(intent)
+            }
+        })
 
         // Inflate the layout for this fragment
         return view

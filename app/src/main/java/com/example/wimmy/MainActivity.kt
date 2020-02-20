@@ -21,9 +21,10 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
         val bnv = findViewById<View>(R.id.bottomNavigationView) as BottomNavigationView
+        var toolbar: Toolbar = findViewById(R.id.main_toolbar)
         bnv.setOnNavigationItemSelectedListener(this)
 
-        SetHeader()
+        SetHeader(toolbar)
         init()
 
         /*val go_intent = findViewById(R.id.search) as SearchView
@@ -86,8 +87,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         vm.Insert(PhotoData(0, "dump", "dumyjpty6", "dump", "dump", 0, false))
     }
 
-    private fun SetHeader() {
-        val toolbar = findViewById<Toolbar>(R.id.main_toolbar)
+    private fun SetHeader(toolbar: Toolbar) {
         toolbar.bringToFront()
         setSupportActionBar(toolbar)
         supportActionBar?.setTitle(null)
@@ -116,10 +116,10 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         return true
     }*/
     override fun onNavigationItemSelected(p0: MenuItem): Boolean {
-        val tb: Toolbar = findViewById(R.id.main_toolbar)
+        var toolbar: Toolbar = findViewById(R.id.main_toolbar)
         if(toolbar_check == false) {
             toolbar_check = true
-            tb.visibility = View.VISIBLE
+            toolbar.visibility = View.VISIBLE
         }
 
         val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
@@ -149,15 +149,20 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         transaction.addToBackStack(null)
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
         transaction.commit()
-        if(p0.itemId == R.id.menu_map) {
+        if(p0.itemId == R.id.menu_map || p0.itemId == R.id.menu_cal ) {
             toolbar_check = false
-            tb.visibility = View.GONE
+            toolbar.visibility = View.GONE
         }
         return true
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
+        var toolbar: Toolbar = findViewById(R.id.main_toolbar)
+        if(toolbar_check == false) {
+            toolbar_check = true
+            toolbar.visibility = View.VISIBLE
+        }
         val bnv = findViewById<View>(R.id.bottomNavigationView) as BottomNavigationView
         updateBottomMenu(bnv)
     }

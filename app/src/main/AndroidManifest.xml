@@ -29,9 +29,13 @@
                 <action android:name="android.intent.action.VIEW"/>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+
+
             </intent-filter>
         </activity>
         <activity android:name=".Main_PhotoView">
+        </activity>
+        <activity android:name=".PhotoViewPager">
         </activity>
 
     </application>

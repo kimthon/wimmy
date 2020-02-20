@@ -1,20 +1,22 @@
 package com.example.wimmy
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.db.thumbnailData
-import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class Main_PhotoView: AppCompatActivity() {
-    private var recyclerAdapter : RecyclerAdapter?= null
+    private var recyclerAdapter : RecyclerAdapterPhoto?= null
     private var thumbnailList = listOf<thumbnailData>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,12 +29,18 @@ class Main_PhotoView: AppCompatActivity() {
         var vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
         vm.getNameDir().observe(this,
             Observer<List<thumbnailData>> { t -> recyclerAdapter?.setThumbnailList(t) })
+
+
     }
 
     private fun setView(view : View) {
         val recyclerView = view.findViewById<RecyclerView>(R.id.photo_recyclerView)
         recyclerAdapter =
-            RecyclerAdapter(this, thumbnailList)
+            RecyclerAdapterPhoto(this, thumbnailList) {
+                thumbnailData ->  Toast.makeText(this,"${thumbnailData.data}",Toast.LENGTH_LONG).show()
+                val intent = Intent(this, com.example.wimmy.PhotoViewPager::class.java)
+                startActivity(intent)
+            }
         recyclerView?.adapter = recyclerAdapter
 
         val lm = GridLayoutManager(MainActivity(), 3)

@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.MainActivity
 import com.example.wimmy.R
-import com.example.wimmy.RecyclerAdapter
+import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.db.thumbnailData
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -20,7 +20,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
  * A simple [Fragment] subclass.
  */
 class CalFragment : Fragment() {
-    private var recyclerAdapter : RecyclerAdapter?= null
+    private var recyclerAdapter : RecyclerAdapterForder?= null
     var bottomNavigationView: BottomNavigationView? = null
     private var thumbnailList = listOf<thumbnailData>()
 
@@ -45,7 +45,10 @@ class CalFragment : Fragment() {
     private fun setView(view : View) {
         val recyclerView = view.findViewById<RecyclerView>(R.id.nameRecycleView)
         recyclerAdapter =
-            RecyclerAdapter(activity, thumbnailList)
+            RecyclerAdapterForder(
+                activity,
+                thumbnailList
+            )
         recyclerView?.adapter = recyclerAdapter
 
         val lm = GridLayoutManager(MainActivity(), 3)
