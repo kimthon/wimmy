@@ -7,17 +7,14 @@
     tools:context=".NameFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <androidx.recyclerview.widget.RecyclerView
-
-        android:id="@+id/calRecycleView"
+    <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+        android:id="@+id/calendarView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="vertical">
-
-
-
-    </androidx.recyclerview.widget.RecyclerView>
-
+        app:mcv_selectionColor="?attr/colorPrimary"
+        app:mcv_showOtherDates="all"
+        app:mcv_tileHeight="0dp"
+        />
 
 </FrameLayout>
 

@@ -13,6 +13,8 @@ import com.example.wimmy.db.PhotoData
 import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.db.thumbnailData
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
@@ -101,6 +103,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             R.id.menu_cal -> {
                 val fragmentC = CalFragment()
                 transaction.replace(R.id.frame_layout,fragmentC, "cal")
+                tb.visibility = View.GONE
             }
             R.id.menu_location -> {
                 val fragmentD = LocationFragment()

@@ -1,7 +1,13 @@
 package com.example.wimmy
 
 
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Typeface
 import android.os.Bundle
+import android.provider.CalendarContract
+import android.text.style.*
 import android.util.DisplayMetrics
 import android.view.*
 import androidx.fragment.app.Fragment
@@ -13,12 +19,14 @@ import com.example.wimmy.db.PhotoData
 import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.db.thumbnailData
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.prolificinteractive.materialcalendarview.*
+import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * A simple [Fragment] subclass.
  */
 class CalFragment : Fragment() {
-    private var recyclerAdapter : RecyclerAdapter ?= null
     var bottomNavigationView: BottomNavigationView? = null
     private var thumbnailList = listOf<thumbnailData>()
 
@@ -28,25 +36,27 @@ class CalFragment : Fragment() {
 
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?,
                                savedInstanceState: Bundle? ): View? {
-        var view : View = inflater.inflate(R.layout.fragment_name, container, false)
+        var view : View = inflater.inflate(R.layout.fragment_cal, container, false)
         setView(view)
         setPhotoSize(3, 10)
         // Inflate the layout for this fragment
 
         var vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-        vm.getLocationDir().observe(this,
-            Observer<List<thumbnailData>> { t -> recyclerAdapter!!.setThumbnailList(t)})
 
         return view
     }
 
     private fun setView(view : View) {
-        val recyclerView = view.findViewById<RecyclerView>(R.id.nameRecycleView)
-        recyclerAdapter = RecyclerAdapter(activity, thumbnailList)
-        recyclerView?.adapter = recyclerAdapter
+        val cal = view.findViewById<MaterialCalendarView>(R.id.calendarView)
+        cal.isDynamicHeightEnabled = true
+        cal.addDecorators(
+            SundayDecorator(),
+            SaturdayDecorator(),
+            TagAddDecorator())
 
-        val lm = GridLayoutManager(MainActivity(), 3)
-        recyclerView?.layoutManager = lm as RecyclerView.LayoutManager?
+        cal.state().edit()
+            .setCalendarDisplayMode(CalendarMode.MONTHS)
+
     }
 
     private fun setPhotoSize(row : Int, padding : Int) {
@@ -55,7 +65,72 @@ class CalFragment : Fragment() {
 
         var width = displayMetrics.widthPixels
         var size = width / row - 2*padding
-
-        recyclerAdapter!!.setPhotoSize(size, padding)
     }
 }
+
+class SundayDecorator : DayViewDecorator {
+    private var cal = Calendar.getInstance()
+
+    override fun shouldDecorate(day: CalendarDay?): Boolean {
+        day?.copyTo(cal)
+        var week = cal.get(Calendar.DAY_OF_WEEK)
+        return week == Calendar.SUNDAY
+    }
+
+    override fun decorate(view: DayViewFacade?) {
+        view?.addSpan(ForegroundColorSpan(Color.RED))
+    }
+}
+
+class SaturdayDecorator : DayViewDecorator {
+    private var cal = Calendar.getInstance()
+
+    override fun shouldDecorate(day: CalendarDay?): Boolean {
+        day?.copyTo(cal)
+        var week = cal.get(Calendar.DAY_OF_WEEK)
+        return week == Calendar.SATURDAY
+    }
+
+    override fun decorate(view: DayViewFacade?) {
+        view?.addSpan(ForegroundColorSpan(Color.BLUE))
+    }
+}
+
+class TagAddDecorator : DayViewDecorator {
+    private var cal = Calendar.getInstance()
+
+    override fun shouldDecorate(day: CalendarDay?): Boolean {
+        day?.copyTo(cal)
+        var week = cal.get(Calendar.DAY_OF_WEEK)
+        return week == Calendar.SUNDAY
+    }
+
+    override fun decorate(view: DayViewFacade?) {
+        view?.addSpan(TagAddSpan("test"))
+    }
+}
+
+class TagAddSpan : LineBackgroundSpan {
+    var text : String = ""
+
+    constructor(text : String) {
+        this.text = text
+    }
+
+    override fun drawBackground(
+        canvas: Canvas,
+        paint: Paint,
+        left: Int,
+        right: Int,
+        top: Int,
+        baseline: Int,
+        bottom: Int,
+        text: CharSequence,
+        start: Int,
+        end: Int,
+        lineNumber: Int
+    ) {
+        canvas.drawText(this.text, ((left+right)/2 - 10).toFloat(), (bottom+30).toFloat(), paint);
+    }
+}
+
