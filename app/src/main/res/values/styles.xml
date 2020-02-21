@@ -22,4 +22,10 @@
 
         <item name="colorAccent">@android:color/holo_purple</item>                    <!-- 상단 움직이는 바 색-->
     </style>
+
+    <style name="calendarTheme" parent="TextAppearance.MaterialCalendarWidget.Date">
+        <item name="android:textColor">#EE88C9</item>
+        <item name="android:background">#EE88C9</item>
+        <item name="android:textSize">15pt</item>
+    </style>
 </resources>

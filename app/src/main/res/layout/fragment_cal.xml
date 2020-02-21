@@ -7,15 +7,112 @@
     tools:context=".NameFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <com.prolificinteractive.materialcalendarview.MaterialCalendarView
-        android:id="@+id/calendarView"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:mcv_selectionColor="?attr/colorPrimary"
-        app:mcv_showOtherDates="all"
-        app:mcv_tileHeight="0dp"
-        />
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal" >
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/cal_month_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="왼"
+                />
+            <TextView
+                android:id="@+id/cal_month_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15pt"
+                />
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/cal_month_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="오"
+                />
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/calendar_week"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal" >
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="8pt"
+                android:gravity="center_horizontal"
+                android:text="일"
+                android:textColor="#ff0000"
+                />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="8pt"
+                android:gravity="center_horizontal"
+                android:text="월"
+                />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="8pt"
+                android:gravity="center_horizontal"
+                android:text="화"
+                />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="8pt"
+                android:gravity="center_horizontal"
+                android:text="수"
+                />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="8pt"
+                android:gravity="center_horizontal"
+                android:text="목"
+                />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="8pt"
+                android:gravity="center_horizontal"
+                android:text="금"
+                />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="8pt"
+                android:gravity="center_horizontal"
+                android:text="토"
+                android:textColor="#0000ff"
+                />
+        </LinearLayout>
+
+        <GridView
+            android:id="@+id/calendar_grid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp"
+            android:gravity="center"
+            android:numColumns="7" />
+    </LinearLayout>
 </FrameLayout>
 
 
