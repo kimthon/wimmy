@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.example.wimmy.R
@@ -29,9 +30,9 @@ public class PagerRecyclerAdapter(private val context: Context, var list: List<t
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val v = layoutInflater!!.inflate(R.layout.photoview_pager, null)
-        //val image = v.findViewById<View>(R.id.imgView) as ImageView
-        //image.setImageResource(list[position])
-
+        val image = v.findViewById<View>(R.id.imgView) as ImageView
+        val text = v.findViewById<View>(R.id.imgView_text) as TextView        //image.setImageResource(list[position])
+        //text.setText("dfs")
         val vp = container as ViewPager
         vp.addView(v, 0)
         return v

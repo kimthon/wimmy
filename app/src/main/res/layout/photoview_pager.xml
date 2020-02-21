@@ -10,6 +10,7 @@
         android:layout_height="match_parent"
         android:layout_marginTop="50dp"
         android:layout_marginBottom="50dp"
+        android:src="@drawable/loding_image"
         android:scaleType="fitXY" />
     <TextView
         android:id="@+id/imgView_text"

@@ -25,9 +25,8 @@ class PhotoViewPager : AppCompatActivity() {
         setContentView(R.layout.photoview_frame)
         setView(view)
         // Inflate the layout for this fragment
-        var vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-        vm.getNameDir().observe(this,
-            Observer<List<thumbnailData>> { t -> recyclerAdapter?.setThumbnailList(t) })
+
+
     }
 
     private fun setView(view: View) {
