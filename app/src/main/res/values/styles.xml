@@ -22,4 +22,5 @@
 
         <item name="colorAccent">@android:color/holo_purple</item>                    <!-- 상단 움직이는 바 색-->
     </style>
+
 </resources>

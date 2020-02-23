@@ -1,9 +1,11 @@
 package com.example.wimmy
 
 
+import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.*
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -32,7 +34,7 @@ class NameFragment : Fragment() {
         savedInstanceState: Bundle? ): View? {
         var view : View = inflater.inflate(R.layout.fragment_name, container, false)
         setView(view)
-        setPhotoSize(3, 10)
+        setPhotoSize(view, 3, 10)
         // Inflate the layout for this fragment
 
         var vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
@@ -51,15 +53,19 @@ class NameFragment : Fragment() {
         recyclerView?.layoutManager = lm as RecyclerView.LayoutManager?
     }
 
-    private fun setPhotoSize(row : Int, padding : Int) {
-        val displayMetrics = DisplayMetrics()
-        activity!!.windowManager.defaultDisplay.getMetrics(displayMetrics)
-
-        var width = displayMetrics.widthPixels
-        var size = width / row - 2*padding
-
-        recyclerAdapter!!.setPhotoSize(size, padding)
+    private fun setPhotoSize(view : View, row : Int, padding : Int) {
+        val recyclerView = view!!.findViewById<RecyclerView>(R.id.nameRecycleView)
+        recyclerView.viewTreeObserver.addOnGlobalLayoutListener( object : ViewTreeObserver.OnGlobalLayoutListener {
+            @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
+            override fun onGlobalLayout() {
+                var width = recyclerView.width
+                var size = width / row - 2 * padding
+                recyclerAdapter!!.setPhotoSize(size, padding)
+                recyclerView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+            }
+        })
     }
+}
 /*
     inner class Scroll : RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int){
@@ -74,8 +80,9 @@ class NameFragment : Fragment() {
         override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
             super.onScrollStateChanged(recyclerView, newState)
         }
-    }*/
+    }
 }
+ */
 
 
 

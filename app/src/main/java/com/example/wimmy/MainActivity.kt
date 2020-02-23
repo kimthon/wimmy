@@ -13,6 +13,8 @@ import com.example.wimmy.db.PhotoData
 import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.db.thumbnailData
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
@@ -54,6 +56,9 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         vm.Insert(PhotoData(0, "dump", "dump7", "dump", "dump", 0, false))
         vm.Insert(PhotoData(0, "dump", "dump7", "dump", "dump", 0, false))
         vm.Insert(PhotoData(0, "dump", "dump7", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump8", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump9", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump10", "dump", "dump", 0, false))
     }
 
     private fun SetHeader() {
@@ -101,6 +106,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             R.id.menu_cal -> {
                 val fragmentC = CalFragment()
                 transaction.replace(R.id.frame_layout,fragmentC, "cal")
+                tb.visibility = View.GONE
             }
             R.id.menu_location -> {
                 val fragmentD = LocationFragment()
