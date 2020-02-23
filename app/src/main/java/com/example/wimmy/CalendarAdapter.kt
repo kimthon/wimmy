@@ -15,10 +15,11 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
 
-class CalendarAdapter(context : FragmentActivity, days : ArrayList<Date>, eventDays : HashSet<Date>?, inputMonth : Int) :
+class CalendarAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : ArrayList<Date>, eventDays : HashSet<Date>?, inputMonth : Int) :
         ArrayAdapter<Date>(context, R.layout.fragment_cal, days) {
     private val inflater : LayoutInflater = LayoutInflater.from(context)
-    private val inputMonth = inputMonth
+    private var inputMonth = inputMonth
+    private var size = size
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var view = convertView
@@ -35,12 +36,12 @@ class CalendarAdapter(context : FragmentActivity, days : ArrayList<Date>, eventD
         val calendarToday = Calendar.getInstance()
         calendarToday.time = today
 
-        if (view == null) {
-            view = inflater.inflate(R.layout.calendar_day_layout, parent, false)
+        if (view == null) view = inflater.inflate(R.layout.calendar_day_layout, parent, false)
+        var textView = view!!.findViewById<TextView>(R.id.calendar_day)
+        if(size != null) {
+            view.layoutParams.width = size!!.first
+            view.layoutParams.height = size!!.second
         }
-
-        (view as TextView).setTypeface(null, Typeface.NORMAL)
-        var textView = view.findViewById<TextView>(R.id.calendar_day)
 
         //저번 달 날짜
         if (month != inputMonth) {
@@ -66,5 +67,17 @@ class CalendarAdapter(context : FragmentActivity, days : ArrayList<Date>, eventD
         textView.text = calendar.get(Calendar.DATE).toString()
 
         return view
+    }
+
+    fun setDateSize(size : Pair<Int, Int>) {
+        this.size = size
+        notifyDataSetChanged()
+    }
+
+    fun Update(cells : ArrayList<Date>, eventDays: HashSet<Date>?, month : Int) {
+        clear()
+        addAll(cells)
+        this.inputMonth = month
+        notifyDataSetChanged()
     }
 }

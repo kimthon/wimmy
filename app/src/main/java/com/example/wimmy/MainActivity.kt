@@ -56,6 +56,9 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         vm.Insert(PhotoData(0, "dump", "dump7", "dump", "dump", 0, false))
         vm.Insert(PhotoData(0, "dump", "dump7", "dump", "dump", 0, false))
         vm.Insert(PhotoData(0, "dump", "dump7", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump8", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump9", "dump", "dump", 0, false))
+        vm.Insert(PhotoData(0, "dump", "dump10", "dump", "dump", 0, false))
     }
 
     private fun SetHeader() {
