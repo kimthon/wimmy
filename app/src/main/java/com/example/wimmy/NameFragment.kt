@@ -24,7 +24,6 @@ import com.example.wimmy.db.thumbnailData
 class NameFragment : Fragment() {
     private var recyclerAdapter : RecyclerAdapter ?= null
     var bottomNavigationView: BottomNavigationView? = null
-    private var thumbnailList = listOf<thumbnailData>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,12 +31,12 @@ class NameFragment : Fragment() {
 
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle? ): View? {
-        var view : View = inflater.inflate(R.layout.fragment_name, container, false)
+        val view : View = inflater.inflate(R.layout.fragment_name, container, false)
         setView(view)
         setPhotoSize(view, 3, 10)
         // Inflate the layout for this fragment
 
-        var vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+        val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
         vm.getNameDir().observe(this,
             Observer<List<thumbnailData>> { t -> recyclerAdapter!!.setThumbnailList(t)})
 
@@ -46,20 +45,20 @@ class NameFragment : Fragment() {
 
     private fun setView(view : View) {
         val recyclerView = view.findViewById<RecyclerView>(R.id.nameRecycleView)
-        recyclerAdapter = RecyclerAdapter(activity, thumbnailList)
+        recyclerAdapter = RecyclerAdapter(activity, listOf<thumbnailData>())
         recyclerView?.adapter = recyclerAdapter
 
         val lm = GridLayoutManager(MainActivity(), 3)
-        recyclerView?.layoutManager = lm as RecyclerView.LayoutManager?
+        recyclerView?.layoutManager = lm
     }
 
     private fun setPhotoSize(view : View, row : Int, padding : Int) {
-        val recyclerView = view!!.findViewById<RecyclerView>(R.id.nameRecycleView)
+        val recyclerView = view.findViewById<RecyclerView>(R.id.nameRecycleView)
         recyclerView.viewTreeObserver.addOnGlobalLayoutListener( object : ViewTreeObserver.OnGlobalLayoutListener {
             @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
             override fun onGlobalLayout() {
-                var width = recyclerView.width
-                var size = width / row - 2 * padding
+                val width = recyclerView.width
+                val size = width / row - 2 * padding
                 recyclerAdapter!!.setPhotoSize(size, padding)
                 recyclerView.viewTreeObserver.removeOnGlobalLayoutListener(this)
             }

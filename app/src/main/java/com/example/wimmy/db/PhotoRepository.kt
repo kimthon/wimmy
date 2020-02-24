@@ -3,15 +3,15 @@ package com.example.wimmy.db
 import android.app.Application
 import android.os.AsyncTask
 import androidx.lifecycle.LiveData
+import java.util.*
 
 class PhotoRepository(application: Application) {
    val photoDao : PhotoData_Dao
 
    companion object {
-      private class insertPhotoAsyncTask constructor(private val asyncTask: PhotoData_Dao) : AsyncTask<PhotoData, Void, Void>() {
-         override fun doInBackground(vararg params: PhotoData?): Void? {
-             asyncTask.insert(params[0]!!)
-             return null
+      private class insertPhotoAsyncTask constructor(private val asyncTask: PhotoData_Dao) : AsyncTask<PhotoData, Void, Long>() {
+         override fun doInBackground(vararg params: PhotoData?): Long? {
+            return asyncTask.insert(params[0]!!)
          }
       }
 
@@ -21,15 +21,27 @@ class PhotoRepository(application: Application) {
             return null
          }
       }
+
+      private class getDateTagAsyncTask constructor(private val asyncTask: PhotoData_Dao) : AsyncTask<Date, Void, String>() {
+         override fun doInBackground(vararg params: Date?): String? {
+            return asyncTask.getDateInfo(params[0]!!, params[1]!!)
+         }
+      }
+
+      private class getSizeAsyncTask constructor(private val asyncTask: PhotoData_Dao) : AsyncTask<Void, Void, Int>() {
+         override fun doInBackground(vararg params: Void?): Int {
+            return asyncTask.getSize()
+         }
+      }
    }
 
    init {
-      var db = PhotoDB.getInstance(application)!!
+      val db = PhotoDB.getInstance(application)!!
       photoDao = db.PhotoData_Dao()
    }
 
-   fun insert(photo : PhotoData) {
-      insertPhotoAsyncTask(photoDao).execute(photo)
+   fun insert(photo : PhotoData) : Long {
+      return insertPhotoAsyncTask(photoDao).execute(photo).get()
    }
 
    fun insert(tag : TagData) {
@@ -42,8 +54,8 @@ class PhotoRepository(application: Application) {
    fun getLocationDir() : LiveData<List<thumbnailData>> {
       return photoDao.getLocationDir()
    }
-   fun getDateDir() : LiveData<List<thumbnailData>> {
-      return photoDao.getDateDir()
+   fun getDateInfo(from : Date, to : Date) : String? {
+       return getDateTagAsyncTask(photoDao).execute(from, to).get()
    }
    fun getTagDir() : LiveData<List<thumbnailData>> {
       return photoDao.getTagDir()
@@ -60,5 +72,9 @@ class PhotoRepository(application: Application) {
    }
    fun getTagDir(tag : String) : LiveData<List<PhotoData>> {
       return photoDao.getTagDir(tag)
+   }
+
+   fun getSize() : Int {
+      return getSizeAsyncTask(photoDao).execute().get()
    }
 }

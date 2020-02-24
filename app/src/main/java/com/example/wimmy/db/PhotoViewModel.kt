@@ -3,13 +3,14 @@ package com.example.wimmy.db
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import java.util.*
 
 class PhotoViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repo : PhotoRepository = PhotoRepository(application)
 
-    fun Insert(photo : PhotoData) {
-       repo.insert(photo)
+    fun Insert(photo : PhotoData) : Long {
+       return repo.insert(photo)
     }
 
     fun Insert(tag : TagData) {
@@ -23,8 +24,8 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
     fun getLocationDir() : LiveData<List<thumbnailData>> {
         return repo.getLocationDir()
     }
-    fun getDateDir() : LiveData<List<thumbnailData>> {
-        return repo.getDateDir()
+    fun getDateInfo(from : Date, to : Date) : String? {
+        return repo.getDateInfo(from, to)
     }
     fun getTagDir() : LiveData<List<thumbnailData>> {
         return repo.getTagDir()
@@ -42,5 +43,9 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
     }
     fun getTagDir(tag : String) : LiveData<List<PhotoData>> {
         return repo.getTagDir(tag)
+    }
+
+    fun getSize() : Int {
+        return repo.getSize()
     }
 }

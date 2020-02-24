@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
     tools:context=".NameFragment">
 
     <!-- TODO: Update blank fragment layout -->
@@ -57,7 +56,7 @@
                 android:layout_weight="1"
                 android:textSize="8pt"
                 android:gravity="center_horizontal"
-                android:text="일"
+                android:text="@string/sunday"
                 android:textColor="#ff0000"
                 />
             <TextView
@@ -66,7 +65,7 @@
                 android:layout_weight="1"
                 android:textSize="8pt"
                 android:gravity="center_horizontal"
-                android:text="월"
+                android:text="@string/monday"
                 android:textColor="#FFFFFF"
                 />
             <TextView
@@ -75,7 +74,7 @@
                 android:layout_weight="1"
                 android:textSize="8pt"
                 android:gravity="center_horizontal"
-                android:text="화"
+                android:text="@string/tuesday"
                 android:textColor="#FFFFFF"
                 />
             <TextView
@@ -84,7 +83,7 @@
                 android:layout_weight="1"
                 android:textSize="8pt"
                 android:gravity="center_horizontal"
-                android:text="수"
+                android:text="@string/wednesday"
                 android:textColor="#FFFFFF"
                 />
             <TextView
@@ -93,7 +92,7 @@
                 android:layout_weight="1"
                 android:textSize="8pt"
                 android:gravity="center_horizontal"
-                android:text="목"
+                android:text="@string/thursday"
                 android:textColor="#FFFFFF"
                 />
             <TextView
@@ -102,7 +101,7 @@
                 android:layout_weight="1"
                 android:textSize="8pt"
                 android:gravity="center_horizontal"
-                android:text="금"
+                android:text="@string/thursday"
                 android:textColor="#FFFFFF"
                 />
             <TextView
@@ -111,26 +110,30 @@
                 android:layout_weight="1"
                 android:textSize="8pt"
                 android:gravity="center_horizontal"
-                android:text="토"
+                android:text="@string/saturday"
                 android:textColor="#0000FF"
                 />
         </LinearLayout>
 
-        <GridView
-            android:id="@+id/cal_grid"
+        <LinearLayout
+            android:id="@+id/cal_grid_wrapper"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="0dp"
-
-            android:paddingRight="1dp"
-            android:paddingLeft="1dp"
-
-            android:clickable="true"
-            android:gravity="center"
             android:background="#f8b5df"
-            android:verticalSpacing="1dp"
-            android:horizontalSpacing="1dp"
-            android:numColumns="7" />
+            android:padding="1dp">
+
+            <GridView
+                android:id="@+id/cal_grid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="0dp"
+
+                android:gravity="center"
+                android:layout_marginBottom="3dp"
+                android:verticalSpacing="1dp"
+                android:horizontalSpacing="1dp"
+                android:numColumns="7" />
+        </LinearLayout>
     </LinearLayout>
 </FrameLayout>
 
