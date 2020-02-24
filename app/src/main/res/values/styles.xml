@@ -12,6 +12,7 @@
 
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@drawable/loding</item>
+        <item name="colorPrimaryDark">@color/Selected</item>
     </style>
 
     <style name="TabTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -22,4 +23,5 @@
 
         <item name="colorAccent">@android:color/holo_purple</item>                    <!-- 상단 움직이는 바 색-->
     </style>
+
 </resources>

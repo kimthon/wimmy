@@ -1,4 +1,4 @@
-package com.example.wimmy
+package com.example.wimmy.fragment
 
 
 import android.os.Bundle
@@ -6,11 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.SearchView
-import android.widget.Toolbar
-import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentManager
+import com.example.wimmy.R
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
