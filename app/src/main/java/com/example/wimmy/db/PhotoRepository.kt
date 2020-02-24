@@ -3,15 +3,15 @@ package com.example.wimmy.db
 import android.app.Application
 import android.os.AsyncTask
 import androidx.lifecycle.LiveData
+import java.util.*
 
 class PhotoRepository(application: Application) {
    val photoDao : PhotoData_Dao
 
    companion object {
-      private class insertPhotoAsyncTask constructor(private val asyncTask: PhotoData_Dao) : AsyncTask<PhotoData, Void, Void>() {
-         override fun doInBackground(vararg params: PhotoData?): Void? {
-             asyncTask.insert(params[0]!!)
-             return null
+      private class insertPhotoAsyncTask constructor(private val asyncTask: PhotoData_Dao) : AsyncTask<PhotoData, Void, Long>() {
+         override fun doInBackground(vararg params: PhotoData?): Long? {
+            return asyncTask.insert(params[0]!!)
          }
       }
 
@@ -21,15 +21,21 @@ class PhotoRepository(application: Application) {
             return null
          }
       }
+
+      private class getDateTagAsyncTask constructor(private val asyncTask: PhotoData_Dao) : AsyncTask<Date, Void, dateData>() {
+         override fun doInBackground(vararg params: Date?): dateData? {
+            return asyncTask.getDateInfo(params[0]!!)
+         }
+      }
    }
 
    init {
-      var db = PhotoDB.getInstance(application)!!
+      val db = PhotoDB.getInstance(application)!!
       photoDao = db.PhotoData_Dao()
    }
 
-   fun insert(photo : PhotoData) {
-      insertPhotoAsyncTask(photoDao).execute(photo)
+   fun insert(photo : PhotoData) : Long {
+      return insertPhotoAsyncTask(photoDao).execute(photo).get()
    }
 
    fun insert(tag : TagData) {
@@ -42,8 +48,8 @@ class PhotoRepository(application: Application) {
    fun getLocationDir() : LiveData<List<thumbnailData>> {
       return photoDao.getLocationDir()
    }
-   fun getDateDir() : LiveData<List<thumbnailData>> {
-      return photoDao.getDateDir()
+   fun getDateInfo(date : Date) : dateData? {
+       return getDateTagAsyncTask(photoDao).execute(date).get()
    }
    fun getTagDir() : LiveData<List<thumbnailData>> {
       return photoDao.getTagDir()

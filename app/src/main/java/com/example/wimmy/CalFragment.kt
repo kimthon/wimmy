@@ -1,59 +1,45 @@
 package com.example.wimmy
 
 
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Typeface
-import android.icu.util.Measure
 import android.os.Build
 import android.os.Bundle
-import android.provider.CalendarContract
-import android.text.style.*
 import android.util.DisplayMetrics
 import android.view.*
-import android.widget.CalendarView
 import android.widget.GridView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
-import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatImageButton
-import androidx.core.view.size
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.wimmy.db.PhotoData
 import com.example.wimmy.db.PhotoViewModel
-import com.example.wimmy.db.thumbnailData
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.prolificinteractive.materialcalendarview.*
+import kotlinx.android.synthetic.main.fragment_cal.*
 import java.util.*
 import kotlin.collections.ArrayList
 
 /**
  * A simple [Fragment] subclass.
  */
-class CalFragment : Fragment() {
-    private var thumbnailList = listOf<thumbnailData>()
+class CalFragment() : Fragment() {
     private lateinit var header : LinearLayout
     private lateinit var gridView : GridView
+    private lateinit var vm : PhotoViewModel
     private var size : Pair<Int, Int>? = null
-    private var cal_date : Calendar = Calendar.getInstance()
+    private var calDate : Calendar = Calendar.getInstance()
+    private var count = 0
 
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?,
                                savedInstanceState: Bundle? ): View? {
-        var view : View = inflater.inflate(R.layout.fragment_cal, container, false)
+        val view : View = inflater.inflate(R.layout.fragment_cal, container, false)
 
         // Inflate the layout for this fragment
         setView(view)
         setHeader(view)
+        setGridLayout(view)
+        vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
-        updateCalendar(null, cal_date.clone() as Calendar)
-
-        var vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+        updateCalendar(view, calDate.clone() as Calendar)
         return view
     }
 
@@ -63,31 +49,31 @@ class CalFragment : Fragment() {
     }
 
     private fun setHeader(view : View) {
-        var month_left_button = view.findViewById<AppCompatImageButton>(R.id.cal_month_left)
-        var month_right_button = view.findViewById<AppCompatImageButton>(R.id.cal_month_right)
-        var month_text = view.findViewById<TextView>(R.id.cal_month_text)
+        val month_left_button = view.findViewById<AppCompatImageButton>(R.id.cal_month_left)
+        val month_right_button = view.findViewById<AppCompatImageButton>(R.id.cal_month_right)
+        val month_text = view.findViewById<TextView>(R.id.cal_month_text)
 
         month_left_button.setOnClickListener {
-            cal_date.add(Calendar.MONTH, -1)
-            updateCalendar(null, cal_date.clone() as Calendar)
-            setHeaderDate(month_text,cal_date)
+            calDate.add(Calendar.MONTH, -1)
+            updateCalendar(view, calDate.clone() as Calendar)
+            setHeaderDate(month_text)
         }
 
         month_right_button.setOnClickListener {
-            cal_date.add(Calendar.MONTH, 1)
-            updateCalendar(null, cal_date.clone() as Calendar)
-            setHeaderDate(month_text,cal_date)
+            calDate.add(Calendar.MONTH, 1)
+            updateCalendar(view, calDate.clone() as Calendar)
+            setHeaderDate(month_text)
         }
 
-        setHeaderDate(month_text,cal_date)
+        setHeaderDate(month_text)
     }
 
-    private fun updateCalendar(events : HashSet<Date>?, inputCalendar : Calendar) {
-        var cells = ArrayList<Date>()
+    private fun updateCalendar(view: View, inputCalendar : Calendar) {
+        val cells = ArrayList<Pair<Date, String?>>()
 
         //해당 달의 1일으로 설정
         inputCalendar.set(Calendar.DAY_OF_MONTH, 1)
-        var month = inputCalendar.get(Calendar.MONTH)
+        val month = inputCalendar.get(Calendar.MONTH)
 
         //월의 시작 요일 계산
         val monthBeginningCell = inputCalendar.get(Calendar.DAY_OF_WEEK) -1
@@ -96,45 +82,64 @@ class CalFragment : Fragment() {
         var count = 0
         do {
             for (i in 1..7) {
-                cells.add(inputCalendar.time)
+                cells.add(Pair(inputCalendar.time, vm.getDateInfo(inputCalendar.time)))
                 inputCalendar.add(Calendar.DAY_OF_MONTH, 1)
             }
             ++count
-        } while(inputCalendar.get(Calendar.MONTH) == month);
+        } while(inputCalendar.get(Calendar.MONTH) == month)
 
-        if(gridView.adapter == null )gridView.adapter = CalendarAdapter(activity!!, size,  cells, events, month)
+        if(gridView.adapter == null )gridView.adapter = CalendarAdapter(activity!!, size,  cells, month)
         else {
             val gridAdapter = gridView.adapter as CalendarAdapter
-            gridAdapter.Update(cells, events, month)
+            gridAdapter.Update(cells, month)
         }
 
-        setColumnSize(count)
+        //이전 달과 주 갯수가 같으면 실행할 필요없음
+        if(this.count != count) {
+            setColumnSize(view, count)
+            this.count = count
+        }
     }
+    private fun setGridLayout(view : View) {
+        val gridViewWrapper = view.findViewById<LinearLayout>(R.id.cal_grid_wrapper)
 
-    private fun setColumnSize(height : Int) {
-        gridView.viewTreeObserver.addOnGlobalLayoutListener( object : ViewTreeObserver.OnGlobalLayoutListener {
+        val displayMetrics = DisplayMetrics()
+        super.getActivity()!!.windowManager.defaultDisplay.getMetrics(displayMetrics)
+        val bnv = super.getActivity()!!.findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+
+        gridViewWrapper.viewTreeObserver.addOnGlobalLayoutListener( object : ViewTreeObserver.OnGlobalLayoutListener {
             @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
             override fun onGlobalLayout() {
-                var viewHeight = view!!.height
-                var weekHeight = view!!.findViewById<LinearLayout>(R.id.calendar_week).height
-                var gridViewHeight = viewHeight - header.height - weekHeight
+                gridViewWrapper.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                //padding
+                val padding = header.paddingBottom + header.paddingBottom + calendar_week.paddingBottom
+                gridViewWrapper.layoutParams.height = displayMetrics.heightPixels - header.height - calendar_week.height - bnv.height - padding
+                gridViewWrapper.requestLayout()
+            }
+        })
+    }
 
-                gridView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+    private fun setColumnSize(view : View, count : Int) {
+        val gridViewWrapper = view.findViewById<LinearLayout>(R.id.cal_grid_wrapper)
 
-                var density = context!!.resources.displayMetrics.density
-                var width = gridView.width / 7 - 1*density.toInt()
-                var height = (gridViewHeight - 1*density.toInt()) / height
+        gridViewWrapper.viewTreeObserver.addOnGlobalLayoutListener( object : ViewTreeObserver.OnGlobalLayoutListener {
+            @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
+            override fun onGlobalLayout() {
+                gridViewWrapper.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                val density = context!!.resources.displayMetrics.density
+                val width = gridViewWrapper.width / 7 - 1*density.toInt()
+                val height = (gridViewWrapper.layoutParams.height - 1*density.toInt()) / count - 1*density.toInt()
 
-                var gridAdapter = gridView.adapter as CalendarAdapter
+                val gridAdapter = gridView.adapter as CalendarAdapter
                 size = Pair(width, height)
                 gridAdapter.setDateSize(size as Pair<Int, Int>)
             }
         })
     }
 
-    private fun setHeaderDate(month_text: TextView, cal : Calendar) {
-        var year = cal_date.get(Calendar.YEAR).toString()
-        var month = (cal_date.get(Calendar.MONTH) + 1).toString()
+    private fun setHeaderDate(month_text: TextView) {
+        val year = calDate.get(Calendar.YEAR).toString()
+        val month = (calDate.get(Calendar.MONTH) + 1).toString()
         month_text.text = "$year 년 $month 월"
     }
 }

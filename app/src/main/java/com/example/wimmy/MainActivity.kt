@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProviders
 import com.example.wimmy.db.PhotoData
 import com.example.wimmy.db.PhotoViewModel
+import com.example.wimmy.db.TagData
 import com.example.wimmy.db.thumbnailData
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.text.SimpleDateFormat
@@ -37,28 +38,35 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             startActivity(intent)
         }*/
 
-        var vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-        vm.Insert(PhotoData(0, "dump", "dump1", "dump", "dump", 0, false))
-        vm.Insert(PhotoData(0, "dump", "dump1", "dump", "dump", 0, false))
-        vm.Insert(PhotoData(0, "dump", "dump1", "dump", "dump", 0, false))
-        vm.Insert(PhotoData(0, "dump", "dump2", "dump", "dump", 0, false))
-        vm.Insert(PhotoData(0, "dump", "dump2", "dump", "dump", 0, false))
-        vm.Insert(PhotoData(0, "dump", "dump2", "dump", "dump", 0, false))
-        vm.Insert(PhotoData(0, "dump", "dump3", "dump", "dump", 0, false))
-        vm.Insert(PhotoData(0, "dump", "dump3", "dump", "dump", 0, false))
-        vm.Insert(PhotoData(0, "dump", "dump4", "dump", "dump", 0, false))
-        vm.Insert(PhotoData(0, "dump", "dump5", "dump", "dump", 0, false))
-        vm.Insert(PhotoData(0, "dump", "dump5", "dump", "dump", 0, false))
-        vm.Insert(PhotoData(0, "dump", "dump5", "dump", "dump", 0, false))
-        vm.Insert(PhotoData(0, "dump", "dump6", "dump", "dump", 0, false))
-        vm.Insert(PhotoData(0, "dump", "dump6", "dump", "dump", 0, false))
-        vm.Insert(PhotoData(0, "dump", "dump6", "dump", "dump", 0, false))
-        vm.Insert(PhotoData(0, "dump", "dump7", "dump", "dump", 0, false))
-        vm.Insert(PhotoData(0, "dump", "dump7", "dump", "dump", 0, false))
-        vm.Insert(PhotoData(0, "dump", "dump7", "dump", "dump", 0, false))
-        vm.Insert(PhotoData(0, "dump", "dump8", "dump", "dump", 0, false))
-        vm.Insert(PhotoData(0, "dump", "dump9", "dump", "dump", 0, false))
-        vm.Insert(PhotoData(0, "dump", "dump10", "dump", "dump", 0, false))
+        val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+        var id = vm.Insert(PhotoData(0, "dump0", "dump0", "dump", "dump", getDate(2019, 2, 23), false))
+        vm.Insert(TagData(id, "멋쟁이", "auto"))
+        vm.Insert(TagData(id, "코로나", "auto"))
+        vm.Insert(TagData(id, "창원", "auto"))
+        id = vm.Insert(PhotoData(0, "dump", "dump1", "dump", "dump", getDate(2019, 2, 24), false))
+        vm.Insert(TagData(id, "멋쟁이", "auto"))
+        vm.Insert(TagData(id, "코로나", "auto"))
+        id = vm.Insert(PhotoData(0, "dump", "dump1", "dump", "dump", getDate(2019, 2, 25), false))
+        vm.Insert(TagData(id, "멋쟁이", "auto"))
+        vm.Insert(TagData(id, "코로나", "auto"))
+        id = vm.Insert(PhotoData(0, "dump", "dump2", "dump", "dump", getDate(2019, 2, 25), false))
+        vm.Insert(TagData(id, "코로나", "auto"))
+        vm.Insert(PhotoData(0, "dump", "dump2", "dump", "dump", getDate(2019, 2, 26), false))
+        vm.Insert(PhotoData(0, "dump", "dump2", "dump", "dump", getDate(2019, 2, 27), false))
+        vm.Insert(PhotoData(0, "dump", "dump3", "dump", "dump", getDate(2019, 2, 27), false))
+        vm.Insert(PhotoData(0, "dump", "dump3", "dump", "dump", getDate(2019, 2, 28), false))
+        vm.Insert(PhotoData(0, "dump", "dump4", "dump", "dump", getDate(2019, 2, 28), false))
+        vm.Insert(PhotoData(0, "dump", "dump5", "dump", "dump", getDate(2019, 2, 29), false))
+        vm.Insert(PhotoData(0, "dump", "dump5", "dump", "dump", getDate(2019, 3, 1), false))
+        vm.Insert(PhotoData(0, "dump", "dump5", "dump", "dump", getDate(2019, 3, 1), false))
+        vm.Insert(PhotoData(0, "dump", "dump6", "dump", "dump", getDate(2019, 3, 2), false))
+        vm.Insert(PhotoData(0, "dump", "dump6", "dump", "dump", getDate(2019, 3, 3), false))
+        vm.Insert(PhotoData(0, "dump", "dump6", "dump", "dump", getDate(2019, 3, 3), false))
+        vm.Insert(PhotoData(0, "dump", "dump7", "dump", "dump", getDate(2019, 3, 4), false))
+        vm.Insert(PhotoData(0, "dump", "dump7", "dump", "dump", getDate(2019, 3, 5), false))
+        vm.Insert(PhotoData(0, "dump", "dump7", "dump", "dump", getDate(2019, 3, 5), false))
+        vm.Insert(PhotoData(0, "dump", "dump9", "dump", "dump", getDate(2019, 4, 5), false))
+        vm.Insert(PhotoData(0, "dump", "dump10", "dump", "dump",getDate(2020, 5, 10), false))
     }
 
     private fun SetHeader() {
@@ -75,6 +83,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
 
 
+    /*
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item?.itemId) {
             //R.id.favorate_menu =>
@@ -82,6 +91,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         }
         return super .onOptionsItemSelected(item)
     }
+     */
 
 
     /*override fun onContextItemSelected(item: MenuItem): Boolean {
@@ -152,6 +162,12 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         transaction.replace(R.id.frame_layout,fragmentA, "name")
         transaction.commit()
         return true
+    }
+
+    private fun getDate(year : Int, month : Int, day : Int) : Date {
+        val date = Calendar.getInstance()
+        date.set(year, month - 1, day)
+        return date.time
     }
 }
 

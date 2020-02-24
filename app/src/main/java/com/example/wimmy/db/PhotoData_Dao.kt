@@ -3,11 +3,12 @@ package com.example.wimmy.db
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
+import java.util.*
 
 @Dao
 interface PhotoData_Dao {
     @Insert(onConflict = REPLACE)
-    fun insert(photoData: PhotoData)
+    fun insert(photoData: PhotoData) : Long
     @Insert(onConflict = REPLACE)
     fun insert(tagData: TagData)
 
@@ -24,12 +25,12 @@ interface PhotoData_Dao {
     @Query("DELETE FROM tag_data WHERE photo_id = :photo_id AND tag = :tag")
     fun delete(photo_id : Int, tag : String)
 
-    @Query("SELECT thumbnail_path, file_path as data FROM photo_data WHERE photo_id IN (SELECT MAX(photo_id) FROM photo_data GROUP BY file_path) ORDER BY data")
+    @Query("SELECT photo_id as thumbnail_path, file_path as data FROM photo_data WHERE photo_id IN (SELECT MAX(photo_id) FROM photo_data GROUP BY file_path) ORDER BY data")
     fun getNameDir() : LiveData<List<thumbnailData>>
     @Query("SELECT thumbnail_path, location_info as data FROM photo_data WHERE photo_id IN (SELECT MAX(photo_id) FROM photo_data GROUP BY location_info) ORDER BY data")
     fun getLocationDir() : LiveData<List<thumbnailData>>
-    @Query("SELECT thumbnail_path, date_info as data FROM photo_data WHERE photo_id IN (SELECT MAX(photo_id) FROM photo_data GROUP BY date_info) ORDER BY data")
-    fun getDateDir() : LiveData<List<thumbnailData>>
+    @Query("SELECT tag FROM photo_data, tag_data WHERE date_info = :date AND photo_data.photo_id = tag_data.photo_id GROUP BY tag ORDER BY count(*) LIMIT 1")
+    fun getDateInfo(date : Date) : dateData
     @Query("SELECT thumbnail_path, tag as data FROM photo_data, (SELECT MAX(photo_id) as photo_id, tag FROM tag_data GROUP BY tag) tag_data WHERE photo_data.photo_id = tag_data.photo_id ORDER BY data")
     fun getTagDir() : LiveData<List<thumbnailData>>
 
