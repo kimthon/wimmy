@@ -12,6 +12,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import com.example.wimmy.Adapter.CalendarAdapter
 import com.example.wimmy.db.PhotoViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.fragment_cal.*
@@ -21,7 +22,8 @@ import kotlin.collections.ArrayList
 /**
  * A simple [Fragment] subclass.
  */
-class CalFragment() : Fragment() {
+
+class DateFragment() : Fragment() {
     private lateinit var header : LinearLayout
     private lateinit var gridView : GridView
     private lateinit var vm : PhotoViewModel
@@ -90,7 +92,13 @@ class CalFragment() : Fragment() {
             ++count
         } while(inputCalendar.get(Calendar.MONTH) == month)
 
-        if(gridView.adapter == null )gridView.adapter = CalendarAdapter(activity!!, size,  cells, month)
+        if(gridView.adapter == null )gridView.adapter =
+            CalendarAdapter(
+                activity!!,
+                size,
+                cells,
+                month
+            )
         else {
             val gridAdapter = gridView.adapter as CalendarAdapter
             gridAdapter.Update(cells, month)

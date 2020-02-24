@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.example.wimmy.db.PhotoDB
 import com.example.wimmy.db.PhotoData
@@ -22,8 +23,9 @@ import com.example.wimmy.db.thumbnailData
  * A simple [Fragment] subclass.
  */
 class NameFragment : Fragment() {
-    private var recyclerAdapter : RecyclerAdapter ?= null
+    private var recyclerAdapter : RecyclerAdapterForder?= null
     var bottomNavigationView: BottomNavigationView? = null
+    private var thumbnailList = listOf<thumbnailData>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,12 +33,12 @@ class NameFragment : Fragment() {
 
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle? ): View? {
-        val view : View = inflater.inflate(R.layout.fragment_name, container, false)
+        var view : View = inflater.inflate(R.layout.fragment_name, container, false)
         setView(view)
-        setPhotoSize(view, 3, 10)
+        setPhotoSize(view,3, 10)
         // Inflate the layout for this fragment
 
-        val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+        var vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
         vm.getNameDir().observe(this,
             Observer<List<thumbnailData>> { t -> recyclerAdapter!!.setThumbnailList(t)})
 
@@ -45,7 +47,11 @@ class NameFragment : Fragment() {
 
     private fun setView(view : View) {
         val recyclerView = view.findViewById<RecyclerView>(R.id.nameRecycleView)
-        recyclerAdapter = RecyclerAdapter(activity, listOf<thumbnailData>())
+        recyclerAdapter =
+            RecyclerAdapterForder(
+                activity,
+                thumbnailList
+            )
         recyclerView?.adapter = recyclerAdapter
 
         val lm = GridLayoutManager(MainActivity(), 3)

@@ -1,18 +1,19 @@
-package com.example.wimmy
+package com.example.wimmy.Adapter
 
 import android.graphics.Color
-import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
+import com.example.wimmy.R
 import java.util.*
 import kotlin.collections.ArrayList
 
 class CalendarAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : ArrayList<Pair<Date, String?>>, inputMonth : Int) :
-        ArrayAdapter<Pair<Date, String?>>(context, R.layout.fragment_cal, days) {
+        ArrayAdapter<Pair<Date, String?>>(context,
+            R.layout.fragment_cal, days) {
     private val inflater : LayoutInflater = LayoutInflater.from(context)
     private var inputMonth : Int = inputMonth
     private var size : Pair<Int, Int>? = size
