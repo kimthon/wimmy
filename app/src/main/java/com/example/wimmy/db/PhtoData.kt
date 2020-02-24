@@ -27,8 +27,6 @@ class TagData(var photo_id: Long,
 data class thumbnailData( var thumbnail_path: String,
                              var data : String )
 
-data class dateData(var tag : String)
-
 class Converters {
     @TypeConverter
     fun fromTimestamp(value : Long?) : Date? {

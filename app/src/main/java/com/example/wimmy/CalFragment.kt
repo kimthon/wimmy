@@ -39,6 +39,8 @@ class CalFragment() : Fragment() {
         setGridLayout(view)
         vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
+
+
         updateCalendar(view, calDate.clone() as Calendar)
         return view
     }
@@ -82,7 +84,7 @@ class CalFragment() : Fragment() {
         var count = 0
         do {
             for (i in 1..7) {
-                cells.add(Pair(inputCalendar.time, vm.getDateInfo(inputCalendar.time)))
+                cells.add(Pair(inputCalendar.time, vm.getDateInfo(getDateStart(inputCalendar), getDateEnd(inputCalendar))))
                 inputCalendar.add(Calendar.DAY_OF_MONTH, 1)
             }
             ++count
@@ -141,6 +143,20 @@ class CalFragment() : Fragment() {
         val year = calDate.get(Calendar.YEAR).toString()
         val month = (calDate.get(Calendar.MONTH) + 1).toString()
         month_text.text = "$year 년 $month 월"
+    }
+
+    private fun getDateStart(cal : Calendar) : Date{
+        cal.set(Calendar.HOUR_OF_DAY, 0)
+        cal.set(Calendar.MINUTE, 0)
+        cal.set(Calendar.SECOND, 0)
+        return cal.time
+    }
+
+    private fun getDateEnd(cal : Calendar) : Date{
+        cal.set(Calendar.HOUR_OF_DAY, 23)
+        cal.set(Calendar.MINUTE, 59)
+        cal.set(Calendar.SECOND, 59)
+        return cal.time
     }
 }
 

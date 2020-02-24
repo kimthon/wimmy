@@ -22,9 +22,15 @@ class PhotoRepository(application: Application) {
          }
       }
 
-      private class getDateTagAsyncTask constructor(private val asyncTask: PhotoData_Dao) : AsyncTask<Date, Void, dateData>() {
-         override fun doInBackground(vararg params: Date?): dateData? {
-            return asyncTask.getDateInfo(params[0]!!)
+      private class getDateTagAsyncTask constructor(private val asyncTask: PhotoData_Dao) : AsyncTask<Date, Void, String>() {
+         override fun doInBackground(vararg params: Date?): String? {
+            return asyncTask.getDateInfo(params[0]!!, params[1]!!)
+         }
+      }
+
+      private class getSizeAsyncTask constructor(private val asyncTask: PhotoData_Dao) : AsyncTask<Void, Void, Int>() {
+         override fun doInBackground(vararg params: Void?): Int {
+            return asyncTask.getSize()
          }
       }
    }
@@ -48,8 +54,8 @@ class PhotoRepository(application: Application) {
    fun getLocationDir() : LiveData<List<thumbnailData>> {
       return photoDao.getLocationDir()
    }
-   fun getDateInfo(date : Date) : dateData? {
-       return getDateTagAsyncTask(photoDao).execute(date).get()
+   fun getDateInfo(from : Date, to : Date) : String? {
+       return getDateTagAsyncTask(photoDao).execute(from, to).get()
    }
    fun getTagDir() : LiveData<List<thumbnailData>> {
       return photoDao.getTagDir()
@@ -66,5 +72,9 @@ class PhotoRepository(application: Application) {
    }
    fun getTagDir(tag : String) : LiveData<List<PhotoData>> {
       return photoDao.getTagDir(tag)
+   }
+
+   fun getSize() : Int {
+      return getSizeAsyncTask(photoDao).execute().get()
    }
 }

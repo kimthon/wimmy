@@ -24,10 +24,8 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
     fun getLocationDir() : LiveData<List<thumbnailData>> {
         return repo.getLocationDir()
     }
-    fun getDateInfo(date : Date) : String? {
-        val tag = repo.getDateInfo(date)
-        if(tag == null) return null
-        else return tag.tag
+    fun getDateInfo(from : Date, to : Date) : String? {
+        return repo.getDateInfo(from, to)
     }
     fun getTagDir() : LiveData<List<thumbnailData>> {
         return repo.getTagDir()
@@ -45,5 +43,9 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
     }
     fun getTagDir(tag : String) : LiveData<List<PhotoData>> {
         return repo.getTagDir(tag)
+    }
+
+    fun getSize() : Int {
+        return repo.getSize()
     }
 }

@@ -12,6 +12,7 @@ interface PhotoData_Dao {
     @Insert(onConflict = REPLACE)
     fun insert(tagData: TagData)
 
+
     @Update
     fun update(photoData: PhotoData)
     @Update
@@ -29,8 +30,8 @@ interface PhotoData_Dao {
     fun getNameDir() : LiveData<List<thumbnailData>>
     @Query("SELECT thumbnail_path, location_info as data FROM photo_data WHERE photo_id IN (SELECT MAX(photo_id) FROM photo_data GROUP BY location_info) ORDER BY data")
     fun getLocationDir() : LiveData<List<thumbnailData>>
-    @Query("SELECT tag FROM photo_data, tag_data WHERE date_info = :date AND photo_data.photo_id = tag_data.photo_id GROUP BY tag ORDER BY count(*) LIMIT 1")
-    fun getDateInfo(date : Date) : dateData
+    @Query("SELECT tag FROM photo_data, tag_data WHERE date_info BETWEEN :from AND :to AND photo_data.photo_id = tag_data.photo_id GROUP BY tag ORDER BY count(*) LIMIT 1")
+    fun getDateInfo(from: Date, to : Date) : String
     @Query("SELECT thumbnail_path, tag as data FROM photo_data, (SELECT MAX(photo_id) as photo_id, tag FROM tag_data GROUP BY tag) tag_data WHERE photo_data.photo_id = tag_data.photo_id ORDER BY data")
     fun getTagDir() : LiveData<List<thumbnailData>>
 
@@ -42,4 +43,7 @@ interface PhotoData_Dao {
     fun getDateDir(date : Int) : LiveData<List<PhotoData>>
     @Query("SELECT * FROM photo_data where name = :tag")
     fun getTagDir(tag : String) : LiveData<List<PhotoData>>
+
+    @Query("SELECT count(*) FROM photo_data")
+    fun getSize() : Int
 }
