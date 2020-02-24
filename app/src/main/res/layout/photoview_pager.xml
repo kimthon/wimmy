@@ -4,19 +4,21 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <TextView
+        android:id="@+id/imgView_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:text="이름"
+        android:textAlignment="center"
+        />
+
     <ImageView
         android:id="@+id/imgView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="50dp"
         android:layout_marginBottom="50dp"
-        android:src="@drawable/loding_image"
-        android:scaleType="fitXY" />
-    <TextView
-        android:id="@+id/imgView_text"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:text="태그"
-        android:textAlignment="center"
-        />
+        android:src="@drawable/loding_image" />
+
 </LinearLayout>

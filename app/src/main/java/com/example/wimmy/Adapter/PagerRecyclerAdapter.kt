@@ -32,7 +32,7 @@ public class PagerRecyclerAdapter(private val context: Context, var list: List<t
         val v = layoutInflater!!.inflate(R.layout.photoview_pager, null)
         val image = v.findViewById<View>(R.id.imgView) as ImageView
         val text = v.findViewById<View>(R.id.imgView_text) as TextView        //image.setImageResource(list[position])
-        //text.setText("dfs")
+        text.setText(list[position].data)
         val vp = container as ViewPager
         vp.addView(v, 0)
         return v

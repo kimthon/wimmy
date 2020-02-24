@@ -134,7 +134,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 transaction.replace(R.id.frame_layout,fragmentB, "tag")
             }
             R.id.menu_cal -> {
-                val fragmentC = CalFragment()
+                val fragmentC = DateFragment()
                 transaction.replace(R.id.frame_layout,fragmentC, "cal")
             }
             R.id.menu_location -> {

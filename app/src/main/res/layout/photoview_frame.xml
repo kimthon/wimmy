@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".PhotoViewPager"
     android:orientation="vertical"
-    android:background="#FFFFF0">
+    android:background="#000000">
 
 
     <androidx.viewpager.widget.ViewPager

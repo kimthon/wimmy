@@ -19,7 +19,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 /**
  * A simple [Fragment] subclass.
  */
-class CalFragment : Fragment() {
+class DateFragment : Fragment() {
     private var recyclerAdapter : RecyclerAdapterForder?= null
     var bottomNavigationView: BottomNavigationView? = null
     private var thumbnailList = listOf<thumbnailData>()
@@ -36,7 +36,7 @@ class CalFragment : Fragment() {
         // Inflate the layout for this fragment
 
         var vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-        vm.getLocationDir().observe(this,
+        vm.getDateDir().observe(this,
             Observer<List<thumbnailData>> { t -> recyclerAdapter!!.setThumbnailList(t)})
 
         return view

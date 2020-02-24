@@ -33,14 +33,6 @@ class LocationFragment : Fragment() {
         }
     })
 
-        val test2 = view?.findViewById<Button>(R.id.test_button2)
-        test2!!.setOnClickListener ( object :View.OnClickListener {
-            override fun onClick(v: View?){
-                val intent = Intent(context, PhotoViewPager::class.java)
-                startActivity(intent)
-            }
-        })
-
         // Inflate the layout for this fragment
         return view
     }
