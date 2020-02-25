@@ -41,8 +41,6 @@ class DateFragment() : Fragment() {
         setGridLayout(view)
         vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
-
-
         updateCalendar(view, calDate.clone() as Calendar)
         return view
     }
@@ -112,6 +110,9 @@ class DateFragment() : Fragment() {
     }
     private fun setGridLayout(view : View) {
         val gridViewWrapper = view.findViewById<LinearLayout>(R.id.cal_grid_wrapper)
+        val header = view.findViewById<LinearLayout>(R.id.calendar_header)
+        val statusBar = resources.getIdentifier("status_bar_height", "dimen", "android")
+        val statusBarHeight = resources.getDimensionPixelSize(statusBar)
 
         val displayMetrics = DisplayMetrics()
         super.getActivity()!!.windowManager.defaultDisplay.getMetrics(displayMetrics)
@@ -121,9 +122,10 @@ class DateFragment() : Fragment() {
             @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
             override fun onGlobalLayout() {
                 gridViewWrapper.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                val density = context!!.resources.displayMetrics.density
                 //padding
-                val padding = header.paddingBottom + header.paddingBottom + calendar_week.paddingBottom
-                gridViewWrapper.layoutParams.height = displayMetrics.heightPixels - header.height - calendar_week.height - bnv.height - padding
+                val padding = header.paddingTop + calendar_week.paddingTop + gridViewWrapper.paddingTop
+                gridViewWrapper.layoutParams.height = displayMetrics.heightPixels - (header.height + calendar_week.height + bnv.height + statusBarHeight + padding)
                 gridViewWrapper.requestLayout()
             }
         })

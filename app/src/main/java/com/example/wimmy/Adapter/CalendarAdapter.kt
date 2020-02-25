@@ -1,6 +1,7 @@
 package com.example.wimmy.Adapter
 
 import android.graphics.Color
+import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -61,13 +62,12 @@ class CalendarAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days :
         }
 
         //오늘의 날짜 수정 필요함
-        /*
         if(year == calendarToday.get(Calendar.YEAR) &&
-            month == calendar.get(Calendar.MONTH) &&
-            day == calendarToday.get(Calendar.DATE)) {
-
+            month == calendarToday.get(Calendar.MONTH) &&
+            day == calendarToday.get(Calendar.DAY_OF_MONTH)) {
+            textView.setTypeface(null, Typeface.BOLD)
         }
-        */
+
         textView.text = calendar.get(Calendar.DATE).toString()
         tagView.text = tag
 

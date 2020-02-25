@@ -27,10 +27,6 @@ class NameFragment : Fragment() {
     var bottomNavigationView: BottomNavigationView? = null
     private var thumbnailList = listOf<thumbnailData>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle? ): View? {
         var view : View = inflater.inflate(R.layout.fragment_name, container, false)
