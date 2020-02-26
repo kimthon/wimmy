@@ -18,6 +18,7 @@
 
         android:layout_margin="8dp"
         android:src="@drawable/loding_image"
+        android:transitionName="pair_thumb"
 
         />
 

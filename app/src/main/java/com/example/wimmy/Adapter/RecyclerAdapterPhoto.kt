@@ -11,13 +11,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.R
 import com.example.wimmy.db.thumbnailData
 
-class RecyclerAdapterPhoto(val context: FragmentActivity?, var list: List<thumbnailData>, var num: Int, val itemClick: (thumbnailData, Int) -> Unit) :
+class RecyclerAdapterPhoto(val context: FragmentActivity?, var list: List<thumbnailData>, val itemClick: (thumbnailData, Int, ImageView) -> Unit) :
     RecyclerView.Adapter<RecyclerAdapterPhoto.Holder>()
 {
     private var size : Int = 200
     private var padding_size = 200
 
-    inner class Holder(itemView: View?, itemClick: (thumbnailData, Int) -> Unit) : RecyclerView.ViewHolder(itemView!!) {
+    inner class Holder(itemView: View?, itemClick: (thumbnailData, Int, ImageView) -> Unit) : RecyclerView.ViewHolder(itemView!!) {
         //thumbnail_imgview 변수 받아오기
 
         var thumbnail: ImageView = itemView!!.findViewById<ImageView>(R.id.thumbnail_img)
@@ -30,7 +30,7 @@ class RecyclerAdapterPhoto(val context: FragmentActivity?, var list: List<thumbn
             thumbnail.layoutParams.height = size
             layoutParam.setMargins(padding_size, padding_size, padding_size, padding_size)
             text!!.text = data.data
-            itemView.setOnClickListener { itemClick(data, num) }
+            itemView.setOnClickListener { itemClick(data, num, thumbnail) }
 
         }
     }
@@ -56,8 +56,9 @@ class RecyclerAdapterPhoto(val context: FragmentActivity?, var list: List<thumbn
         notifyDataSetChanged()
     }
 
-    fun setThumbnailList(list : List<thumbnailData>) {
+    fun setThumbnailList(list : List<thumbnailData>) : List<thumbnailData>{
         this.list = list
         notifyDataSetChanged()
+        return list
     }
 }

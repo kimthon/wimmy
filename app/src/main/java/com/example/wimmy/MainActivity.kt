@@ -164,7 +164,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         var id9 = vm.Insert(PhotoData(0, "du4mp", "dump4", "dump", "dump", getDate(2020, 2, 28), false))
         var id10 = vm.Insert(PhotoData(0, "d3ump", "dum457p5", "dump", "dump", getDate(2020, 2, 29), false))
         var id11 = vm.Insert(PhotoData(0, "dum9p", "dum4p5", "dump", "dump", getDate(2020, 3, 1), false))
-        var id13 = vm.Insert(PhotoData(0, "dum75p", "du346mp6", "dump", "dump", getDate(2020, 3, 2), false))
+        /*var id13 = vm.Insert(PhotoData(0, "dum75p", "du346mp6", "dump", "dump", getDate(2020, 3, 2), false))
         var id14 = vm.Insert(PhotoData(0, "du58mp", "dum42p6", "dump", "dump", getDate(2020, 3, 3), false))
         var id15 =  vm.Insert(PhotoData(0, "du8mp", "du42mp6", "dump", "dump", getDate(2020, 3, 3), false))
         var id16 = vm.Insert(PhotoData(0, "dum6p", "dump7124", "dump", "dump", getDate(2020, 3, 4), false))
@@ -190,7 +190,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         var id1577 = vm.Insert(PhotoData(0, "dumyup", "dump7", "dump", "dump", getDate(2020, 3, 5), false))
         var id1378 = vm.Insert(PhotoData(0, "dumiyp", "dum6p7", "dump", "dump", getDate(2020, 3, 5), false))
         var id199 = vm.Insert(PhotoData(0, "dumoip", "dump957", "dump", "dump", getDate(2020, 4, 5), false))
-        var id270 = vm.Insert(PhotoData(0, "dumoip", "dump1230", "dump", "dump",getDate(2020, 5, 10), false))
+        var id270 = vm.Insert(PhotoData(0, "dumoip", "dump1230", "dump", "dump",getDate(2020, 5, 10), false))*/
 
         vm.Insert(TagData(id3, "코로나", "auto"))
         vm.Insert(TagData(id3, "상남", "auto"))
