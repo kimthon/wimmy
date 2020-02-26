@@ -30,12 +30,12 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
 
-
             </intent-filter>
         </activity>
         <activity android:name=".Main_PhotoView">
         </activity>
-        <activity android:name=".PhotoViewPager">
+        <activity android:name=".PhotoViewPager"
+            android:theme="@style/PhotoTheme">
         </activity>
 
     </application>

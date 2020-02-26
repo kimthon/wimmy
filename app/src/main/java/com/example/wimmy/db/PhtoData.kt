@@ -1,5 +1,7 @@
 package com.example.wimmy.db
 
+import android.os.Parcel
+import android.os.Parcelable
 import androidx.room.*
 import java.util.*
 
@@ -25,7 +27,32 @@ class TagData(var photo_id: Long,
               @ColumnInfo var type : String)
 
 data class thumbnailData( var thumbnail_path: String,
-                             var data : String )
+                             var data : String ): Parcelable {
+    constructor(parcel: Parcel) : this(
+        parcel.readString().toString(),
+        parcel.readString().toString()
+    ) {
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(thumbnail_path)
+        parcel.writeString(data)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<thumbnailData> {
+        override fun createFromParcel(parcel: Parcel): thumbnailData {
+            return thumbnailData(parcel)
+        }
+
+        override fun newArray(size: Int): Array<thumbnailData?> {
+            return arrayOfNulls(size)
+        }
+    }
+}
 
 class Converters {
     @TypeConverter
