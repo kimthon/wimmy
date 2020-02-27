@@ -194,15 +194,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         var id38 = vm.Insert(PhotoData(0, "dumoip", "dump957", "dump", "dump", getDate(2020, 4, 5), false))
         var id39 = vm.Insert(PhotoData(0, "dumoip", "dump1230", "dump", "dump",getDate(2020, 5, 10), false))
          */
-
-        vm.Insert(TagData(id3, "코로나", "auto"))
-        vm.Insert(TagData(id3, "상남", "auto"))
-
-        vm.Insert(TagData(id4, "코로나", "auto"))
-        vm.Insert(TagData(id4, "상남", "auto"))
-
-
-        vm.Insert(TagData(id5, "코로나", "auto"))
     }
 }
 

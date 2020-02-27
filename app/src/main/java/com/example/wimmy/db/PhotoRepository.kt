@@ -9,11 +9,13 @@ class PhotoRepository(application: Application) {
    val photoDao : PhotoData_Dao
 
    companion object {
-      private class insertPhotoAsyncTask constructor(private val asyncTask: PhotoData_Dao) : AsyncTask<PhotoData, Void, Long>() {
-         override fun doInBackground(vararg params: PhotoData?): Long? {
-            return asyncTask.insert(params[0]!!)
+      private class insertPhotoAsyncTask constructor(private val asyncTask: PhotoData_Dao) : AsyncTask<PhotoData, Void, Void>() {
+         override fun doInBackground(vararg params: PhotoData?): Void? {
+            asyncTask.insert(params[0]!!)
+            return null
          }
       }
+
 
       private class insertTagAsyncTask constructor(private val asyncTask: PhotoData_Dao) : AsyncTask<TagData, Void, Void>() {
          override fun doInBackground(vararg params: TagData?): Void? {
@@ -33,6 +35,12 @@ class PhotoRepository(application: Application) {
             return asyncTask.getSize()
          }
       }
+
+      private class IsInsertedAsyncTask constructor(private val asyncTask: PhotoData_Dao) : AsyncTask<Long, Void, Long>() {
+         override fun doInBackground(vararg params: Long?): Long? {
+            return asyncTask.IsInserted(params[0]!!)
+         }
+      }
    }
 
    init {
@@ -40,8 +48,8 @@ class PhotoRepository(application: Application) {
       photoDao = db.PhotoData_Dao()
    }
 
-   fun insert(photo : PhotoData) : Long {
-      return insertPhotoAsyncTask(photoDao).execute(photo).get()
+   fun insert(photo : PhotoData) {
+      insertPhotoAsyncTask(photoDao).execute(photo)
    }
 
    fun insert(tag : TagData) {
@@ -67,13 +75,16 @@ class PhotoRepository(application: Application) {
    fun getLocationDir(loc : String) : LiveData<List<PhotoData>> {
       return photoDao.getLocationDir(loc)
    }
-   fun getDateDir(date : Int) : LiveData<List<PhotoData>> {
+   fun getDateDir(date : Date) : LiveData<List<PhotoData>> {
       return photoDao.getDateDir(date)
    }
    fun getTagDir(tag : String) : LiveData<List<PhotoData>> {
       return photoDao.getTagDir(tag)
    }
 
+   fun IsInserted(id : Long) : Boolean {
+      return (IsInsertedAsyncTask(photoDao).execute(id) != null)
+   }
    fun getSize() : Int {
       return getSizeAsyncTask(photoDao).execute().get()
    }

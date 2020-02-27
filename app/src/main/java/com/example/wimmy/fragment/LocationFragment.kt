@@ -3,6 +3,7 @@ package com.example.wimmy.fragment
 
 import android.content.Intent
 import android.os.Bundle
+import android.provider.MediaStore
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -28,8 +29,9 @@ class LocationFragment : Fragment() {
         val test = view?.findViewById<Button>(R.id.test_button)
         test!!.setOnClickListener ( object :View.OnClickListener {
             override fun onClick(v: View?){
-            val intent = Intent(context, Main_PhotoView::class.java)
-            startActivity(intent)
+                val intent = Intent(Intent.ACTION_PICK)
+                intent.setType(MediaStore.Images.Media.CONTENT_TYPE)
+                startActivityForResult(intent, 1)
         }
     })
 

@@ -12,7 +12,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
-import com.example.wimmy.Adapter.CalendarAdapter
+import com.example.wimmy.Adapter.DateAdapter
 import com.example.wimmy.db.PhotoViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.fragment_cal.*
@@ -84,21 +84,21 @@ class DateFragment() : Fragment() {
         var count = 0
         do {
             for (i in 1..7) {
-                cells.add(Pair(inputCalendar.time, vm.getDateInfo(getDateStart(inputCalendar), getDateEnd(inputCalendar))))
+                cells.add(Pair(inputCalendar.time, vm.getDateInfo(inputCalendar)))
                 inputCalendar.add(Calendar.DAY_OF_MONTH, 1)
             }
             ++count
         } while(inputCalendar.get(Calendar.MONTH) == month)
 
         if(gridView.adapter == null )gridView.adapter =
-            CalendarAdapter(
+            DateAdapter(
                 activity!!,
                 size,
                 cells,
                 month
             )
         else {
-            val gridAdapter = gridView.adapter as CalendarAdapter
+            val gridAdapter = gridView.adapter as DateAdapter
             gridAdapter.Update(cells, month)
         }
 
@@ -142,7 +142,7 @@ class DateFragment() : Fragment() {
                 val width = gridViewWrapper.width / 7 - 1*density.toInt()
                 val height = (gridViewWrapper.layoutParams.height - 1*density.toInt()) / count - 1*density.toInt()
 
-                val gridAdapter = gridView.adapter as CalendarAdapter
+                val gridAdapter = gridView.adapter as DateAdapter
                 size = Pair(width, height)
                 gridAdapter.setDateSize(size as Pair<Int, Int>)
             }
@@ -155,19 +155,7 @@ class DateFragment() : Fragment() {
         month_text.text = "$year 년 $month 월"
     }
 
-    private fun getDateStart(cal : Calendar) : Date{
-        cal.set(Calendar.HOUR_OF_DAY, 0)
-        cal.set(Calendar.MINUTE, 0)
-        cal.set(Calendar.SECOND, 0)
-        return cal.time
-    }
 
-    private fun getDateEnd(cal : Calendar) : Date{
-        cal.set(Calendar.HOUR_OF_DAY, 23)
-        cal.set(Calendar.MINUTE, 59)
-        cal.set(Calendar.SECOND, 59)
-        return cal.time
-    }
 }
 
 

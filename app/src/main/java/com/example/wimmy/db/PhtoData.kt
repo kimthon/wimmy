@@ -4,7 +4,7 @@ import androidx.room.*
 import java.util.*
 
 @Entity(tableName = "photo_data")
-class PhotoData(@PrimaryKey(autoGenerate = true) var photo_id: Long,
+class PhotoData(@PrimaryKey var photo_id: Long,
                 @ColumnInfo(name = "name") var name : String,
                 @ColumnInfo(name = "file_path") var file_path : String,
                 @ColumnInfo(name = "thumbnail_path") var thumbnail_path : String,
@@ -24,7 +24,7 @@ class TagData(var photo_id: Long,
               var tag : String,
               @ColumnInfo var type : String)
 
-data class thumbnailData( var thumbnail_path: String,
+data class thumbnailData( var id : Long,
                              var data : String )
 
 class Converters {

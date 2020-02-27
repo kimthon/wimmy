@@ -12,7 +12,7 @@ import com.example.wimmy.R
 import java.util.*
 import kotlin.collections.ArrayList
 
-class CalendarAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : ArrayList<Pair<Date, String?>>, inputMonth : Int) :
+class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : ArrayList<Pair<Date, String?>>, inputMonth : Int) :
         ArrayAdapter<Pair<Date, String?>>(context,
             R.layout.fragment_cal, days) {
     private val inflater : LayoutInflater = LayoutInflater.from(context)
@@ -66,6 +66,8 @@ class CalendarAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days :
             month == calendarToday.get(Calendar.MONTH) &&
             day == calendarToday.get(Calendar.DAY_OF_MONTH)) {
             textView.setTypeface(null, Typeface.BOLD)
+        } else {
+            textView.setTypeface(null, Typeface.NORMAL)
         }
 
         textView.text = calendar.get(Calendar.DATE).toString()
@@ -87,5 +89,9 @@ class CalendarAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days :
         addAll(cells)
         this.inputMonth = month
         notifyDataSetChanged()
+    }
+
+    private fun setClickListener(view : View, cal: Calendar) {
+
     }
 }

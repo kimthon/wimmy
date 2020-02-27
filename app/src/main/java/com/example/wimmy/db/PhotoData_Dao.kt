@@ -8,7 +8,7 @@ import java.util.*
 @Dao
 interface PhotoData_Dao {
     @Insert(onConflict = REPLACE)
-    fun insert(photoData: PhotoData) : Long
+    fun insert(photoData: PhotoData)
     @Insert(onConflict = REPLACE)
     fun insert(tagData: TagData)
 
@@ -19,12 +19,12 @@ interface PhotoData_Dao {
     fun update(tagData: TagData)
 
     @Query("DELETE FROM photo_data WHERE photo_id = :photo_id")
-    fun deleteById(photo_id : Int)
+    fun deleteById(photo_id : Long)
     @Query("DELETE FROM tag_data WHERE photo_id = :photo_id")
-    fun deleteTagById(photo_id: Int)
+    fun deleteTagById(photo_id: Long)
 
     @Query("DELETE FROM tag_data WHERE photo_id = :photo_id AND tag = :tag")
-    fun delete(photo_id : Int, tag : String)
+    fun delete(photo_id : Long, tag : String)
 
     @Query("SELECT photo_id as thumbnail_path, file_path as data FROM photo_data WHERE photo_id IN (SELECT MAX(photo_id) FROM photo_data GROUP BY file_path) ORDER BY data")
     fun getNameDir() : LiveData<List<thumbnailData>>
@@ -40,10 +40,12 @@ interface PhotoData_Dao {
     @Query("SELECT * FROM photo_data where name = :loc")
     fun getLocationDir(loc : String) : LiveData<List<PhotoData>>
     @Query("SELECT * FROM photo_data where date_info = :date")
-    fun getDateDir(date : Int) : LiveData<List<PhotoData>>
+    fun getDateDir(date : Date) : LiveData<List<PhotoData>>
     @Query("SELECT * FROM photo_data where name = :tag")
     fun getTagDir(tag : String) : LiveData<List<PhotoData>>
 
+    @Query("SELECT photo_id FROM photo_data WHERE photo_id = :photo_id")
+    fun IsInserted(photo_id: Long) : Long
     @Query("SELECT count(*) FROM photo_data")
     fun getSize() : Int
 }

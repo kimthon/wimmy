@@ -36,7 +36,9 @@ class NameFragment : Fragment() {
 
         var vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
         vm.getNameDir().observe(this,
-            Observer<List<thumbnailData>> { t -> recyclerAdapter!!.setThumbnailList(t)})
+            Observer<List<thumbnailData>> {
+                    t -> recyclerAdapter!!.setThumbnailList(t)
+            })
 
         return view
     }
