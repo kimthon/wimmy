@@ -86,21 +86,21 @@
                     android:textColor="#FFFFFF" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/imgView_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="2020. 02. 25"
                     android:textColor="#FFFFFF" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/imgView_location"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="창원시 의창구 창원대학로 20"
                     android:textColor="#FFFFFF" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/imgView_tag"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="코로나, 창원, 여권"
                     android:textColor="#FFFFFF" />
             </LinearLayout>
 
