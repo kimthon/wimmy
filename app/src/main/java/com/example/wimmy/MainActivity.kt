@@ -1,7 +1,6 @@
 package com.example.wimmy
 
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -9,16 +8,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
-import androidx.lifecycle.ViewModelProviders
-import com.example.wimmy.db.PhotoData
-import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.fragment.*
-import com.example.wimmy.db.TagData
-import com.example.wimmy.db.thumbnailData
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import java.text.SimpleDateFormat
 import java.util.*
-
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
     var toolbar_check: Boolean? = null
@@ -36,8 +28,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             val intent = Intent(this, com.example.wimmy.SearchView::class.java)
             startActivity(intent)
         }*/
-
-
     }
 
     private fun SetHeader() {
@@ -45,7 +35,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         setSupportActionBar(toolbar)
         supportActionBar?.title = null
     }
-
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
@@ -62,12 +51,13 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }
      */
 
-
-    /*override fun onContextItemSelected(item: MenuItem): Boolean {
+    /*
+    override fun onContextItemSelected(item: MenuItem): Boolean {
         val bottomNavigationView = findViewById<View>(R.id.bottomNavigationView) as BottomNavigationView
         bottomNavigationView.setSelectedItemId(R.id.menu_tag)
         return true
     }*/
+
     override fun onNavigationItemSelected(p0: MenuItem): Boolean {
         var toolbar: Toolbar = findViewById(R.id.main_toolbar)
         if(toolbar_check == false) {
@@ -127,13 +117,11 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         val tag4: Fragment? = supportFragmentManager.findFragmentByTag("location")
         val tag5: Fragment? = supportFragmentManager.findFragmentByTag("map")
 
-        if(tag1 != null && tag1.isVisible()) navigation.getMenu().findItem(R.id.menu_name).setChecked(true)
-        if(tag2 != null && tag2.isVisible()) navigation.getMenu().findItem(R.id.menu_tag).setChecked(true)
-        if(tag3 != null && tag3.isVisible()) navigation.getMenu().findItem(R.id.menu_cal).setChecked(true)
-        if(tag4 != null && tag4.isVisible()) navigation.getMenu().findItem(R.id.menu_location).setChecked(true)
-        if(tag5 != null && tag5.isVisible()) navigation.getMenu().findItem(R.id.menu_map).setChecked(true)
-
-
+        if(tag1 != null && tag1.isVisible) navigation.menu.findItem(R.id.menu_name).isChecked = true
+        if(tag2 != null && tag2.isVisible) navigation.menu.findItem(R.id.menu_tag).isChecked = true
+        if(tag3 != null && tag3.isVisible) navigation.menu.findItem(R.id.menu_cal).isChecked = true
+        if(tag4 != null && tag4.isVisible) navigation.menu.findItem(R.id.menu_location).isChecked = true
+        if(tag5 != null && tag5.isVisible) navigation.menu.findItem(R.id.menu_map).isChecked = true
     }
 
     fun init(): Boolean{

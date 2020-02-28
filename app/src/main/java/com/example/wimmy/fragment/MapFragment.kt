@@ -24,7 +24,6 @@ class MapFragment : Fragment(),  OnMapReadyCallback {
         mapFragment.getMapAsync(this)
 
         // Inflate the layout for this fragment
-
         return rootView
     }
 

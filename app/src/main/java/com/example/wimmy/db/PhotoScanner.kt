@@ -1,55 +1,28 @@
-package com.example.wimmy
+package com.example.wimmy.db
 
 import android.app.Activity
-import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.location.Address
 import android.location.Geocoder
-import android.location.Location
-import android.media.ExifInterface
-import android.net.Uri
 import android.os.Build
-import android.os.FileUtils
 import android.provider.MediaStore
 import android.util.Log
 import android.util.Size
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProviders
-import com.example.wimmy.db.PhotoData
-import com.example.wimmy.db.PhotoViewModel
 import java.io.File
 import java.util.*
-import java.util.jar.Manifest
 
 object PhotoScanner {
     fun addAllImages(activity: Activity, vm : PhotoViewModel) {
-        //마시멜로 이전엔 권한 체크 필요 x
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val REQUEST_STORAGE_ACCESS = 1000
-            var permission = ContextCompat.checkSelfPermission(
-                activity.applicationContext,
-                android.Manifest.permission.READ_EXTERNAL_STORAGE
-            )
 
-            if (permission != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(
-                    activity,
-                    arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
-                    REQUEST_STORAGE_ACCESS
-                )
-
-                //재 검사 후 권한이 없을 시 종료
-                permission = ContextCompat.checkSelfPermission(
-                    activity.applicationContext,
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE
-                )
-                if (permission == PackageManager.PERMISSION_DENIED) { return }
-            }
-        }
+        val permission = ContextCompat.checkSelfPermission(
+            activity.applicationContext,
+            android.Manifest.permission.READ_EXTERNAL_STORAGE
+        )
+        if (permission == PackageManager.PERMISSION_DENIED) return
 
         val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         val projection = arrayOf(

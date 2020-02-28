@@ -41,8 +41,6 @@ interface PhotoData_Dao {
     fun getLocationDir(loc : String) : LiveData<List<PhotoData>>
     @Query("SELECT * FROM photo_data where date_info = :date")
     fun getDateDir(date : Date) : LiveData<List<PhotoData>>
-    @Query("SELECT * FROM photo_data where name = :tag")
-    fun getDateDir(date : Int) : LiveData<List<PhotoData>>
     @Query("SELECT photo_data.* FROM photo_data, tag_data where (photo_data.photo_id = tag_data.photo_id) AND (tag_data.tag = :tag)")
     fun getTagDir(tag : String) : LiveData<List<PhotoData>>
 

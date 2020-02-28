@@ -1,6 +1,5 @@
 package com.example.wimmy
 
-
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -154,7 +153,6 @@ class DateFragment() : Fragment() {
         val month = (calDate.get(Calendar.MONTH) + 1).toString()
         month_text.text = "$year 년 $month 월"
     }
-
 
 }
 

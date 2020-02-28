@@ -7,7 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.example.wimmy.PhotoScanner
+import com.example.wimmy.db.PhotoScanner
 import com.example.wimmy.R
 import com.example.wimmy.db.thumbnailData
 import java.io.File

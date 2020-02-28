@@ -7,10 +7,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.example.wimmy.PhotoScanner
+import com.example.wimmy.db.PhotoScanner
 import com.example.wimmy.R
 import com.example.wimmy.db.PhotoData
-import com.example.wimmy.db.thumbnailData
 
 class RecyclerAdapterPhoto(val context: FragmentActivity?, var list: List<PhotoData>, val itemClick: (PhotoData, Int, ImageView) -> Unit) :
     RecyclerView.Adapter<RecyclerAdapterPhoto.Holder>()
@@ -49,8 +48,6 @@ class RecyclerAdapterPhoto(val context: FragmentActivity?, var list: List<PhotoD
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
         holder.bind(list[position], position)
-
-
     }
 
     fun setPhotoSize(size : Int, padding_size : Int) {

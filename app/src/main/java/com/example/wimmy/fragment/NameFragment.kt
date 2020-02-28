@@ -1,25 +1,17 @@
 package com.example.wimmy
 
-
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.os.SystemClock
-import android.util.DisplayMetrics
-import android.util.Log
 import android.view.*
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.example.wimmy.db.PhotoDB
-import com.example.wimmy.db.PhotoData
 import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.db.thumbnailData
 

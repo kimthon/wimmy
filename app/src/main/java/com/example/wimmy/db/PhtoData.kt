@@ -28,7 +28,6 @@ class PhotoData(@PrimaryKey var photo_id: Long,
         parcel.readString().toString(),
         parcel.readString().toString(),
         parcel.readString().toString(),
-        parcel.readString().toString(),
         parcel.readDate(),
         parcel.readByte() != 0.toByte()
     )
@@ -38,7 +37,6 @@ class PhotoData(@PrimaryKey var photo_id: Long,
         parcel.writeLong(photo_id)
         parcel.writeString(name)
         parcel.writeString(file_path)
-        parcel.writeString(thumbnail_path)
         parcel.writeString(location_info)
         parcel.writeDate(date_info)
         parcel.writeByte(if (favorite) 1 else 0)
