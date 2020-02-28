@@ -15,8 +15,6 @@ class MapFragment : Fragment(),  OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     override fun onCreateView(
-
-
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
@@ -26,7 +24,6 @@ class MapFragment : Fragment(),  OnMapReadyCallback {
         mapFragment.getMapAsync(this)
 
         // Inflate the layout for this fragment
-
         return rootView
     }
 
@@ -36,7 +33,5 @@ class MapFragment : Fragment(),  OnMapReadyCallback {
         mMap.addMarker(MarkerOptions().position(marker).title("Marker LAB"))
         mMap.moveCamera(CameraUpdateFactory.newLatLng(marker))
     }
-
-
 
 }

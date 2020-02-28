@@ -15,15 +15,15 @@ android:orientation="vertical">
     android:layout_height="100dp"
 
     android:layout_margin="8dp"
-    android:src="@drawable/loding_image"
-
     />
 
 <TextView
     android:id="@+id/thumbnail_text"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+
     android:text="태그"
     android:textAlignment="center"
-/>
+    android:gravity="center_horizontal"
+    />
 </androidx.appcompat.widget.LinearLayoutCompat>

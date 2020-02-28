@@ -17,16 +17,14 @@ fun Parcel.readDate(): Date? {
 
 
 @Entity(tableName = "photo_data")
-class PhotoData(@PrimaryKey(autoGenerate = true) var photo_id: Long,
+class PhotoData(@PrimaryKey var photo_id: Long,
                 @ColumnInfo(name = "name") var name : String,
                 @ColumnInfo(name = "file_path") var file_path : String,
-                @ColumnInfo(name = "thumbnail_path") var thumbnail_path : String,
                 @ColumnInfo(name = "location_info") var location_info : String?,
                 @ColumnInfo(name = "date_info") var date_info : Date?,
                 @ColumnInfo(name = "favorite") var favorite : Boolean): Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readLong(),
-        parcel.readString().toString(),
         parcel.readString().toString(),
         parcel.readString().toString(),
         parcel.readString().toString(),
@@ -39,7 +37,6 @@ class PhotoData(@PrimaryKey(autoGenerate = true) var photo_id: Long,
         parcel.writeLong(photo_id)
         parcel.writeString(name)
         parcel.writeString(file_path)
-        parcel.writeString(thumbnail_path)
         parcel.writeString(location_info)
         parcel.writeDate(date_info)
         parcel.writeByte(if (favorite) 1 else 0)
@@ -100,8 +97,8 @@ class TagData(var photo_id: Long,
 }
 
 
-data class thumbnailData( var thumbnail_path: String,
-                             var data : String )
+data class thumbnailData( var photo_id : Long,
+                          var data : String)
 
 class Converters {
     @TypeConverter

@@ -1,6 +1,5 @@
 package com.example.wimmy.Adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,8 +7,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.example.wimmy.db.PhotoScanner
 import com.example.wimmy.R
 import com.example.wimmy.db.thumbnailData
+import java.io.File
 
 class RecyclerAdapterForder(val context: FragmentActivity?, var list: List<thumbnailData>, val itemClick: (thumbnailData) -> Unit) :
     RecyclerView.Adapter<RecyclerAdapterForder.Holder>()
@@ -28,7 +29,10 @@ class RecyclerAdapterForder(val context: FragmentActivity?, var list: List<thumb
             thumbnail.layoutParams.width = size
             thumbnail.layoutParams.height = size
             layoutParam.setMargins(padding_size, padding_size, padding_size, padding_size)
-            text.text = data.data
+
+            thumbnail.setImageBitmap(PhotoScanner.LoadThumbnail(context!!.applicationContext, data.photo_id))
+            text.text = File(data.data).name
+
             itemView.setOnClickListener { itemClick(data) }
         }
     }

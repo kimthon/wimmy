@@ -1,21 +1,15 @@
 package com.example.wimmy.Adapter
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toolbar
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
-import com.example.wimmy.PhotoViewPager
 import com.example.wimmy.R
 import com.example.wimmy.db.PhotoData
-import com.example.wimmy.db.thumbnailData
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import java.lang.Thread.sleep
 
 public class PagerRecyclerAdapter(private val context: Context, var list: ArrayList<PhotoData>, var tb: View, var bt: View) : PagerAdapter() {
     private var layoutInflater: LayoutInflater? = null
@@ -36,6 +30,8 @@ public class PagerRecyclerAdapter(private val context: Context, var list: ArrayL
         val image = v.findViewById<View>(R.id.imgView) as ImageView
         val vp = container as ViewPager
         vp.addView(v, 0)
+        val bitmap = BitmapFactory.decodeFile(list[position].file_path +'/'+ list[position].name)
+        image.setImageBitmap(bitmap)
         image.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
                 if(check == false) {

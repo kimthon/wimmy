@@ -9,8 +9,8 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repo : PhotoRepository = PhotoRepository(application)
 
-    fun Insert(photo : PhotoData) : Long {
-       return repo.insert(photo)
+    fun Insert(photo : PhotoData) {
+       repo.insert(photo)
     }
 
     fun Insert(tag : TagData) {
@@ -24,8 +24,8 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
     fun getLocationDir() : LiveData<List<thumbnailData>> {
         return repo.getLocationDir()
     }
-    fun getDateInfo(from : Date, to : Date) : String? {
-        return repo.getDateInfo(from, to)
+    fun getDateInfo(cal : Calendar) : String? {
+        return repo.getDateInfo(getDateStart(cal), getDateEnd(cal))
     }
     fun getTagDir() : LiveData<List<thumbnailData>> {
         return repo.getTagDir()
@@ -38,7 +38,7 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
     fun getLocationDir(loc : String) : LiveData<List<PhotoData>> {
         return repo.getLocationDir(loc)
     }
-    fun getDateDir(date : Int) : LiveData<List<PhotoData>> {
+    fun getDateDir(date : Date) : LiveData<List<PhotoData>> {
         return repo.getDateDir(date)
     }
     fun getTagDir(tag : String) : LiveData<List<PhotoData>> {
@@ -58,7 +58,24 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
        return repo.getTagTag(tag)
     }
 
+    fun IsInserted(id : Long) : Boolean {
+        return repo.IsInserted(id)
+    }
     fun getSize() : Int {
         return repo.getSize()
+    }
+
+    private fun getDateStart(cal : Calendar) : Date{
+        cal.set(Calendar.HOUR_OF_DAY, 0)
+        cal.set(Calendar.MINUTE, 0)
+        cal.set(Calendar.SECOND, 0)
+        return cal.time
+    }
+
+    private fun getDateEnd(cal : Calendar) : Date{
+        cal.set(Calendar.HOUR_OF_DAY, 23)
+        cal.set(Calendar.MINUTE, 59)
+        cal.set(Calendar.SECOND, 59)
+        return cal.time
     }
 }

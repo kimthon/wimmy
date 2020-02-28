@@ -1,9 +1,9 @@
 package com.example.wimmy
 
-
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.os.SystemClock
 import android.util.DisplayMetrics
 import android.util.Log
@@ -30,10 +30,6 @@ class LocationFragment : Fragment() {
     private var recyclerAdapter : RecyclerAdapterForder?= null
     var bottomNavigationView: BottomNavigationView? = null
     private var thumbnailList = listOf<thumbnailData>()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?,
                                savedInstanceState: Bundle? ): View? {
