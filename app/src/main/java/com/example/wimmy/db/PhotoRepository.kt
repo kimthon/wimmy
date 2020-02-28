@@ -74,19 +74,6 @@ class PhotoRepository(application: Application) {
       return photoDao.getTagDir(tag)
    }
 
-   fun getNameTag(name : String) : LiveData<List<TagData>> {
-      return photoDao.getNameTag(name)
-   }
-   fun getLocationTag(loc : String) : LiveData<List<TagData>> {
-      return photoDao.getLocationTag(loc)
-   }
-   fun getDateTag(date : Int) : LiveData<List<TagData>> {
-      return photoDao.getDateTag(date)
-   }
-   fun getTagTag(tag : String) : LiveData<List<TagData>> {
-      return photoDao.getTagTag(tag)
-   }
-
    fun getSize() : Int {
       return getSizeAsyncTask(photoDao).execute().get()
    }

@@ -1,14 +1,10 @@
 package com.example.wimmy
 
 
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.os.SystemClock
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.*
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -45,19 +41,17 @@ class NameFragment : Fragment() {
         var vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
         vm.getNameDir().observe(this,
             Observer<List<thumbnailData>> { t -> recyclerAdapter!!.setThumbnailList(t)})
-        
+
         return view
     }
 
     private fun setView(view : View) {
         val recyclerView = view.findViewById<RecyclerView>(R.id.nameRecycleView)
         recyclerAdapter =
-            RecyclerAdapterForder(activity, thumbnailList)
-            {thumbnailData ->
-                val intent = Intent(activity, com.example.wimmy.Main_PhotoView::class.java)
-                intent.putExtra("dir_name", thumbnailData.data)
-                startActivity(intent)
-            }
+            RecyclerAdapterForder(
+                activity,
+                thumbnailList
+            )
         recyclerView?.adapter = recyclerAdapter
 
         val lm = GridLayoutManager(MainActivity(), 3)
