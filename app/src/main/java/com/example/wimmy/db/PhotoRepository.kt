@@ -16,7 +16,6 @@ class PhotoRepository(application: Application) {
          }
       }
 
-
       private class insertTagAsyncTask constructor(private val asyncTask: PhotoData_Dao) : AsyncTask<TagData, Void, Void>() {
          override fun doInBackground(vararg params: TagData?): Void? {
             asyncTask.insert(params[0]!!)
@@ -82,9 +81,23 @@ class PhotoRepository(application: Application) {
       return photoDao.getTagDir(tag)
    }
 
-   fun IsInserted(id : Long) : Boolean {
-      return (IsInsertedAsyncTask(photoDao).execute(id).get() != null)
+
+   fun getNameTag(name : String) : LiveData<List<TagData>> {
+      return photoDao.getNameTag(name)
    }
+   fun getLocationTag(loc : String) : LiveData<List<TagData>> {
+      return photoDao.getLocationTag(loc)
+   }
+   fun getDateTag(date : Int) : LiveData<List<TagData>> {
+      return photoDao.getDateTag(date)
+   }
+   fun getTagTag(tag : String) : LiveData<List<TagData>> {
+      return photoDao.getTagTag(tag)
+   }
+
+    fun IsInserted(id : Long) : Boolean {
+        return (IsInsertedAsyncTask(photoDao).execute(id).get() != null)
+    }
    fun getSize() : Int {
       return getSizeAsyncTask(photoDao).execute().get()
    }

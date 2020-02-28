@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/menu_bottom">
+
+    <item
+        android:id="@+id/menu_tag"
+        android:icon="@drawable/ic_tag"
+        android:title="옵션1" />
+
+    <item
+        android:id="@+id/menu_cal"
+        android:icon="@drawable/ic_cal"
+        android:title="옵션2" />
+
+    <item
+        android:id="@+id/menu_location"
+        android:icon="@drawable/ic_location"
+        android:title="옵션3" />
+
+    <item
+        android:id="@+id/menu_map"
+        android:icon="@drawable/ic_map"
+        android:title="옵션4" />
+
+
+</menu>
