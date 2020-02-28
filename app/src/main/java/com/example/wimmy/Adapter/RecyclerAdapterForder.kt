@@ -7,8 +7,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.example.wimmy.PhotoScanner
 import com.example.wimmy.R
 import com.example.wimmy.db.thumbnailData
+import java.io.File
 
 class RecyclerAdapterForder(val context: FragmentActivity?, var list: List<thumbnailData>) :
     RecyclerView.Adapter<RecyclerAdapterForder.Holder>()
@@ -26,9 +28,9 @@ class RecyclerAdapterForder(val context: FragmentActivity?, var list: List<thumb
             val layoutParam = thumbnail.layoutParams as ViewGroup.MarginLayoutParams
             thumbnail.layoutParams.width = size
             thumbnail.layoutParams.height = size
+            thumbnail.setImageBitmap(PhotoScanner.LoadThumbnail(context!!.applicationContext, data.photo_id))
             layoutParam.setMargins(padding_size, padding_size, padding_size, padding_size)
-            text.text = data.data
-
+            text.text = File(data.data).name
         }
     }
 

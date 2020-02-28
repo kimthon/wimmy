@@ -30,7 +30,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         SetHeader()
         init()
 
-        InsertDummy()
         /*val go_intent = findViewById(R.id.search) as SearchView
         go_intent.setOnClickListener {
             val intent = Intent(this, com.example.wimmy.SearchView::class.java)
@@ -151,6 +150,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }
 
     private fun InsertDummy() {
+        /*
         val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
         //더미는 한번만 생성
         if(vm.getSize() != 0) return
@@ -164,7 +164,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         var id8 = vm.Insert(PhotoData(0, "dum5p", "dump8", "dump", "dump", getDate(2020, 2, 28), false))
         var id9 = vm.Insert(PhotoData(0, "du4mp", "dump9", "dump", "dump", getDate(2020, 2, 28), false))
         var id10 = vm.Insert(PhotoData(0, "d3ump", "dump10", "dump", "dump", getDate(2020, 2, 29), false))
-        /*
         var id11 = vm.Insert(PhotoData(0, "dum9p", "dum4p5", "dump", "dump", getDate(2020, 3, 1), false))
         var id13 = vm.Insert(PhotoData(0, "dum75p", "du346mp6", "dump", "dump", getDate(2020, 3, 2), false))
         var id14 = vm.Insert(PhotoData(0, "du58mp", "dum42p6", "dump", "dump", getDate(2020, 3, 3), false))

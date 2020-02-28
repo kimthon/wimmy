@@ -83,7 +83,7 @@ class PhotoRepository(application: Application) {
    }
 
    fun IsInserted(id : Long) : Boolean {
-      return (IsInsertedAsyncTask(photoDao).execute(id) != null)
+      return (IsInsertedAsyncTask(photoDao).execute(id).get() != null)
    }
    fun getSize() : Int {
       return getSizeAsyncTask(photoDao).execute().get()

@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.example.wimmy.PhotoScanner
 import com.example.wimmy.R
 import com.example.wimmy.db.thumbnailData
 
@@ -29,6 +30,9 @@ class RecyclerAdapterPhoto(val context: FragmentActivity?, var list: List<thumbn
             thumbnail.layoutParams.height = size
             layoutParam.setMargins(padding_size, padding_size, padding_size, padding_size)
             text!!.text = data.data
+
+            thumbnail.setImageBitmap(PhotoScanner.LoadThumbnail(context!!.applicationContext, data.photo_id))
+
             itemView.setOnClickListener { itemClick(data, num) }
 
         }
