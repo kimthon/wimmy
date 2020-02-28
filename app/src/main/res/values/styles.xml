@@ -12,7 +12,10 @@
 
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@drawable/loding</item>
-        <item name="colorPrimaryDark">@color/Selected</item>
+        <item name="colorPrimary">@color/colorLoading</item>
+        <item name="colorPrimaryDark">@color/colorLoading</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
 
     <style name="TabTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -23,5 +26,15 @@
 
         <item name="colorAccent">@android:color/holo_purple</item>                    <!-- 상단 움직이는 바 색-->
     </style>
+
+    <style name="PhotoTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/common_google_signin_btn_text_light_focused</item>
+        <item name="colorPrimaryDark">@android:color/black</item>
+        <item name="colorAccent">@android:color/black</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
 
 </resources>

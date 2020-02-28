@@ -11,13 +11,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.R
 import com.example.wimmy.db.thumbnailData
 
-class RecyclerAdapterForder(val context: FragmentActivity?, var list: List<thumbnailData>) :
+class RecyclerAdapterForder(val context: FragmentActivity?, var list: List<thumbnailData>, val itemClick: (thumbnailData) -> Unit) :
     RecyclerView.Adapter<RecyclerAdapterForder.Holder>()
 {
     private var size : Int = 200
     private var padding_size = 200
 
-    inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView!!) {
+    inner class Holder(itemView: View,  itemClick: (thumbnailData) -> Unit) : RecyclerView.ViewHolder(itemView!!) {
         //thumbnail_imgview 변수 받아오기
         var thumbnail = itemView?.findViewById<ImageView>(R.id.thumbnail)
         var text = itemView?.findViewById<TextView>(R.id.thumbnail_text)
@@ -29,7 +29,7 @@ class RecyclerAdapterForder(val context: FragmentActivity?, var list: List<thumb
             thumbnail.layoutParams.height = size
             layoutParam.setMargins(padding_size, padding_size, padding_size, padding_size)
             text.text = data.data
-
+            itemView.setOnClickListener { itemClick(data) }
         }
     }
 
@@ -37,7 +37,7 @@ class RecyclerAdapterForder(val context: FragmentActivity?, var list: List<thumb
         val view = LayoutInflater.from(context).inflate(R.layout.thumbnail_forderview, parent, false)
 
 
-        return Holder(view)
+        return Holder(view, itemClick)
     }
 
     override fun getItemCount(): Int {
