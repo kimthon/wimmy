@@ -45,6 +45,19 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         return repo.getTagDir(tag)
     }
 
+    fun getNameTag(name : String) : LiveData<List<TagData>> {
+        return repo.getNameTag(name)
+    }
+    fun getLocationTag(loc : String) : LiveData<List<TagData>> {
+        return repo.getLocationTag(loc)
+    }
+    fun getDateTag(date : Int) : LiveData<List<TagData>> {
+        return repo.getDateTag(date)
+    }
+    fun getTagTag(tag : String) : LiveData<List<TagData>> {
+       return repo.getTagTag(tag)
+    }
+
     fun getSize() : Int {
         return repo.getSize()
     }

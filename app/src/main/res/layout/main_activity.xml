@@ -34,7 +34,7 @@
                 android:background="?attr/colorPrimary"
                 android:minHeight="@dimen/top_size"
                 android:theme="@style/AppTheme"
-                app:contentInsetStart="0dp"
+                app:contentInsetStart="3dp"
                 app:layout_scrollFlags="scroll|enterAlways">
 
                 <ImageView
