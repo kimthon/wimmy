@@ -60,7 +60,7 @@ class PhotoViewPager : AppCompatActivity() {
             )
 
         //Log.d("asd",recyclerAdapter?.getThumbnailList())
-        viewPager?.adapter = recyclerAdapter
+        viewPager.adapter = recyclerAdapter
 
     }
 
@@ -84,14 +84,9 @@ class PhotoViewPager : AppCompatActivity() {
         date.setText(date_string)
         location.setText(photoList[position].location_info)
 
-        for(x in 0..tagList.size - 1){
+        val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+        tag.setText(vm.getTag(photoList[position].photo_id).joinToString ( ", " ))
 
-            if(photoList[position].photo_id == tagList[x].photo_id) {
-                list_temp.add(tagList[x].tag)
-            }
-        }
-        Log.d("이거는", list_temp.joinToString ( ", " ))
-        tag.setText(list_temp.joinToString ( ", " ))
         list_temp.clear()
     }
 

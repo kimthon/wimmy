@@ -6,13 +6,11 @@ import android.os.Bundle
 import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
+import com.example.wimmy.db.MediaStore_Dao
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.db.thumbnailData
 
 /**
@@ -25,14 +23,17 @@ class NameFragment : Fragment() {
 
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle? ): View? {
-        var view : View = inflater.inflate(R.layout.fragment_name, container, false)
+        val view : View = inflater.inflate(R.layout.fragment_name, container, false)
+        thumbnailList = MediaStore_Dao.getNameDir(view.context)
+
         setView(view)
         setPhotoSize(view,3, 10)
+
         // Inflate the layout for this fragment
 
-        var vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-        vm.getNameDir().observe(this,
-            Observer<List<thumbnailData>> { t -> recyclerAdapter!!.setThumbnailList(t)})
+        //var vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+        //vm.getNameDir().observe(this,
+        //  Observer<List<thumbnailData>> { t -> recyclerAdapter!!.setThumbnailList(t)})
 
         return view
     }
@@ -42,7 +43,7 @@ class NameFragment : Fragment() {
         recyclerAdapter =
             RecyclerAdapterForder(activity, thumbnailList)
             {thumbnailData ->
-                val intent = Intent(activity, com.example.wimmy.Main_PhotoView::class.java)
+                val intent = Intent(activity, Main_PhotoView::class.java)
                 intent.putExtra("dir_name", thumbnailData.data)
                 startActivity(intent)
             }

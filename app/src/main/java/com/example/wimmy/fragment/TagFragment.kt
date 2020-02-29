@@ -30,14 +30,13 @@ class TagFragment : Fragment() {
 
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?,
                                savedInstanceState: Bundle? ): View? {
-        var view : View = inflater.inflate(R.layout.fragment_tag, container, false)
+        val view : View = inflater.inflate(R.layout.fragment_tag, container, false)
+        val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+        thumbnailList = vm.getTagDir()
+
         setView(view)
         setPhotoSize(view,3, 10)
         // Inflate the layout for this fragment
-
-        var vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-        vm.getTagDir().observe(this,
-            Observer<List<thumbnailData>> { t -> recyclerAdapter!!.setThumbnailList(t)})
 
         return view
     }
@@ -47,7 +46,7 @@ class TagFragment : Fragment() {
         recyclerAdapter =
             RecyclerAdapterForder(activity, thumbnailList)
             {thumbnailData ->
-                val intent = Intent(activity, com.example.wimmy.Main_PhotoView::class.java)
+                val intent = Intent(activity, Main_PhotoView::class.java)
                 intent.putExtra("tag_name", thumbnailData.data)
                 startActivity(intent)
             }
