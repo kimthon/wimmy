@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProviders
-import com.example.wimmy.db.PhotoScanner
+import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoViewModel
 
 class SplashActivity : AppCompatActivity() {
@@ -17,7 +17,7 @@ class SplashActivity : AppCompatActivity() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val REQUEST_STORAGE_ACCESS = 1000
-            var permission = ContextCompat.checkSelfPermission(
+            val permission = ContextCompat.checkSelfPermission(
                 this.applicationContext,
                 android.Manifest.permission.READ_EXTERNAL_STORAGE
             )
@@ -30,7 +30,6 @@ class SplashActivity : AppCompatActivity() {
                 )
             }
         }
-        PhotoScanner.addAllImages(this, ViewModelProviders.of(this).get(PhotoViewModel::class.java))
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
