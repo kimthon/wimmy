@@ -18,10 +18,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.example.wimmy.Adapter.PagerRecyclerAdapter
-import com.example.wimmy.db.PhotoData
-import com.example.wimmy.db.PhotoViewModel
-import com.example.wimmy.db.TagData
-import com.example.wimmy.db.thumbnailData
+import com.example.wimmy.db.*
 import java.lang.Thread.sleep
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
@@ -36,6 +33,7 @@ class PhotoViewPager : AppCompatActivity() {
     private var photoList = ArrayList<PhotoData>()
     private var tagList = ArrayList<TagData>()
     private var index: Int = 1
+    private var thumbnail: Long? = null
     private var ck: Boolean = false
     private var check: Boolean = false
     private var check1: Boolean = false
@@ -49,10 +47,8 @@ class PhotoViewPager : AppCompatActivity() {
             WindowManager.LayoutParams.FLAG_FULLSCREEN);
         val uiOptions = getWindow().getDecorView().getSystemUiVisibility();
         var newUiOptions = uiOptions;*/
-        getExtra()
         setContentView(R.layout.photoview_frame)
-        subimg = findViewById(R.id.sub_img) as ImageView // 뷰페이저로 넘어올 때, 애니메이션을 위한 눈속임
-        subimg!!.setImageResource(R.drawable.loding_image)
+        getExtra()
     }
     private fun setView(view: View, toolbar: View, bottombar: View) {
 
@@ -74,7 +70,8 @@ class PhotoViewPager : AppCompatActivity() {
         //subimg!!.setImageResource(R.drawable.loding_image) // 돌아갈 때, 애니메이션을 위한 눈속임
         intent.putExtra("index", check_index)
         setResult(Activity.RESULT_OK, intent)
-        supportFinishAfterTransition()
+        //supportFinishAfterTransition()
+        finish()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -87,7 +84,6 @@ class PhotoViewPager : AppCompatActivity() {
         date.setText(date_string)
         location.setText(photoList[position].location_info)
 
-        var tag_temp: String? = null
         for(x in 0..tagList.size - 1){
 
             if(photoList[position].photo_id == tagList[x].photo_id) {
@@ -101,9 +97,13 @@ class PhotoViewPager : AppCompatActivity() {
 
     fun getExtra(){
         if (intent.hasExtra("photo_num") && intent.hasExtra("photo_list")) {
+            thumbnail = intent.getLongExtra("thumbnail", 0)
+            subimg = findViewById(R.id.sub_img) as ImageView // 뷰페이저로 넘어올 때, 애니메이션을 위한 눈속임
+            subimg!!.setImageBitmap(PhotoScanner.LoadThumbnail(this.applicationContext, thumbnail!!))
             index = intent.getIntExtra("photo_num", 0)
             photoList = intent.getSerializableExtra("photo_list") as ArrayList<PhotoData>
             tagList = intent.getSerializableExtra("tag_list") as ArrayList<TagData>
+
         }
         else {
             Toast.makeText(this, "전달된 이름이 없습니다", Toast.LENGTH_SHORT).show()
@@ -127,6 +127,7 @@ class PhotoViewPager : AppCompatActivity() {
         val bt = findViewById<View>(R.id.bottom_photo_menu)
 
         setView(view, tb, bt)
+        viewPager.setCurrentItem(index, false)
         toolbar_text(index, text_name, date_name, location_name, tag_name)
 
 
@@ -134,10 +135,6 @@ class PhotoViewPager : AppCompatActivity() {
 
             override fun onPageScrollStateChanged(state: Int) { }
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
-                if(check == false ) {
-                    viewPager.setCurrentItem(index, false)
-                    check = true
-                }
                 subimg!!.setImageResource(0)    // 애니메이션
                 tb.visibility = View.VISIBLE
                 bt.visibility = View.VISIBLE

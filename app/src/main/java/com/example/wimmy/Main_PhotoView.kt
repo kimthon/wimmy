@@ -39,7 +39,6 @@ class Main_PhotoView: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_photoview)
         val view: View = findViewById(R.id.photo_recyclerView)
-        var getname: String? = null
         getExtra()
 
         setView(view)
@@ -59,11 +58,12 @@ class Main_PhotoView: AppCompatActivity() {
                     .show()
                 val intent = Intent(this, com.example.wimmy.PhotoViewPager::class.java)
                 intent.putExtra("photo_num", num)
-                PhotoArrayList.addAll(PhotoList)
+                intent.putExtra("thumbnail", PhotoData.photo_id)
 
                 Log.d("처음사이즈", "${TagArrayList.size}")
                 intent.putParcelableArrayListExtra("photo_list", PhotoArrayList)
                 intent.putParcelableArrayListExtra("tag_list", TagArrayList)
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     val options = ActivityOptions.makeSceneTransitionAnimation(
                         this,
@@ -80,7 +80,7 @@ class Main_PhotoView: AppCompatActivity() {
         recyclerView?.adapter = recyclerAdapter
 
         val lm = GridLayoutManager(MainActivity(), 3)
-        recyclerView?.layoutManager = lm as RecyclerView.LayoutManager?
+        recyclerView?.layoutManager = lm
 
     }
 
@@ -121,8 +121,8 @@ class Main_PhotoView: AppCompatActivity() {
             getname = intent.getStringExtra("dir_name")
             var vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
             vm.getNameDir("${getname}").observe(this,
-                Observer<List<PhotoData>> { t -> PhotoList =
-                    recyclerAdapter?.setThumbnailList(t)!!
+                Observer<List<PhotoData>> { t ->
+                    PhotoArrayList.addAll(recyclerAdapter?.setThumbnailList(t)!!)
                 })
             title_type.setImageResource(R.drawable.ic_folder)
             title.setText(getname)
@@ -135,8 +135,8 @@ class Main_PhotoView: AppCompatActivity() {
             getname = intent.getStringExtra("location_name")
             var vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
             vm.getLocationDir("${getname}").observe(this,
-                Observer<List<PhotoData>> { t -> PhotoList =
-                    recyclerAdapter?.setThumbnailList(t)!!
+                Observer<List<PhotoData>> { t ->
+                    PhotoArrayList.addAll(recyclerAdapter?.setThumbnailList(t)!!)
                 })
             title_type.setImageResource(R.drawable.ic_location)
             title.setText(getname)
@@ -149,8 +149,8 @@ class Main_PhotoView: AppCompatActivity() {
             getname = intent.getStringExtra("tag_name")
             var vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
             vm.getTagDir("${getname}").observe(this,
-                Observer<List<PhotoData>> { t -> PhotoList =
-                    recyclerAdapter?.setThumbnailList(t)!!
+                Observer<List<PhotoData>> { t ->
+                    PhotoArrayList.addAll(recyclerAdapter?.setThumbnailList(t)!!)
                 })
             title_type.setImageResource(R.drawable.ic_tag)
             title.setText(getname)
