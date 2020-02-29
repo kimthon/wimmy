@@ -12,6 +12,7 @@ import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.example.wimmy.Adapter.DateAdapter
+import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.fragment_cal.*
@@ -83,19 +84,14 @@ class DateFragment() : Fragment() {
         var count = 0
         do {
             for (i in 1..7) {
-                cells.add(Pair(inputCalendar.time, vm.getDateInfo(inputCalendar)))
+                val list = MediaStore_Dao.getDateIdInfo(view.context, inputCalendar)
+                cells.add(Pair(inputCalendar.time, vm.getDateInfo(list)))
                 inputCalendar.add(Calendar.DAY_OF_MONTH, 1)
             }
             ++count
         } while(inputCalendar.get(Calendar.MONTH) == month)
 
-        if(gridView.adapter == null )gridView.adapter =
-            DateAdapter(
-                activity!!,
-                size,
-                cells,
-                month
-            )
+        if(gridView.adapter == null ) gridView.adapter = DateAdapter( activity!!, size, cells, month )
         else {
             val gridAdapter = gridView.adapter as DateAdapter
             gridAdapter.Update(cells, month)
@@ -121,7 +117,6 @@ class DateFragment() : Fragment() {
             @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
             override fun onGlobalLayout() {
                 gridViewWrapper.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                val density = context!!.resources.displayMetrics.density
                 //padding
                 val padding = header.paddingTop + calendar_week.paddingTop + gridViewWrapper.paddingTop
                 gridViewWrapper.layoutParams.height = displayMetrics.heightPixels - (header.height + calendar_week.height + bnv.height + statusBarHeight + padding)
