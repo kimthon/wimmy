@@ -11,7 +11,7 @@ import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.R
 import com.example.wimmy.db.PhotoData
 
-class RecyclerAdapterPhoto(val context: FragmentActivity?, var list: List<PhotoData>, val itemClick: (PhotoData, Int, ImageView) -> Unit) :
+class RecyclerAdapterPhoto(val context: FragmentActivity?, var list: ArrayList<PhotoData>, val itemClick: (PhotoData, Int, ImageView) -> Unit) :
     RecyclerView.Adapter<RecyclerAdapterPhoto.Holder>()
 {
     private var size : Int = 200
@@ -56,9 +56,14 @@ class RecyclerAdapterPhoto(val context: FragmentActivity?, var list: List<PhotoD
         notifyDataSetChanged()
     }
 
-    fun setThumbnailList(list : List<PhotoData>) : List<PhotoData>{
+    fun setThumbnailList(list : ArrayList<PhotoData>) : ArrayList<PhotoData>{
         this.list = list
         notifyDataSetChanged()
         return list
+    }
+
+    fun setThumbnailList(list : List<PhotoData>) {
+        this.list.addAll(list)
+        notifyDataSetChanged()
     }
 }

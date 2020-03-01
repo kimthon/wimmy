@@ -8,6 +8,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.ViewModelProviders
+import com.example.wimmy.db.PhotoData
+import com.example.wimmy.db.PhotoViewModel
+import com.example.wimmy.db.TagData
 import com.example.wimmy.fragment.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.util.*
@@ -137,6 +141,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         date.set(year, month - 1, day)
         return date.time
     }
+
 }
 
 

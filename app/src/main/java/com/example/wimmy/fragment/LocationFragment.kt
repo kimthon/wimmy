@@ -27,13 +27,14 @@ class LocationFragment : Fragment() {
     private var recyclerAdapter : RecyclerAdapterForder?= null
     var bottomNavigationView: BottomNavigationView? = null
     private var thumbnailList = listOf<thumbnailData>()
+    private var mLastClickTime: Long = 0
 
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?,
                                savedInstanceState: Bundle? ): View? {
         var view : View = inflater.inflate(R.layout.fragment_location, container, false)
         thumbnailList = MediaStore_Dao.getLocationDir(view.context)
         setView(view)
-        setPhotoSize(view,3, 10)
+        setPhotoSize(view,3, 3)
         // Inflate the layout for this fragment
 
         return view
@@ -44,9 +45,12 @@ class LocationFragment : Fragment() {
         recyclerAdapter =
             RecyclerAdapterForder(activity, thumbnailList)
             {thumbnailData ->
-                val intent = Intent(activity, com.example.wimmy.Main_PhotoView::class.java)
-                intent.putExtra("location_name", thumbnailData.data)
-                startActivity(intent)
+                if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
+                    val intent = Intent(activity, com.example.wimmy.Main_PhotoView::class.java)
+                    intent.putExtra("location_name", thumbnailData.data)
+                    startActivity(intent)
+                }
+                mLastClickTime = SystemClock.elapsedRealtime()
             }
         recyclerView?.adapter = recyclerAdapter
 
