@@ -17,11 +17,8 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
+import com.example.wimmy.db.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.example.wimmy.db.PhotoDB
-import com.example.wimmy.db.PhotoData
-import com.example.wimmy.db.PhotoViewModel
-import com.example.wimmy.db.thumbnailData
 
 /**
  * A simple [Fragment] subclass.
@@ -35,13 +32,11 @@ class LocationFragment : Fragment() {
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?,
                                savedInstanceState: Bundle? ): View? {
         var view : View = inflater.inflate(R.layout.fragment_location, container, false)
+        thumbnailList = MediaStore_Dao.getLocationDir(view.context)
         setView(view)
         setPhotoSize(view,3, 3)
         // Inflate the layout for this fragment
 
-        var vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-        vm.getLocationDir().observe(this,
-            Observer<List<thumbnailData>> { t -> recyclerAdapter!!.setThumbnailList(t)})
         return view
     }
 

@@ -19,10 +19,10 @@ import com.example.wimmy.DateFragment
 import com.example.wimmy.Main_PhotoView
 import com.example.wimmy.R
 import java.text.SimpleDateFormat
+import com.example.wimmy.db.thumbnailData
 import java.util.*
 import kotlin.collections.ArrayList
-
-class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : ArrayList<Pair<Date, String?>>, inputMonth : Int) :
+class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : ArrayList<Pair<Date, String?>>, inputMonth : Int , val itemClick: (Date) -> Unit) :
         ArrayAdapter<Pair<Date, String?>>(context,
             R.layout.fragment_cal, days) {
     private val inflater : LayoutInflater = LayoutInflater.from(context)
@@ -43,13 +43,16 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
         val year = calendar.get(Calendar.YEAR)
         val week = calendar.get(Calendar.DAY_OF_WEEK)
 
-        val calendarToday = Calendar.getInstance()
-
         if (view == null) view = inflater.inflate(R.layout.calendar_day_layout, parent, false)
         val textView = view!!.findViewById<TextView>(R.id.calendar_day)
         val tagView = view.findViewById<TextView>(R.id.calendar_day_tag)
-        val calendar_data = view.findViewById(R.id.calendar_data) as View
 
+        view.setOnClickListener {
+            if(mLastClickTime != date.time){
+                itemClick(date)
+                mLastClickTime = date.time
+            }
+        }
 
         if(size != null) {
             view.layoutParams.width = size!!.first
@@ -57,50 +60,10 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
             if(requestFlag) view.requestLayout()
         }
 
-        //다른 달 날짜
-        if (month != inputMonth) {
-            textView.setTextColor(Color.GRAY)
-        }
-        // 토요일
-        else if (week == Calendar.SATURDAY) {
-            textView.setTextColor(Color.BLUE)
-        }
-        //일요일
-        else if (week == Calendar.SUNDAY) {
-            textView.setTextColor(Color.RED)
-        }
-        //나머지
-        else {
-            textView.setTextColor(Color.BLACK)
-        }
-
-        //오늘의 날짜 수정 필요함
-        if(year == calendarToday.get(Calendar.YEAR) &&
-            month == calendarToday.get(Calendar.MONTH) &&
-            day == calendarToday.get(Calendar.DAY_OF_MONTH)) {
-            textView.setTypeface(null, Typeface.BOLD)
-        } else {
-            textView.setTypeface(null, Typeface.NORMAL)
-        }
+        setExtraDay(textView, year, month, week, day)
 
         textView.text = calendar.get(Calendar.DATE).toString()
         tagView.text = tag
-        if(textView.currentTextColor != Color.GRAY) {
-            calendar_data.setOnClickListener {
-                if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
-                    val intent = Intent(view.context, Main_PhotoView::class.java)
-                    //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                    intent.putExtra("date_name", date)
-                    //val formatter = SimpleDateFormat("yyyy년 MM월 dd일 (E) / HH:mm:ss")
-                    //val dateinfo: String = "" + date
-                    Log.d("헬로", "${date}")
-                    //val date_string = (formatter).format(photoList[position].date_info)
-                    view.context.startActivity(intent)
-                }
-                mLastClickTime = SystemClock.elapsedRealtime()
-            }
-        }
 
         return view
     }
@@ -118,6 +81,36 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
         addAll(cells)
         this.inputMonth = month
         notifyDataSetChanged()
+    }
+
+    fun setToday(textView: TextView, year: Int, month: Int, day: Int) {
+        val calendarToday = Calendar.getInstance()
+        if(year == calendarToday.get(Calendar.YEAR) &&
+            month == calendarToday.get(Calendar.MONTH) &&
+            day == calendarToday.get(Calendar.DAY_OF_MONTH)) {
+            textView.setTypeface(null, Typeface.BOLD)
+        } else {
+            textView.setTypeface(null, Typeface.NORMAL)
+        }
+    }
+
+    fun setExtraDay(textView: TextView, year : Int, month : Int, week : Int, day : Int) {
+        //다른 달 날짜
+        if (month != inputMonth) {
+            textView.setTextColor(Color.GRAY)
+        }
+        // 토요일
+        else if (week == Calendar.SATURDAY) {
+            textView.setTextColor(Color.BLUE)
+        }
+        //일요일
+        else if (week == Calendar.SUNDAY) {
+            textView.setTextColor(Color.RED)
+        }
+        //나머지
+        else {
+            textView.setTextColor(Color.BLACK)
+        }
     }
 
 }

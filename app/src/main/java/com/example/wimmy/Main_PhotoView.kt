@@ -21,11 +21,12 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import com.example.wimmy.db.*
-import java.io.File
-import java.lang.Thread.sleep
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+import java.io.File
+import java.lang.Thread.sleep
+import java.util.*
 
 
 class Main_PhotoView: AppCompatActivity() {
@@ -54,7 +55,7 @@ class Main_PhotoView: AppCompatActivity() {
         recyclerAdapter =
             RecyclerAdapterPhoto(this, PhotoList) {
                     PhotoData, num, image ->  if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
-                Toast.makeText(this, "인덱스: ${num} 이름: ${PhotoData.photo_id}", Toast.LENGTH_SHORT)
+                Toast.makeText(this, "인덱스: ${num} 이름: ${PhotoData.name}", Toast.LENGTH_SHORT)
                     .show()
                 val intent = Intent(this, PhotoViewPager::class.java)
                 intent.putExtra("photo_num", num)
@@ -122,54 +123,37 @@ class Main_PhotoView: AppCompatActivity() {
             getname = intent.getStringExtra("dir_name")
 
             PhotoList = MediaStore_Dao.getNameDir(view.context, getname)
-            //PhotoArrayList.addAll(PhotoList)
 
             title_type.setImageResource(R.drawable.ic_folder)
-            title.setText(File(getname).name)
+            title.text = File(getname).name
         }
         else if (intent.hasExtra("location_name")) {
             getname = intent.getStringExtra("location_name")
-
-            //PhotoList = MediaStore_Dao.getLocationDir(view.context, getname)
-            //PhotoArrayList.addAll(PhotoList)
+            PhotoList = MediaStore_Dao.getLocationDir(view.context, getname)
 
             title_type.setImageResource(R.drawable.ic_location)
-            title.setText(getname)
-
-            /*vm.getLocationTag("${getname}").observe(this,
-                Observer<List<TagData>> { t -> TagList.addAll(t)
-                })*/
+            title.text = getname
         }
-        else if (intent.hasExtra("date_name")) {
-            val day: Date = intent.getSerializableExtra("date_name") as Date
-            val calendar = Calendar.getInstance()
-            calendar.setTime(day)
-            PhotoList = MediaStore_Dao.getDateDir(view.context, calendar)
-            //PhotoArrayList.addAll(PhotoList)
-            val formatter = SimpleDateFormat("yyyy년 MM월 dd일 (E)")
-            val date_string = (formatter).format(day)
-            title_type.setImageResource(R.drawable.ic_cal)
-            title.setText(date_string)
+        else if(intent.hasExtra("date_name")) {
+            val date = intent.getLongExtra("date_name", 0)
+            val cal = Calendar.getInstance()
 
-            /*vm.getLocationTag("${getname}").observe(this,
-                Observer<List<TagData>> { t -> TagList.addAll(t)
-                })*/
+            cal.time = Date(date)
+            PhotoList = MediaStore_Dao.getDateDir(view.context, cal)
+            val formatter = SimpleDateFormat("yyyy년 MM월 dd일")
+            getname = formatter.format(Date(date))
+
+            title_type.setImageResource(R.drawable.ic_cal)
+
+            title.text = getname
         }
         else if (intent.hasExtra("tag_name")) {
             getname = intent.getStringExtra("tag_name")
-            var vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-            /*vm.getTagDir("${getname}").observe(this,
-                Observer<List<PhotoData>> { t ->
-                    recyclerAdapter?.setThumbnailList(t)
-                })*/
+            val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+            PhotoList = MediaStore_Dao.getTagDir(view.context, vm, getname)
+
             title_type.setImageResource(R.drawable.ic_tag)
-            title.setText(getname)
-
-            /*vm.getTagTag("${getname}").observe(this,
-                Observer<List<TagData>> { t -> TagList.addAll(t)
-                })*/
-
+            title.text = getname
         }
-
     }
 }

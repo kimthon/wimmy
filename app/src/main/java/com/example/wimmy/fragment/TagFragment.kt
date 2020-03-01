@@ -37,7 +37,6 @@ class TagFragment : Fragment() {
 
         setView(view)
         setPhotoSize(view,3, 3)
-        // Inflate the layout for this fragment
 
         return view
     }
