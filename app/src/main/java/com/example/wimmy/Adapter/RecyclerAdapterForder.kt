@@ -26,11 +26,11 @@ class RecyclerAdapterForder(val context: FragmentActivity?, var list: List<thumb
         fun bind(data : thumbnailData) {
             //photo_view의 내부 값 설정
             val layoutParam = thumbnail.layoutParams as ViewGroup.MarginLayoutParams
+            thumbnail.setImageBitmap(MediaStore_Dao.LoadThumbnail(context!!.applicationContext, data.photo_id))
             thumbnail.layoutParams.width = size
             thumbnail.layoutParams.height = size
             layoutParam.setMargins(padding_size, padding_size, padding_size, padding_size)
 
-            thumbnail.setImageBitmap(MediaStore_Dao.LoadThumbnail(context!!.applicationContext, data.photo_id))
             text.text = File(data.data).name
 
             itemView.setOnClickListener { itemClick(data) }
