@@ -14,9 +14,7 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     //기본 검색 썸네일
-    fun getLocationDir() : LiveData<List<thumbnailData>> {
-        return repo.getLocationDir()
-    }
+
     fun getDateInfo(idList : List<Long>) : String? {
         return repo.getDateInfo(idList)
     }
@@ -24,9 +22,6 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         return repo.getTagDir()
     }
 
-    fun getLocationDir(loc : String) : LiveData<List<PhotoData>> {
-        return repo.getLocationDir(loc)
-    }
     fun getTagDirIdList(tag : String) : List<Long> {
         return repo.getTagDirIdList(tag)
     }

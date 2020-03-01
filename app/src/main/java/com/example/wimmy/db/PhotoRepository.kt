@@ -50,9 +50,6 @@ class PhotoRepository(application: Application) {
       insertTagAsyncTask(photoDao).execute(tag)
    }
 
-   fun getLocationDir() : LiveData<List<thumbnailData>> {
-      return photoDao.getLocationDir()
-   }
    fun getDateInfo(idList : List<Long>) : String? {
        return getDateTagAsyncTask(photoDao).execute(idList).get()
    }
@@ -60,9 +57,6 @@ class PhotoRepository(application: Application) {
       return getTagDirAsyncTask(photoDao).execute().get()
    }
 
-   fun getLocationDir(loc : String) : LiveData<List<PhotoData>> {
-      return photoDao.getLocationDir(loc)
-   }
 
    fun getTagDirIdList(tag : String) : List<Long> {
       return getTagDirIdListAsyncTask(photoDao).execute(tag).get()

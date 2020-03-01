@@ -21,6 +21,9 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import com.example.wimmy.db.*
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class Main_PhotoView: AppCompatActivity() {
@@ -117,18 +120,27 @@ class Main_PhotoView: AppCompatActivity() {
             PhotoList = MediaStore_Dao.getNameDir(view.context, getname)
 
             title_type.setImageResource(R.drawable.ic_folder)
-            title.setText(getname)
+            title.text = getname
         }
         else if (intent.hasExtra("location_name")) {
             getname = intent.getStringExtra("location_name")
-            val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-            vm.getLocationDir("${getname}").observe(this,
-                Observer<List<PhotoData>> { t -> PhotoList =
-                    recyclerAdapter?.setThumbnailList(t)!!
-                })
-            title_type.setImageResource(R.drawable.ic_location)
-            title.setText(getname)
+            PhotoList = MediaStore_Dao.getLocationDir(view.context, getname)
 
+            title_type.setImageResource(R.drawable.ic_location)
+            title.text = getname
+        }
+        else if(intent.hasExtra("date_name")) {
+            val date = intent.getLongExtra("date_name", 0)
+            val cal = Calendar.getInstance()
+
+            cal.time = Date(date)
+            PhotoList = MediaStore_Dao.getDateDir(view.context, cal)
+            val formatter = SimpleDateFormat("yyyy년 MM월 dd일")
+            getname = formatter.format(Date(date))
+
+            title_type.setImageResource(R.drawable.ic_cal)
+
+            title.text = getname
         }
         else if (intent.hasExtra("tag_name")) {
             getname = intent.getStringExtra("tag_name")
@@ -136,8 +148,7 @@ class Main_PhotoView: AppCompatActivity() {
             PhotoList = MediaStore_Dao.getTagDir(view.context, vm, getname)
 
             title_type.setImageResource(R.drawable.ic_tag)
-            title.setText(getname)
+            title.text = getname
         }
-
     }
 }
