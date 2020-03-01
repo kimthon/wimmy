@@ -17,7 +17,6 @@
         android:transitionName="pair_thumb"/>
 
     <androidx.viewpager.widget.ViewPager
-
         android:id="@+id/imgViewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

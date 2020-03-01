@@ -103,6 +103,7 @@ object MediaStore_Dao {
     //@Query("SELECT * FROM photo_data where file_path = :name")
     fun getNameDir(context: Context, name : String) : ArrayList<PhotoData>{
         val photoList = ArrayList<PhotoData>()
+        var selection: String? = null
 
         val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         val projection = arrayOf(
@@ -113,7 +114,8 @@ object MediaStore_Dao {
             MediaStore.Images.ImageColumns.LONGITUDE,
             MediaStore.Images.ImageColumns.DATE_TAKEN //date
         )
-        val selection = MediaStore.Images.ImageColumns.DATA + " LIKE '" + name + "%'"
+            // 폴더 중첩
+            selection = MediaStore.Images.ImageColumns.DATA + " LIKE '" + name + "/%' AND " + MediaStore.Images.ImageColumns.DATA + " NOT LIKE '" + name + "/%/%'"
 
         val cursor = context.contentResolver.query(uri, projection, selection, null, null)
 
@@ -127,6 +129,7 @@ object MediaStore_Dao {
             cursor.close()
             return photoList
         }
+var num: Int = 0;
 
         do {
             val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
@@ -147,6 +150,8 @@ object MediaStore_Dao {
                 loc = locTmp[0].countryName + locTmp[0].locality + locTmp[0].subLocality
             }
             photoList.add(PhotoData(id, name, path, loc, date, false))
+            Log.d("값: ", "${num}")
+            num++
         } while (cursor.moveToNext())
         cursor.close()
 
