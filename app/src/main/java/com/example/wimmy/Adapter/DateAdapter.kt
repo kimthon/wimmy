@@ -47,7 +47,12 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
         val textView = view!!.findViewById<TextView>(R.id.calendar_day)
         val tagView = view.findViewById<TextView>(R.id.calendar_day_tag)
 
-        view.setOnClickListener { itemClick(date) }
+        view.setOnClickListener {
+            if(mLastClickTime != date.time){
+                itemClick(date)
+                mLastClickTime = date.time
+            }
+        }
 
         if(size != null) {
             view.layoutParams.width = size!!.first

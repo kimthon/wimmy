@@ -26,9 +26,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import java.io.File
 import java.lang.Thread.sleep
-import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class Main_PhotoView: AppCompatActivity() {
@@ -127,7 +125,7 @@ class Main_PhotoView: AppCompatActivity() {
             PhotoList = MediaStore_Dao.getNameDir(view.context, getname)
 
             title_type.setImageResource(R.drawable.ic_folder)
-            title.setText(File(getname).name)
+            title.text = File(getname).name
         }
         else if (intent.hasExtra("location_name")) {
             getname = intent.getStringExtra("location_name")

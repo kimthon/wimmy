@@ -148,7 +148,8 @@ object MediaStore_Dao {
 
     //@Query("SELECT * FROM photo_data where file_path = :name")
     fun getNameDir(context: Context, path : String) : ArrayList<PhotoData>{
-        val selection = MediaStore.Images.ImageColumns.DATA + " LIKE '" + path + "%'"
+        val selection = MediaStore.Images.ImageColumns.DATA + " LIKE '" + path + "/%' AND " +
+                MediaStore.Images.ImageColumns.DATA + " NOT LIKE '" + path + "/%/%'"
         return getDir(context, selection)
     }
     //@Query("SELECT * FROM photo_data where location_info = :loc")

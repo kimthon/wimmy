@@ -34,12 +34,6 @@ class NameFragment : Fragment() {
         setView(view)
         setPhotoSize(view,3, 3)
 
-        // Inflate the layout for this fragment
-
-        //var vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-        //vm.getNameDir().observe(this,
-        //  Observer<List<thumbnailData>> { t -> recyclerAdapter!!.setThumbnailList(t)})
-
         return view
     }
 
