@@ -65,9 +65,10 @@ class PhotoData(@PrimaryKey var photo_id: Long,
         childColumns = arrayOf("photo_id")
     )]
 )
-class TagData(var photo_id: Long,
-              var tag : String,
-              @ColumnInfo var type : String): Parcelable {
+class TagData(
+    var photo_id: Long,
+    var tag: String,
+    @ColumnInfo var type: String): Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readLong(),
         parcel.readString().toString(),

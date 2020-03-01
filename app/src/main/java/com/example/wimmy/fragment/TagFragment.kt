@@ -4,6 +4,7 @@ package com.example.wimmy
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
 import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
@@ -23,7 +24,7 @@ class TagFragment : Fragment() {
     private var recyclerAdapter : RecyclerAdapterForder?= null
     var bottomNavigationView: BottomNavigationView? = null
     private var thumbnailList = listOf<thumbnailData>()
-
+    private var mLastClickTime: Long = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -35,7 +36,7 @@ class TagFragment : Fragment() {
         thumbnailList = vm.getTagDir()
 
         setView(view)
-        setPhotoSize(view,3, 10)
+        setPhotoSize(view,3, 3)
         // Inflate the layout for this fragment
 
         return view
@@ -46,9 +47,12 @@ class TagFragment : Fragment() {
         recyclerAdapter =
             RecyclerAdapterForder(activity, thumbnailList)
             {thumbnailData ->
-                val intent = Intent(activity, Main_PhotoView::class.java)
-                intent.putExtra("tag_name", thumbnailData.data)
-                startActivity(intent)
+                if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
+                    val intent = Intent(activity, Main_PhotoView::class.java)
+                    intent.putExtra("tag_name", thumbnailData.data)
+                    startActivity(intent)
+                }
+                mLastClickTime = SystemClock.elapsedRealtime()
             }
         recyclerView?.adapter = recyclerAdapter
 

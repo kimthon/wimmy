@@ -21,12 +21,17 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import com.example.wimmy.db.*
+import java.io.File
+import java.lang.Thread.sleep
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class Main_PhotoView: AppCompatActivity() {
-    private var PhotoArrayList = ArrayList<PhotoData>()
-    private var TagArrayList = ArrayList<TagData>()
-    private var PhotoList = listOf<PhotoData>()
+    //private var PhotoArrayList = ArrayList<PhotoData>()
+    private var TagList = ArrayList<TagData>()
+    private var PhotoList = arrayListOf<PhotoData>()
 
     private var recyclerAdapter : RecyclerAdapterPhoto?= null
     var recyclerView: RecyclerView? = null
@@ -40,7 +45,7 @@ class Main_PhotoView: AppCompatActivity() {
 
         setView(view)
         SetHeader()
-        setPhotoSize(3, 10)
+        setPhotoSize(3, 3)
         // Inflate the layout for this fragment
     }
 
@@ -49,16 +54,15 @@ class Main_PhotoView: AppCompatActivity() {
         recyclerAdapter =
             RecyclerAdapterPhoto(this, PhotoList) {
                     PhotoData, num, image ->  if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
-                Toast.makeText(this, "인덱스: ${num} 이름: ${PhotoData.name}", Toast.LENGTH_SHORT)
+                Toast.makeText(this, "인덱스: ${num} 이름: ${PhotoData.photo_id}", Toast.LENGTH_SHORT)
                     .show()
                 val intent = Intent(this, PhotoViewPager::class.java)
                 intent.putExtra("photo_num", num)
-                PhotoArrayList.addAll(PhotoList)
+                intent.putExtra("thumbnail", PhotoData.photo_id)
 
-                Log.d("처음사이즈", "${TagArrayList.size}")
-                intent.putParcelableArrayListExtra("photo_list", PhotoArrayList)
-                intent.putParcelableArrayListExtra("tag_list", TagArrayList)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                intent.putParcelableArrayListExtra("photo_list", PhotoList)
+                intent.putParcelableArrayListExtra("tag_list", TagList)
+                /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     val options = ActivityOptions.makeSceneTransitionAnimation(
                         this,
                         image, "pair_thumb"
@@ -66,8 +70,11 @@ class Main_PhotoView: AppCompatActivity() {
                     startActivityForResult(intent, 100, options.toBundle())
 
                 } else {
+*/
                     startActivityForResult(intent, 100)
-                }
+
+
+                //}
             }
                 mLastClickTime = SystemClock.elapsedRealtime()
             }
@@ -101,7 +108,7 @@ class Main_PhotoView: AppCompatActivity() {
             when (requestCode) {
                 100 -> {
                     val doc = data!!.getIntExtra("index", 0)
-                    recyclerView?.scrollToPosition(doc)
+                    recyclerView?.smoothScrollToPosition(doc)
                 }
             }
         }
@@ -115,28 +122,53 @@ class Main_PhotoView: AppCompatActivity() {
             getname = intent.getStringExtra("dir_name")
 
             PhotoList = MediaStore_Dao.getNameDir(view.context, getname)
+            //PhotoArrayList.addAll(PhotoList)
 
             title_type.setImageResource(R.drawable.ic_folder)
-            title.setText(getname)
+            title.setText(File(getname).name)
         }
         else if (intent.hasExtra("location_name")) {
             getname = intent.getStringExtra("location_name")
-            val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-            vm.getLocationDir("${getname}").observe(this,
-                Observer<List<PhotoData>> { t -> PhotoList =
-                    recyclerAdapter?.setThumbnailList(t)!!
-                })
+
+            //PhotoList = MediaStore_Dao.getLocationDir(view.context, getname)
+            //PhotoArrayList.addAll(PhotoList)
+
             title_type.setImageResource(R.drawable.ic_location)
             title.setText(getname)
 
+            /*vm.getLocationTag("${getname}").observe(this,
+                Observer<List<TagData>> { t -> TagList.addAll(t)
+                })*/
+        }
+        else if (intent.hasExtra("date_name")) {
+            val day: Date = intent.getSerializableExtra("date_name") as Date
+            val calendar = Calendar.getInstance()
+            calendar.setTime(day)
+            PhotoList = MediaStore_Dao.getDateDir(view.context, calendar)
+            //PhotoArrayList.addAll(PhotoList)
+            val formatter = SimpleDateFormat("yyyy년 MM월 dd일 (E)")
+            val date_string = (formatter).format(day)
+            title_type.setImageResource(R.drawable.ic_cal)
+            title.setText(date_string)
+
+            /*vm.getLocationTag("${getname}").observe(this,
+                Observer<List<TagData>> { t -> TagList.addAll(t)
+                })*/
         }
         else if (intent.hasExtra("tag_name")) {
             getname = intent.getStringExtra("tag_name")
-            val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-            PhotoList = MediaStore_Dao.getTagDir(view.context, vm, getname)
-
+            var vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+            /*vm.getTagDir("${getname}").observe(this,
+                Observer<List<PhotoData>> { t ->
+                    recyclerAdapter?.setThumbnailList(t)
+                })*/
             title_type.setImageResource(R.drawable.ic_tag)
             title.setText(getname)
+
+            /*vm.getTagTag("${getname}").observe(this,
+                Observer<List<TagData>> { t -> TagList.addAll(t)
+                })*/
+
         }
 
     }

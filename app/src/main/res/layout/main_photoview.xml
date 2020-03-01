@@ -37,7 +37,7 @@
                 android:layout_height="@dimen/top_photoview"
                 android:layout_marginLeft="3dp"
                 android:layout_marginRight="5dp"
-                android:padding="3dp" />
+                android:padding="3dp"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/title_name"

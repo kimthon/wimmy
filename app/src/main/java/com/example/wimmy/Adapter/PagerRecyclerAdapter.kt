@@ -2,6 +2,7 @@ package com.example.wimmy.Adapter
 
 import android.content.Context
 import android.graphics.BitmapFactory
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,6 +32,7 @@ public class PagerRecyclerAdapter(private val context: Context, var list: ArrayL
         val vp = container as ViewPager
         vp.addView(v, 0)
         val bitmap = BitmapFactory.decodeFile(list[position].file_path +'/'+ list[position].name)
+        Log.d("사진: ", list[position].file_path +'/'+ list[position].name)
         image.setImageBitmap(bitmap)
         image.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
