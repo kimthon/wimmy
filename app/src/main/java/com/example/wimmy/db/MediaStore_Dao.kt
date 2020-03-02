@@ -32,8 +32,8 @@ object MediaStore_Dao {
             MediaStore.Images.ImageColumns.DATA// folder + name
         )
         val selection = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            MediaStore.Images.ImageColumns._ID + " IN (SELECT MAX(" + MediaStore.Images.ImageColumns._ID +
-                    ") FROM images GROUP BY " + MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME + ")"
+            MediaStore.Images.ImageColumns._ID + " IN (SELECT " + MediaStore.Images.ImageColumns._ID +
+                    " FROM images GROUP BY " + MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME + ")"
         }else {
             "1) GROUP BY (" + MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME
         }
@@ -79,8 +79,8 @@ object MediaStore_Dao {
         // TODO api 29 이상에선 group by 사용 불가
 
         val selection = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            MediaStore.Images.ImageColumns._ID + " IN (SELECT MAX(" + MediaStore.Images.ImageColumns._ID +
-                    ") FROM images GROUP BY " + MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME + " OR " + MediaStore.Images.ImageColumns.LONGITUDE+ ")"
+            MediaStore.Images.ImageColumns._ID + " IN (SELECT " + MediaStore.Images.ImageColumns._ID +
+                    " FROM images GROUP BY " + MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME + " OR " + MediaStore.Images.ImageColumns.LONGITUDE+ ")"
         }else {
             "1) GROUP BY (" + MediaStore.Images.ImageColumns.LATITUDE + " OR " + MediaStore.Images.ImageColumns.LONGITUDE
         }
