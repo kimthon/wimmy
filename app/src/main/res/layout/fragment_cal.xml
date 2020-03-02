@@ -11,7 +11,15 @@
         android:layout_height="match_parent"
         android:padding="0dp"
         android:layout_margin="0dp"
+        android:orientation="vertical"
+        android:id="@+id/calendar_view">
+
+    <LinearLayout
+        android:id="@+id/calendar_allheader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
+
         <LinearLayout
             android:id="@+id/calendar_header"
             android:theme="@style/AppTheme"
@@ -124,6 +132,7 @@
                 />
         </LinearLayout>
 
+    </LinearLayout>
         <LinearLayout
             android:id="@+id/cal_grid_wrapper"
             android:layout_width="match_parent"

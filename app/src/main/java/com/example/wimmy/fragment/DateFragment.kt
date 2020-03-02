@@ -1,42 +1,55 @@
 package com.example.wimmy
 
+import SwipeGesture
+import YearMonthPickerDialog
+import android.app.AlertDialog
+import android.app.DatePickerDialog
+import android.app.Dialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.*
 import android.widget.GridView
 import android.widget.LinearLayout
+import android.widget.NumberPicker
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatImageButton
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.example.wimmy.Adapter.DateAdapter
 import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoViewModel
-import com.example.wimmy.db.thumbnailData
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.fragment_cal.*
+import kotlinx.android.synthetic.main.year_month_picker.view.*
 import java.util.*
 import kotlin.collections.ArrayList
+
 
 /**
  * A simple [Fragment] subclass.
  */
 
-class DateFragment() : Fragment() {
+open class DateFragment() : Fragment() {
     private lateinit var header : LinearLayout
     private lateinit var gridView : GridView
     private lateinit var vm : PhotoViewModel
     private var size : Pair<Int, Int>? = null
-    private var calDate : Calendar = Calendar.getInstance()
     private var count = 0
+    companion object {
+        var calDate: Calendar = Calendar.getInstance()
+    }
 
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?,
                                savedInstanceState: Bundle? ): View? {
         val view : View = inflater.inflate(R.layout.fragment_cal, container, false)
-
+        val calendar_allheader: View = view.findViewById(R.id.calendar_allheader) as View
         // Inflate the layout for this fragment
         setView(view)
         setHeader(view)
@@ -44,18 +57,27 @@ class DateFragment() : Fragment() {
         vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
         updateCalendar(view, calDate.clone() as Calendar)
+
+        // 상단 스와이프 제스처
+        var gestureListener = SwipeGesture(calendar_allheader)
+        var gesturedetector = GestureDetector(calendar_allheader.context, gestureListener)
+        calendar_allheader.setOnTouchListener { v, event ->
+            return@setOnTouchListener gesturedetector.onTouchEvent(event)
+
+        }
         return view
     }
 
-    private fun setView(view : View) {
+    fun setView(view : View) {
         header = view.findViewById(R.id.calendar_week)
         gridView = view.findViewById(R.id.cal_grid)
     }
 
-    private fun setHeader(view : View) {
+    fun setHeader(view : View) {
         val month_left_button = view.findViewById<AppCompatImageButton>(R.id.cal_month_left)
         val month_right_button = view.findViewById<AppCompatImageButton>(R.id.cal_month_right)
         val month_text = view.findViewById<TextView>(R.id.cal_month_text)
+
 
         month_left_button.setOnClickListener {
             calDate.add(Calendar.MONTH, -1)
@@ -69,6 +91,14 @@ class DateFragment() : Fragment() {
             setHeaderDate(month_text)
         }
 
+        // 다이얼로그
+        month_text.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(v: View?) {
+                val pd: YearMonthPickerDialog<View> = YearMonthPickerDialog(view)
+                //pd.setListener()
+                pd.show(childFragmentManager, "YearMonthPickerTest")
+            }
+        })
         setHeaderDate(month_text)
     }
 
@@ -151,12 +181,15 @@ class DateFragment() : Fragment() {
         })
     }
 
-    private fun setHeaderDate(month_text: TextView) {
+    fun setHeaderDate(month_text: TextView) {
         val year = calDate.get(Calendar.YEAR).toString()
         val month = (calDate.get(Calendar.MONTH) + 1).toString()
         month_text.text = "$year 년 $month 월"
+
     }
 
 }
+
+
 
 
