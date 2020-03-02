@@ -29,9 +29,14 @@ object MediaStore_Dao {
         val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         val projection = arrayOf(
             MediaStore.Images.ImageColumns._ID, //photo_id
-            MediaStore.Images.ImageColumns.DATA // folder + name
+            MediaStore.Images.ImageColumns.DATA// folder + name
         )
-        val selection = MediaStore.Images.ImageColumns._ID + "=" + MediaStore.Images.ImageColumns._ID+ ") GROUP BY (" + MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME
+        val selection = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            MediaStore.Images.ImageColumns._ID + " IN (SELECT MAX(" + MediaStore.Images.ImageColumns._ID +
+                    ") FROM images GROUP BY " + MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME + ")"
+        }else {
+            "1) GROUP BY (" + MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME
+        }
         val sortOrder = MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME + " ASC"
 
         val cursor = context.contentResolver.query(uri, projection, selection, null, sortOrder)
@@ -71,9 +76,14 @@ object MediaStore_Dao {
             MediaStore.Images.ImageColumns.LATITUDE,
             MediaStore.Images.ImageColumns.LONGITUDE
         )
-        val selection = MediaStore.Images.ImageColumns._ID + "=" + MediaStore.Images.ImageColumns._ID+
-                ") GROUP BY (" + MediaStore.Images.ImageColumns.LATITUDE + " OR " + MediaStore.Images.ImageColumns.LONGITUDE
+        // TODO api 29 이상에선 group by 사용 불가
 
+        val selection = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            MediaStore.Images.ImageColumns._ID + " IN (SELECT MAX(" + MediaStore.Images.ImageColumns._ID +
+                    ") FROM images GROUP BY " + MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME + " OR " + MediaStore.Images.ImageColumns.LONGITUDE+ ")"
+        }else {
+            "1) GROUP BY (" + MediaStore.Images.ImageColumns.LATITUDE + " OR " + MediaStore.Images.ImageColumns.LONGITUDE
+        }
         val cursor = context.contentResolver.query(uri, projection, selection, null, null)
 
 
@@ -245,7 +255,6 @@ object MediaStore_Dao {
 
         return photoList
     }
-
 
     fun LoadThumbnail(context: Context, id : Long) : Bitmap{
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
