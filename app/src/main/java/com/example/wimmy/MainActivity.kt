@@ -8,10 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
-import androidx.lifecycle.ViewModelProviders
-import com.example.wimmy.db.PhotoData
-import com.example.wimmy.db.PhotoViewModel
-import com.example.wimmy.db.TagData
 import com.example.wimmy.fragment.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.util.*
@@ -63,7 +59,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }*/
 
     override fun onNavigationItemSelected(p0: MenuItem): Boolean {
-        var toolbar: Toolbar = findViewById(R.id.main_toolbar)
+        val toolbar: Toolbar = findViewById(R.id.main_toolbar)
         if(toolbar_check == false) {
             toolbar_check = true
             toolbar.visibility = View.VISIBLE
@@ -105,7 +101,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     override fun onBackPressed() {
         super.onBackPressed()
-        var toolbar: Toolbar = findViewById(R.id.main_toolbar)
+        val toolbar: Toolbar = findViewById(R.id.main_toolbar)
         if(toolbar_check == false) {
             toolbar_check = true
             toolbar.visibility = View.VISIBLE

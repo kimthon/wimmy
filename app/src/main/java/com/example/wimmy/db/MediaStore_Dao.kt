@@ -1,21 +1,13 @@
 package com.example.wimmy.db
 
-import android.app.Activity
 import android.content.ContentUris
 import android.content.Context
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.location.Geocoder
-import android.location.Location
-import android.location.LocationManager
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import android.util.Size
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModelProviders
-import androidx.room.Query
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
@@ -76,7 +68,6 @@ object MediaStore_Dao {
             MediaStore.Images.ImageColumns.LATITUDE,
             MediaStore.Images.ImageColumns.LONGITUDE
         )
-        // TODO api 29 이상에선 group by 사용 불가
 
         val selection = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             MediaStore.Images.ImageColumns._ID + " IN (SELECT " + MediaStore.Images.ImageColumns._ID +

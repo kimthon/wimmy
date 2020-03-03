@@ -2,32 +2,27 @@ package com.example.wimmy
 
 import SwipeGesture
 import YearMonthPickerDialog
-import android.app.AlertDialog
-import android.app.DatePickerDialog
-import android.app.Dialog
-import android.content.DialogInterface
+import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.*
 import android.widget.GridView
+import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.NumberPicker
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatImageButton
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.example.wimmy.Adapter.DateAdapter
 import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.fragment_cal.*
-import kotlinx.android.synthetic.main.year_month_picker.view.*
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -59,8 +54,8 @@ open class DateFragment() : Fragment() {
         updateCalendar(view, calDate.clone() as Calendar)
 
         // 상단 스와이프 제스처
-        var gestureListener = SwipeGesture(calendar_allheader)
-        var gesturedetector = GestureDetector(calendar_allheader.context, gestureListener)
+        val gestureListener: SwipeGesture = SwipeGesture(calendar_allheader)
+        val gesturedetector = GestureDetector(calendar_allheader.context, gestureListener)
         calendar_allheader.setOnTouchListener { v, event ->
             return@setOnTouchListener gesturedetector.onTouchEvent(event)
 
@@ -103,7 +98,7 @@ open class DateFragment() : Fragment() {
     }
 
     private fun updateCalendar(view: View, inputCalendar : Calendar) {
-        val cells = ArrayList<Pair<Date, String?>>()
+        val cells = ArrayList<Date>()
 
         //해당 달의 1일으로 설정
         inputCalendar.set(Calendar.DAY_OF_MONTH, 1)
@@ -116,8 +111,7 @@ open class DateFragment() : Fragment() {
         var count = 0
         do {
             for (i in 1..7) {
-                val list = MediaStore_Dao.getDateIdInfo(view.context, inputCalendar)
-                cells.add(Pair(inputCalendar.time, vm.getDateInfo(list)))
+                cells.add(inputCalendar.time)
                 inputCalendar.add(Calendar.DAY_OF_MONTH, 1)
             }
             ++count
@@ -187,7 +181,6 @@ open class DateFragment() : Fragment() {
         month_text.text = "$year 년 $month 월"
 
     }
-
 }
 
 

@@ -1,6 +1,5 @@
 package com.example.wimmy.db
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
 

@@ -7,9 +7,6 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProviders
-import com.example.wimmy.db.MediaStore_Dao
-import com.example.wimmy.db.PhotoViewModel
 
 class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
