@@ -1,14 +1,20 @@
 package com.example.wimmy.Adapter
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.os.AsyncTask
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.R
+import com.example.wimmy.db.PhotoViewModel
+import com.example.wimmy.db.TagData
 import com.example.wimmy.db.thumbnailData
 import java.io.File
 
@@ -18,19 +24,42 @@ class RecyclerAdapterForder(val context: FragmentActivity?, var list: List<thumb
     private var size : Int = 200
     private var padding_size = 200
 
-    inner class Holder(itemView: View,  itemClick: (thumbnailData) -> Unit) : RecyclerView.ViewHolder(itemView) {
+    inner class setThumbnailAsyncTask(holder: Holder, imageView: ImageView, id : Long) : AsyncTask<Context, Void, Bitmap>() {
+        private val holder = holder
+        private val holderPosition = holder.adapterPosition
+        private val imageView: ImageView = imageView
+        private val id = id
+
+        override fun doInBackground(vararg params: Context?): Bitmap? {
+            return if(holder.adapterPosition == holderPosition) {
+                MediaStore_Dao.LoadThumbnail(params[0]!!, id)
+            } else null
+        }
+
+        override fun onPostExecute(result: Bitmap?) {
+            if(holder.adapterPosition == holderPosition) {
+                imageView.setImageBitmap(result)
+                imageView.layoutParams.width = size
+                imageView.layoutParams.height = size
+            }
+        }
+    }
+
+    inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         //thumbnail_imgview 변수 받아오기
         var thumbnail = itemView.findViewById<ImageView>(R.id.thumbnail)
         var text = itemView.findViewById<TextView>(R.id.thumbnail_text)
 
+
         fun bind(data : thumbnailData) {
             //photo_view의 내부 값 설정
             val layoutParam = thumbnail.layoutParams as ViewGroup.MarginLayoutParams
-            thumbnail.setImageBitmap(MediaStore_Dao.LoadThumbnail(context!!.applicationContext, data.photo_id))
             thumbnail.layoutParams.width = size
             thumbnail.layoutParams.height = size
             layoutParam.setMargins(padding_size, padding_size, padding_size, padding_size)
 
+            thumbnail.setImageResource(R.drawable.loding_image)
+            setThumbnailAsyncTask(this, thumbnail,data.photo_id).execute(context!!.applicationContext)
             text.text = File(data.data).name
 
             itemView.setOnClickListener { itemClick(data) }
@@ -41,7 +70,7 @@ class RecyclerAdapterForder(val context: FragmentActivity?, var list: List<thumb
         val view = LayoutInflater.from(context).inflate(R.layout.thumbnail_forderview, parent, false)
 
 
-        return Holder(view, itemClick)
+        return Holder(view)
     }
 
     override fun getItemCount(): Int {
@@ -63,3 +92,4 @@ class RecyclerAdapterForder(val context: FragmentActivity?, var list: List<thumb
         notifyDataSetChanged()
     }
 }
+

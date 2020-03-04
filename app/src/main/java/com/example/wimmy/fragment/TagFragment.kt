@@ -8,7 +8,6 @@ import android.os.SystemClock
 import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -57,6 +56,7 @@ class TagFragment : Fragment() {
 
         val lm = GridLayoutManager(MainActivity(), 3)
         recyclerView?.layoutManager = lm
+        recyclerView.smoothScrollToPosition(-10)
     }
 
     private fun setPhotoSize(view : View, row : Int, padding : Int) {
