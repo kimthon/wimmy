@@ -1,9 +1,11 @@
 package com.example.wimmy
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -27,11 +29,11 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         SetHeader()
         init()
 
-        /*val go_intent = findViewById(R.id.search) as SearchView
-        go_intent.setOnClickListener {
-            val intent = Intent(this, com.example.wimmy.SearchView::class.java)
+        val go_search = findViewById(R.id.main_search_button) as ImageView
+        go_search.setOnClickListener {
+            val intent = Intent(this, SearchView::class.java)
             startActivity(intent)
-        }*/
+        }
     }
 
     private fun SetHeader() {
@@ -72,10 +74,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
 
         when(p0.itemId){
-            R.id.menu_name ->{
-                val fragmentA = NameFragment()
-                transaction.replace(R.id.frame_layout,fragmentA, "name")
-            }
             R.id.menu_tag -> {
                 val fragmentB = TagFragment()
                 transaction.replace(R.id.frame_layout,fragmentB, "tag")
@@ -88,15 +86,15 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 val fragmentD = LocationFragment()
                 transaction.replace(R.id.frame_layout,fragmentD, "location")
             }
-            R.id.menu_map -> {
-                val fragmentE = MapFragment()
-                transaction.replace(R.id.frame_layout,fragmentE, "map")
+            R.id.menu_name ->{
+                val fragmentA = NameFragment()
+                transaction.replace(R.id.frame_layout,fragmentA, "name")
             }
         }
         transaction.addToBackStack(null)
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
         transaction.commit()
-        if(p0.itemId == R.id.menu_map || p0.itemId == R.id.menu_cal ) {
+        if(p0.itemId == R.id.menu_cal ) {
             toolbar_check = false
             toolbar.visibility = View.GONE
         }
@@ -115,23 +113,21 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }
 
     private fun updateBottomMenu(navigation: BottomNavigationView) {
-        val tag1: Fragment? = supportFragmentManager.findFragmentByTag("name")
-        val tag2: Fragment? = supportFragmentManager.findFragmentByTag("tag")
-        val tag3: Fragment? = supportFragmentManager.findFragmentByTag("cal")
-        val tag4: Fragment? = supportFragmentManager.findFragmentByTag("location")
-        val tag5: Fragment? = supportFragmentManager.findFragmentByTag("map")
+        val tag1: Fragment? = supportFragmentManager.findFragmentByTag("tag")
+        val tag2: Fragment? = supportFragmentManager.findFragmentByTag("cal")
+        val tag3: Fragment? = supportFragmentManager.findFragmentByTag("location")
+        val tag4: Fragment? = supportFragmentManager.findFragmentByTag("name")
 
-        if(tag1 != null && tag1.isVisible) navigation.menu.findItem(R.id.menu_name).isChecked = true
-        if(tag2 != null && tag2.isVisible) navigation.menu.findItem(R.id.menu_tag).isChecked = true
-        if(tag3 != null && tag3.isVisible) navigation.menu.findItem(R.id.menu_cal).isChecked = true
-        if(tag4 != null && tag4.isVisible) navigation.menu.findItem(R.id.menu_location).isChecked = true
-        if(tag5 != null && tag5.isVisible) navigation.menu.findItem(R.id.menu_map).isChecked = true
+        if(tag1 != null && tag1.isVisible) navigation.menu.findItem(R.id.menu_tag).isChecked = true
+        if(tag2 != null && tag2.isVisible) navigation.menu.findItem(R.id.menu_cal).isChecked = true
+        if(tag3 != null && tag3.isVisible) navigation.menu.findItem(R.id.menu_location).isChecked = true
+        if(tag4 != null && tag4.isVisible) navigation.menu.findItem(R.id.menu_name).isChecked = true
     }
 
     fun init(): Boolean{
         val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
-        val fragmentA = NameFragment()
-        transaction.replace(R.id.frame_layout,fragmentA, "name")
+        val fragmentA = TagFragment()
+        transaction.replace(R.id.frame_layout, fragmentA, "tag")
         transaction.commit()
         return true
     }

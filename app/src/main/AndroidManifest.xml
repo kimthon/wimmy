@@ -37,6 +37,8 @@
         <activity android:name=".PhotoViewPager"
             android:theme="@style/PhotoTheme">
         </activity>
+        <activity android:name=".SearchView">
+        </activity>
 
     </application>
 

@@ -94,7 +94,7 @@ open class DateFragment() : Fragment() {
         // 다이얼로그
         month_text.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
-                val pd: YearMonthPickerDialog<View> = YearMonthPickerDialog(view)
+                val pd: YearMonthPickerDialog<View> = YearMonthPickerDialog(view, "calendar")
                 //pd.setListener()
                 pd.show(childFragmentManager, "YearMonthPickerTest")
             }
