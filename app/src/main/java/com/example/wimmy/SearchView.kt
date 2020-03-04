@@ -50,14 +50,13 @@ class SearchView: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.search_view)
-        val view: View = findViewById(R.id.search_recyclerView)
 
         searchview.queryHint = "WIMMY 검색"
         searchview.onActionViewExpanded()
         searchview.isIconified = false
 
-        dateQuery(searchview)
-        searchResult(searchview)
+        dateQuery()
+        searchResult()
 
     }
 
@@ -101,17 +100,17 @@ class SearchView: AppCompatActivity() {
             }
         }
     }
-    fun dateQuery(view: View){
+    fun dateQuery(){
 
         searchview_spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
 
             override fun onItemSelected(parent: AdapterView<*>?, v: View?, position: Int, id: Long) {
-                if(position == 3) {
-                    dialogCreate(view)
-                }
-
+                if(position == 3)
+                    dialogCreate(searchview)
+                else
+                    searchview.isIconified = false
             }
         }
 
@@ -125,7 +124,7 @@ class SearchView: AppCompatActivity() {
             }*/
     }
 
-    fun searchResult(view: View){
+    fun searchResult(){
         searchview.setOnQueryTextListener (object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
                 thumbnailList = emptyList()
