@@ -1,8 +1,8 @@
 package com.example.wimmy.db
 
 import android.app.Application
+import android.widget.TextView
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import java.util.*
 
 class PhotoViewModel(application: Application) : AndroidViewModel(application) {
@@ -15,8 +15,8 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
 
     //기본 검색 썸네일
 
-    fun getDateInfo(idList : List<Long>) : String? {
-        return repo.getDateInfo(idList)
+    fun setCalendarTag(textView: TextView, inputCalendar: Calendar) {
+        repo.setCalendarTag(textView, inputCalendar)
     }
     fun getTagDir() : List<thumbnailData> {
         return repo.getTagDir()

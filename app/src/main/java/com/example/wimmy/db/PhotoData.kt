@@ -59,11 +59,7 @@ class PhotoData(@PrimaryKey var photo_id: Long,
 
 
 @Entity(tableName = "tag_data",
-    primaryKeys = ["photo_id", "tag"],
-    foreignKeys = [ForeignKey(entity = PhotoData::class,
-        parentColumns = arrayOf("photo_id"),
-        childColumns = arrayOf("photo_id")
-    )]
+    primaryKeys = ["photo_id", "tag"]
 )
 class TagData(
     var photo_id: Long,
@@ -109,7 +105,7 @@ class Converters {
 
     @TypeConverter
     fun dateToTimestamp(date: Date?): Long? {
-        return date?.time?.toLong()
+        return date?.time
     }
 }
 

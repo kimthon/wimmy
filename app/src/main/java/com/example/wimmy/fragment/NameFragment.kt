@@ -1,6 +1,5 @@
 package com.example.wimmy
 
-import android.animation.LayoutTransition
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -10,9 +9,6 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.transition.TransitionInflater
-import androidx.transition.TransitionSet
-import androidx.transition.TransitionValues
 import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.example.wimmy.db.MediaStore_Dao
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -52,7 +48,8 @@ class NameFragment : Fragment() {
         recyclerView?.adapter = recyclerAdapter
 
         val lm = GridLayoutManager(MainActivity(), 3)
-        recyclerView?.layoutManager = lm
+        recyclerView!!.layoutManager = lm
+        recyclerView.smoothScrollToPosition(-10)
     }
 
     private fun setPhotoSize(view : View, row : Int, padding : Int) {

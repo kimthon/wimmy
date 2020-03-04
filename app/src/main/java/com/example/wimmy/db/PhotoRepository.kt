@@ -1,9 +1,9 @@
 package com.example.wimmy.db
 
 import android.app.Application
-import android.media.ThumbnailUtils
+import android.content.Context
 import android.os.AsyncTask
-import androidx.lifecycle.LiveData
+import android.widget.TextView
 import java.util.*
 
 class PhotoRepository(application: Application) {
@@ -17,9 +17,18 @@ class PhotoRepository(application: Application) {
          }
       }
 
-      private class getDateTagAsyncTask constructor(private val asyncTask: PhotoData_Dao) : AsyncTask<List<Long>, Void, String>() {
-         override fun doInBackground(vararg params: List<Long>?): String? {
-            return asyncTask.getDateInfo(params[0]!!)
+      private class setCalendarTagAsyncTask(asyncTask: PhotoData_Dao, textView: TextView, inputCalendar: Calendar) : AsyncTask<Context, Void, String>() {
+         private val asyncTask = asyncTask
+         private val textView = textView
+         private val inputCalendar = inputCalendar
+
+         override fun doInBackground(vararg params: Context?): String? {
+            val list = MediaStore_Dao.getDateIdInfo(params[0]!!, inputCalendar)
+            return asyncTask.getDateInfo(list)
+         }
+
+         override fun onPostExecute(result: String?) {
+            textView.text = result
          }
       }
 
@@ -50,13 +59,12 @@ class PhotoRepository(application: Application) {
       insertTagAsyncTask(photoDao).execute(tag)
    }
 
-   fun getDateInfo(idList : List<Long>) : String? {
-       return getDateTagAsyncTask(photoDao).execute(idList).get()
+   fun setCalendarTag(textView: TextView, inputCalendar: Calendar) {
+       setCalendarTagAsyncTask(photoDao, textView, inputCalendar).execute(textView.context)
    }
    fun getTagDir() : List<thumbnailData> {
       return getTagDirAsyncTask(photoDao).execute().get()
    }
-
 
    fun getTagDirIdList(tag : String) : List<Long> {
       return getTagDirIdListAsyncTask(photoDao).execute(tag).get()

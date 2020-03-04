@@ -1,21 +1,16 @@
 package com.example.wimmy
 
 import android.app.Activity
-import android.app.ActivityOptions
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.app.ActivityOptionsCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -25,8 +20,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import java.io.File
-import java.lang.Thread.sleep
-import java.util.*
 
 
 class Main_PhotoView: AppCompatActivity() {
@@ -83,7 +76,7 @@ class Main_PhotoView: AppCompatActivity() {
 
         val lm = GridLayoutManager(MainActivity(), 3)
         recyclerView?.layoutManager = lm
-
+        recyclerView?.smoothScrollToPosition(-10)
     }
 
     private fun setPhotoSize(row : Int, padding : Int) {
@@ -116,7 +109,7 @@ class Main_PhotoView: AppCompatActivity() {
     }
 
     fun getExtra(view: View){
-        var getname: String?
+        val getname: String?
         val title_type: ImageView = findViewById(R.id.title_type)
         val title: TextView = findViewById(R.id.title_name)
         if (intent.hasExtra("dir_name")) {
@@ -157,3 +150,4 @@ class Main_PhotoView: AppCompatActivity() {
         }
     }
 }
+

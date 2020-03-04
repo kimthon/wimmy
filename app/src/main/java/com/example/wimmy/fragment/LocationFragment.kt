@@ -3,17 +3,10 @@ package com.example.wimmy
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
 import android.os.SystemClock
-import android.util.DisplayMetrics
-import android.util.Log
 import android.view.*
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
@@ -31,7 +24,7 @@ class LocationFragment : Fragment() {
 
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?,
                                savedInstanceState: Bundle? ): View? {
-        var view : View = inflater.inflate(R.layout.fragment_location, container, false)
+        val view : View = inflater.inflate(R.layout.fragment_location, container, false)
         thumbnailList = MediaStore_Dao.getLocationDir(view.context)
         setView(view)
         setPhotoSize(view,3, 3)
@@ -46,7 +39,7 @@ class LocationFragment : Fragment() {
             RecyclerAdapterForder(activity, thumbnailList)
             {thumbnailData ->
                 if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
-                    val intent = Intent(activity, com.example.wimmy.Main_PhotoView::class.java)
+                    val intent = Intent(activity, Main_PhotoView::class.java)
                     intent.putExtra("location_name", thumbnailData.data)
                     startActivity(intent)
                 }
@@ -56,6 +49,7 @@ class LocationFragment : Fragment() {
 
         val lm = GridLayoutManager(MainActivity(), 3)
         recyclerView?.layoutManager = lm
+        recyclerView.smoothScrollToPosition(-10)
     }
 
     private fun setPhotoSize(view : View, row : Int, padding : Int) {
