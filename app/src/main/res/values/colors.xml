@@ -7,5 +7,6 @@
     <color name="colorLoading">#f8b5df</color>
     <color name="Select">#EE88C9</color>
     <color name="Selected">#EE6EBE</color>
+    <color name="bar">#F3F3F3</color>
 
 </resources>

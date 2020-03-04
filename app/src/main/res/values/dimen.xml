@@ -6,8 +6,8 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
-    <dimen name="top_size">48dp</dimen>
-    <dimen name="bottom_size">48dp</dimen>
+    <dimen name="top_size">45dp</dimen>
+    <dimen name="bottom_size">50dp</dimen>
     <dimen name="top_photoview">35dp</dimen>
     <dimen name="top_info">90dp</dimen>
 
