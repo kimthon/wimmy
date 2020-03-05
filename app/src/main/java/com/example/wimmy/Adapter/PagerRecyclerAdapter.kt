@@ -2,7 +2,6 @@ package com.example.wimmy.Adapter
 
 import android.content.Context
 import android.graphics.BitmapFactory
-import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,7 +13,7 @@ import com.example.wimmy.R
 import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoData
 
-public class PagerRecyclerAdapter(private val context: Context, var list: ArrayList<PhotoData>, var tb: View, var bt: View) : PagerAdapter() {
+class PagerRecyclerAdapter(private val context: Context, var list: ArrayList<PhotoData>, var tb: View, var bt: View) : PagerAdapter() {
     private var layoutInflater: LayoutInflater? = null
     private var check: Boolean = false
 

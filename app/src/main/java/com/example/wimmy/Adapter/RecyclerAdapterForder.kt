@@ -9,12 +9,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
-import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.R
-import com.example.wimmy.db.PhotoViewModel
-import com.example.wimmy.db.TagData
+import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.thumbnailData
 import java.io.File
 

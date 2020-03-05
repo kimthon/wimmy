@@ -2,40 +2,23 @@ package com.example.wimmy
 
 import YearMonthPickerDialog
 import android.app.Activity
-import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.DisplayMetrics
-import android.util.Log
-import android.view.MenuItem
-import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import androidx.core.app.ActivityOptionsCompat
-import androidx.core.view.get
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
-import com.example.wimmy.Adapter.RecyclerAdapterPhoto
-import com.example.wimmy.db.*
-import kotlinx.android.synthetic.main.fragment_cal.*
-import kotlinx.android.synthetic.main.main_activity.*
+import com.example.wimmy.db.MediaStore_Dao
+import com.example.wimmy.db.thumbnailData
 import kotlinx.android.synthetic.main.search_view.*
-import kotlinx.android.synthetic.main.thumbnail_forderview.*
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.ArrayList
-import java.io.File
-import java.lang.Thread.sleep
-import java.util.*
 
 
 class SearchView: AppCompatActivity() {
@@ -154,8 +137,8 @@ class SearchView: AppCompatActivity() {
                 }
                 setView()
                 setPhotoSize(3, 3)
-                val imm: InputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager;
-                imm.hideSoftInputFromWindow(searchview.getWindowToken(), 0)
+                val imm: InputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(searchview.windowToken, 0)
                 return true
             }
 

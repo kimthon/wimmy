@@ -2,16 +2,12 @@ package com.example.wimmy
 
 import SwipeGesture
 import YearMonthPickerDialog
-import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.*
 import android.widget.GridView
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
@@ -19,7 +15,6 @@ import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.example.wimmy.Adapter.DateAdapter
-import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.fragment_cal.*
@@ -31,7 +26,7 @@ import kotlin.collections.ArrayList
  * A simple [Fragment] subclass.
  */
 
-open class DateFragment() : Fragment() {
+open class DateFragment : Fragment() {
     private lateinit var header : LinearLayout
     private lateinit var gridView : GridView
     private lateinit var vm : PhotoViewModel

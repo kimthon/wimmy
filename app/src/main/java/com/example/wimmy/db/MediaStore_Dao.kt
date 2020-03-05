@@ -5,8 +5,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.location.Geocoder
-import android.media.ExifInterface
-import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log

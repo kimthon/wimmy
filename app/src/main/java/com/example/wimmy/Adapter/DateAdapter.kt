@@ -1,31 +1,18 @@
 package com.example.wimmy.Adapter
 
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
-import android.os.AsyncTask
-import android.os.SystemClock
-import android.util.Log
-import android.util.Log.d
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
-import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProviders
-import com.example.wimmy.DateFragment
-import com.example.wimmy.Main_PhotoView
 import com.example.wimmy.R
-import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoViewModel
-import java.text.SimpleDateFormat
-import com.example.wimmy.db.thumbnailData
 import java.util.*
-import kotlin.collections.ArrayList
+
 class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : ArrayList<Date>, inputMonth : Int , val itemClick: (Date) -> Unit) :
         ArrayAdapter<Date>(context,
             R.layout.fragment_cal, days) {

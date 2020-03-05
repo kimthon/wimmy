@@ -1,11 +1,8 @@
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.Dialog
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.NumberPicker
 import androidx.annotation.RequiresApi
@@ -13,15 +10,13 @@ import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.DialogFragment
 import com.example.wimmy.DateFragment
 import com.example.wimmy.R
-
-import kotlinx.android.synthetic.main.search_view.*
 import kotlinx.android.synthetic.main.search_view.view.*
 import java.util.*
 
 class YearMonthPickerDialog<Button : View?>(v: View, tag: String): DialogFragment() {
     private var listener: DatePickerDialog.OnDateSetListener? = null
-    private final val MAX_YEAR = 2099
-    private final val MIN_YEAR = 1980
+    private val MAX_YEAR = 2099
+    private val MIN_YEAR = 1980
     val v = v
     val tagname: String = tag
     var cal = Calendar.getInstance()

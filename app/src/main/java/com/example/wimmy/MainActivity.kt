@@ -25,11 +25,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
-import com.example.wimmy.fragment.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.io.File
 import java.io.IOException
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -50,13 +48,13 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         SetHeader()
         init()
 
-        val go_search = findViewById(R.id.main_search_button) as ImageView
+        val go_search = findViewById<ImageView>(R.id.main_search_button)
         go_search.setOnClickListener {
             val intent = Intent(this, SearchView::class.java)
             startActivity(intent)
         }
 
-        val go_camera = findViewById(R.id.main_camera_button) as ImageView
+        val go_camera = findViewById<ImageView>(R.id.main_camera_button)
         go_camera.setOnClickListener {
             captureCamera()
         }
@@ -192,17 +190,17 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             REQUEST_TAKE_PHOTO -> {
-                Log.i("REQUEST_TAKE_PHOTO", "${Activity.RESULT_OK}" + " " + "${resultCode}");
+                Log.i("REQUEST_TAKE_PHOTO", "${Activity.RESULT_OK}" + " " + "${resultCode}")
                 if (resultCode == RESULT_OK) {
                     try {
 
-                        galleryAddPic();
+                        galleryAddPic()
                     } catch (e: Exception) {
-                        Log.e("REQUEST_TAKE_PHOTO", e.toString());
+                        Log.e("REQUEST_TAKE_PHOTO", e.toString())
                     }
 
                 } else {
-                    Toast.makeText(this@MainActivity, "사진찍기를 취소하였습니다.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this@MainActivity, "사진찍기를 취소하였습니다.", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -227,14 +225,14 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }
 
     private fun galleryAddPic() {
-        Log.i("galleryAddPic", "Call");
-        val mediaScanIntent: Intent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        Log.i("galleryAddPic", "Call")
+        val mediaScanIntent: Intent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
         // 해당 경로에 있는 파일을 객체화(새로 파일을 만든다는 것으로 이해하면 안 됨)
-        val f: File = File(mCurrentPhotoPath);
-        val contentUri: Uri = Uri.fromFile(f);
-        mediaScanIntent.setData(contentUri);
-        sendBroadcast(mediaScanIntent);
-        Toast.makeText(this, "사진이 앨범에 저장되었습니다.", Toast.LENGTH_SHORT).show();
+        val f: File = File(mCurrentPhotoPath)
+        val contentUri: Uri = Uri.fromFile(f)
+        mediaScanIntent.data = contentUri
+        sendBroadcast(mediaScanIntent)
+        Toast.makeText(this, "사진이 앨범에 저장되었습니다.", Toast.LENGTH_SHORT).show()
     }
 
 
@@ -256,7 +254,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                     .setNeutralButton("설정", object: DialogInterface.OnClickListener {
                         override fun onClick(dialogInterface:DialogInterface, i:Int) {
                             val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                            intent.setData(Uri.parse("package:" + getPackageName()))
+                            intent.data = Uri.parse("package:" + packageName)
                             startActivity(intent)
                         }
                     })
