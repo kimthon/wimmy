@@ -2,6 +2,7 @@ package com.example.wimmy.Adapter
 
 import android.content.Context
 import android.graphics.BitmapFactory
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import android.widget.ImageView
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.example.wimmy.R
+import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoData
 
 public class PagerRecyclerAdapter(private val context: Context, var list: ArrayList<PhotoData>, var tb: View, var bt: View) : PagerAdapter() {
@@ -31,7 +33,9 @@ public class PagerRecyclerAdapter(private val context: Context, var list: ArrayL
         val image = v.findViewById<View>(R.id.imgView) as ImageView
         val vp = container as ViewPager
         vp.addView(v, 0)
-        val bitmap = BitmapFactory.decodeFile(list[position].file_path +'/'+ list[position].name)
+        var bitmap = BitmapFactory.decodeFile(list[position].file_path +'/'+ list[position].name)
+        bitmap = MediaStore_Dao.modifyOrientaionById(v.context, list[position].photo_id, bitmap)
+
         Log.d("사진: ", list[position].file_path +'/'+ list[position].name)
         image.setImageBitmap(bitmap)
         image.setOnClickListener(object : View.OnClickListener {

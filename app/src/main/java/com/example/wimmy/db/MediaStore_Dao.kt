@@ -250,7 +250,7 @@ object MediaStore_Dao {
         return photoList
     }
 
-    fun LoadThumbnail(context: Context, id : Long) : Bitmap{
+    fun LoadThumbnailById(context: Context, id : Long) : Bitmap{
         var bitmap : Bitmap = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
             context.contentResolver.loadThumbnail( uri, Size(100, 100), null)
@@ -258,10 +258,10 @@ object MediaStore_Dao {
         else {
             MediaStore.Images.Thumbnails.getThumbnail( context.contentResolver, id, MediaStore.Images.Thumbnails.MINI_KIND, null)
         }
-        return modifyOrientaion(context, id, bitmap)
+        return modifyOrientaionById(context, id, bitmap)
     }
 
-    private fun modifyOrientaion(context: Context, id: Long, bitmap: Bitmap) : Bitmap {
+    fun modifyOrientaionById(context: Context, id: Long, bitmap: Bitmap) : Bitmap {
         val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         val projection = arrayOf(
             MediaStore.Images.ImageColumns.ORIENTATION

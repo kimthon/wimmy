@@ -28,7 +28,7 @@ class RecyclerAdapterPhoto(val context: FragmentActivity?, var list: ArrayList<P
 
         override fun doInBackground(vararg params: Context?): Bitmap? {
             return if(holder.adapterPosition == holderPosition) {
-                MediaStore_Dao.LoadThumbnail(params[0]!!, id)
+                MediaStore_Dao.LoadThumbnailById(params[0]!!, id)
             } else null
         }
 
