@@ -3,7 +3,10 @@ package com.example.wimmy.db
 import android.content.ContentUris
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Matrix
 import android.location.Geocoder
+import android.media.ExifInterface
+import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
@@ -248,20 +251,33 @@ object MediaStore_Dao {
     }
 
     fun LoadThumbnail(context: Context, id : Long) : Bitmap{
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        var bitmap : Bitmap = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
-            return context.contentResolver.loadThumbnail(
-                uri,
-                Size(100, 100),
-                null)
+            context.contentResolver.loadThumbnail( uri, Size(100, 100), null)
         }
         else {
-            return MediaStore.Images.Thumbnails.getThumbnail(
-                context.contentResolver,
-                id,
-                MediaStore.Images.Thumbnails.MINI_KIND,
-                null)
+            MediaStore.Images.Thumbnails.getThumbnail( context.contentResolver, id, MediaStore.Images.Thumbnails.MINI_KIND, null)
         }
+        return modifyOrientaion(context, id, bitmap)
+    }
+
+    private fun modifyOrientaion(context: Context, id: Long, bitmap: Bitmap) : Bitmap {
+        val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        val projection = arrayOf(
+            MediaStore.Images.ImageColumns.ORIENTATION
+        )
+        val selection = MediaStore.Images.ImageColumns._ID + "=" + id
+        val cursor = context.contentResolver.query(uri, projection, selection, null, null)
+        cursor!!.moveToFirst()
+
+        val orientation = cursor.getFloat(cursor.getColumnIndex(MediaStore.Images.ImageColumns.ORIENTATION))
+        return rotateBitmap(bitmap, orientation)
+    }
+
+    private fun rotateBitmap(bitmap: Bitmap, degrees : Float) : Bitmap{
+        val matrix = Matrix()
+        matrix.postRotate(degrees)
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
 
     private fun getDateStart(cal : Calendar) : Long{
