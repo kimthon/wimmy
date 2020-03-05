@@ -12,21 +12,6 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val REQUEST_STORAGE_ACCESS = 1000
-            val permission = ContextCompat.checkSelfPermission(
-                this.applicationContext,
-                android.Manifest.permission.READ_EXTERNAL_STORAGE
-            )
-
-            if (permission != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
-                    REQUEST_STORAGE_ACCESS
-                )
-            }
-        }
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
