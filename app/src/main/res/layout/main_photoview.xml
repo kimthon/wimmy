@@ -48,4 +48,28 @@
 
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
+
+
+
+    <ImageView
+        android:id="@+id/up_button"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="start|bottom"
+        android:src="@drawable/ic_up"
+        android:layout_margin="10dp"
+        android:alpha="0.3" />
+
+    <ImageView
+        android:id="@+id/down_button"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="end|bottom"
+        android:src="@drawable/ic_down"
+        android:layout_margin="10dp"
+        android:alpha="0.3"/>
+
+
+
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
