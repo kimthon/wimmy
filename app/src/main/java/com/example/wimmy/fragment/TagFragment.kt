@@ -15,21 +15,27 @@ import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.db.thumbnailData
+import com.google.android.material.appbar.AppBarLayout
+import kotlinx.android.synthetic.main.main_activity.view.*
 
 /**
  * A simple [Fragment] subclass.
  */
-class TagFragment : Fragment() {
+class TagFragment(v: AppBarLayout) : Fragment() {
     private var recyclerAdapter : RecyclerAdapterForder?= null
     var bottomNavigationView: BottomNavigationView? = null
     private var thumbnailList = listOf<thumbnailData>()
     private var mLastClickTime: Long = 0
+    val ab = v
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
 
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?,
                                savedInstanceState: Bundle? ): View? {
+        ab.main_toolbar.visibility = View.VISIBLE
+        ab.setExpanded(true,true)
+
         val view : View = inflater.inflate(R.layout.fragment_tag, container, false)
         val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
         thumbnailList = vm.getTagDir()
@@ -56,7 +62,6 @@ class TagFragment : Fragment() {
 
         val lm = GridLayoutManager(MainActivity(), 3)
         recyclerView?.layoutManager = lm
-        recyclerView.smoothScrollToPosition(-10)
     }
 
     private fun setPhotoSize(view : View, row : Int, padding : Int) {

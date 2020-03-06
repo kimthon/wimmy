@@ -58,7 +58,7 @@ class RecyclerAdapterForder(val context: FragmentActivity?, var list: List<thumb
             thumbnail.layoutParams.height = size
             layoutParam.setMargins(padding_size, padding_size, padding_size, padding_size)
 
-            thumbnail.setImageResource(R.drawable.loding_image)
+            thumbnail.setImageResource(0)
             setThumbnailAsyncTask(this, thumbnail,data.photo_id).execute(context!!.applicationContext)
             text.text = File(data.data).name
 

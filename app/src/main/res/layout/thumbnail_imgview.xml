@@ -15,9 +15,7 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/loding_image"
-
-        android:transitionName="pair_thumb" />
+        android:background="@color/bar" />
 
     <TextView
         android:id="@+id/thumbnail_img_text"

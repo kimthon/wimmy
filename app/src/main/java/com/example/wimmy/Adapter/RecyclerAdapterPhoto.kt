@@ -1,5 +1,6 @@
 package com.example.wimmy.Adapter
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.AsyncTask
@@ -14,7 +15,7 @@ import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.R
 import com.example.wimmy.db.PhotoData
 
-class RecyclerAdapterPhoto(val context: FragmentActivity?, var list: ArrayList<PhotoData>, val itemClick: (PhotoData, Int, ImageView) -> Unit) :
+class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<PhotoData>, val itemClick: (PhotoData, Int, ImageView) -> Unit) :
     RecyclerView.Adapter<RecyclerAdapterPhoto.Holder>()
 {
     private var size : Int = 200
@@ -55,7 +56,7 @@ class RecyclerAdapterPhoto(val context: FragmentActivity?, var list: ArrayList<P
             layoutParam.setMargins(padding_size, padding_size, padding_size, padding_size)
 
             text!!.text = data.name
-            thumbnail.setImageResource(R.drawable.loding_image)
+            thumbnail.setImageResource(0)
             setThumbnailAsyncTask(this, thumbnail,data.photo_id).execute(context!!.applicationContext)
 
             itemView.setOnClickListener { itemClick(data, num, thumbnail) }

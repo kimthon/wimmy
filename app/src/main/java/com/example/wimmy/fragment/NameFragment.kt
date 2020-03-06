@@ -1,11 +1,15 @@
 package com.example.wimmy
 
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
+import android.text.Layout
+import android.util.Log
 import android.view.*
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -13,23 +17,31 @@ import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.example.wimmy.db.MediaStore_Dao
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.example.wimmy.db.thumbnailData
+import com.google.android.material.appbar.AppBarLayout
+import kotlinx.android.synthetic.main.fragment_name.*
+import kotlinx.android.synthetic.main.main_activity.*
+import kotlinx.android.synthetic.main.main_activity.view.*
+import java.lang.Thread.sleep
 
 /**
  * A simple [Fragment] subclass.
  */
-class NameFragment : Fragment() {
+class NameFragment(v: AppBarLayout) : Fragment() {
+    private lateinit var recyclerView : RecyclerView
     private var recyclerAdapter : RecyclerAdapterForder?= null
     var bottomNavigationView: BottomNavigationView? = null
     private var thumbnailList = listOf<thumbnailData>()
     private var mLastClickTime: Long = 0
+    val ab = v
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle? ): View? {
+        ab.main_toolbar.visibility = View.VISIBLE
+        ab.setExpanded(true,true)
+
         val view : View = inflater.inflate(R.layout.fragment_name, container, false)
         thumbnailList = MediaStore_Dao.getNameDir(view.context)
 
         setView(view)
-        setPhotoSize(view,3, 3)
-
         return view
     }
 
@@ -45,15 +57,16 @@ class NameFragment : Fragment() {
                 }
                 mLastClickTime = SystemClock.elapsedRealtime()
             }
+        setPhotoSize(view,3, 3)
         recyclerView?.adapter = recyclerAdapter
 
         val lm = GridLayoutManager(MainActivity(), 3)
-        recyclerView!!.layoutManager = lm
-        recyclerView.smoothScrollToPosition(-10)
+        recyclerView!!.layoutManager = lm as RecyclerView.LayoutManager?
+
     }
 
     private fun setPhotoSize(view : View, row : Int, padding : Int) {
-        val recyclerView = view.findViewById<RecyclerView>(R.id.nameRecycleView)
+        recyclerView = view.findViewById<RecyclerView>(R.id.nameRecycleView)
         recyclerView.viewTreeObserver.addOnGlobalLayoutListener( object : ViewTreeObserver.OnGlobalLayoutListener {
             @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
             override fun onGlobalLayout() {
@@ -64,6 +77,8 @@ class NameFragment : Fragment() {
             }
         })
     }
+
+
 }
 /*
     inner class Scroll : RecyclerView.OnScrollListener() {

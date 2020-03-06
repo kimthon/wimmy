@@ -2,27 +2,34 @@ package com.example.wimmy
 
 import SwipeGesture
 import YearMonthPickerDialog
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.opengl.Visibility
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.*
-import android.widget.GridView
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatImageButton
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.example.wimmy.Adapter.DateAdapter
 import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoViewModel
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.fragment_cal.*
+import kotlinx.android.synthetic.main.fragment_cal.view.*
+import kotlinx.android.synthetic.main.fragment_name.view.*
+import kotlinx.android.synthetic.main.main_activity.*
+import kotlinx.android.synthetic.main.main_activity.view.*
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -31,19 +38,27 @@ import kotlin.collections.ArrayList
  * A simple [Fragment] subclass.
  */
 
-open class DateFragment() : Fragment() {
+open class DateFragment(v: AppBarLayout) : Fragment() {
     private lateinit var header : LinearLayout
     private lateinit var gridView : GridView
     private lateinit var vm : PhotoViewModel
     private var size : Pair<Int, Int>? = null
     private var count = 0
+    val ab = v
+
     companion object {
         var calDate: Calendar = Calendar.getInstance()
     }
 
-    override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?,
-                               savedInstanceState: Bundle? ): View? {
+    @SuppressLint("RestrictedApi")
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle? ): View? {
+        ab.main_toolbar.visibility = View.GONE
+        ab.setExpanded(true,false)
+
         val view : View = inflater.inflate(R.layout.fragment_cal, container, false)
+
         val calendar_allheader: View = view.findViewById(R.id.calendar_allheader) as View
         // Inflate the layout for this fragment
         setView(view)
@@ -53,11 +68,13 @@ open class DateFragment() : Fragment() {
 
         updateCalendar(view, calDate.clone() as Calendar)
 
+
         // 상단 스와이프 제스처
         val gestureListener: SwipeGesture = SwipeGesture(calendar_allheader)
         val gesturedetector = GestureDetector(calendar_allheader.context, gestureListener)
         calendar_allheader.setOnTouchListener { v, event ->
             return@setOnTouchListener gesturedetector.onTouchEvent(event)
+
 
         }
         return view
@@ -181,6 +198,7 @@ open class DateFragment() : Fragment() {
         month_text.text = "$year 년 $month 월"
 
     }
+
 }
 
 
