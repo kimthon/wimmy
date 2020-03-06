@@ -32,7 +32,7 @@ class RecyclerAdapterPhoto(val context: FragmentActivity?, var list: ArrayList<P
 
             text!!.text = data.name
             thumbnail.setImageResource(R.drawable.loding_image)
-            ThumbnailAsyncTask(this, thumbnail,data.photo_id, size).execute(context!!.applicationContext)
+            ThumbnailAsyncTask(this, thumbnail,data.photo_id).execute(context!!.applicationContext)
 
             itemView.setOnClickListener { itemClick(data, num, thumbnail) }
         }

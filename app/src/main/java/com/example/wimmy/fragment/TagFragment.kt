@@ -35,11 +35,8 @@ class TagFragment : Fragment() {
         val view : View = inflater.inflate(R.layout.fragment_tag, container, false)
         val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
         thumbnailList = vm.getTagDir()
-
         setView(view)
-        setPhotoSize(view,3, 3)
-        observer =
-            DataBaseObserver(Handler(), recyclerAdapter!!)
+        observer = DataBaseObserver(Handler(), recyclerAdapter!!)
 
         return view
     }
@@ -77,6 +74,7 @@ class TagFragment : Fragment() {
     }
     override fun onResume() {
         super.onResume()
+        setPhotoSize(this.view!!,3, 3)
         this.context!!.contentResolver.registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, false, observer)
     }
 

@@ -31,8 +31,7 @@ class NameFragment : Fragment() {
         val view : View = inflater.inflate(R.layout.fragment_name, container, false)
         thumbnailList = MediaStore_Dao.getNameDir(view.context)
         setView(view)
-        observer =
-            DataBaseObserver(Handler(), recyclerAdapter!!)
+        observer = DataBaseObserver(Handler(), recyclerAdapter!!)
         setPhotoSize(view,3, 3)
 
         return view
@@ -72,6 +71,7 @@ class NameFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        setPhotoSize(this.view!!,3, 3)
         this.context!!.contentResolver.registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, false, observer)
     }
 

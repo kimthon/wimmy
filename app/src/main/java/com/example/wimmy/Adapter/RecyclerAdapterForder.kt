@@ -30,7 +30,7 @@ class RecyclerAdapterForder(val context: FragmentActivity?, var list: List<thumb
             layoutParam.setMargins(padding_size, padding_size, padding_size, padding_size)
 
             thumbnail.setImageResource(R.drawable.loding_image)
-            ThumbnailAsyncTask(this, thumbnail,data.photo_id, size).execute(context!!.applicationContext)
+            ThumbnailAsyncTask(this, thumbnail,data.photo_id).execute(context!!.applicationContext)
             text.text = File(data.data).name
 
             itemView.setOnClickListener { itemClick(data) }

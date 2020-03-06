@@ -32,11 +32,7 @@ class LocationFragment : Fragment() {
         val view : View = inflater.inflate(R.layout.fragment_location, container, false)
         thumbnailList = MediaStore_Dao.getLocationDir(view.context)
         setView(view)
-        observer =
-            DataBaseObserver(Handler(), recyclerAdapter!!)
-
-        setPhotoSize(view,3, 3)
-        // Inflate the layout for this fragment
+        observer = DataBaseObserver(Handler(), recyclerAdapter!!)
 
         return view
     }
@@ -75,6 +71,7 @@ class LocationFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        setPhotoSize(this.view!!,3, 3)
         this.context!!.contentResolver.registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, false, observer)
     }
 
