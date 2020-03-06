@@ -3,23 +3,28 @@ package com.example.wimmy
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.os.SystemClock
-import android.view.*
+import android.provider.MediaStore
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
-import com.example.wimmy.db.*
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.example.wimmy.db.MediaStore_Dao
+import com.example.wimmy.db.thumbnailData
 
 /**
  * A simple [Fragment] subclass.
  */
 class LocationFragment : Fragment() {
     private var recyclerAdapter : RecyclerAdapterForder?= null
-    var bottomNavigationView: BottomNavigationView? = null
     private var thumbnailList = listOf<thumbnailData>()
+    private lateinit var observer : DataBaseObserver
     private var mLastClickTime: Long = 0
 
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?,
@@ -27,6 +32,9 @@ class LocationFragment : Fragment() {
         val view : View = inflater.inflate(R.layout.fragment_location, container, false)
         thumbnailList = MediaStore_Dao.getLocationDir(view.context)
         setView(view)
+        observer =
+            DataBaseObserver(Handler(), recyclerAdapter!!)
+
         setPhotoSize(view,3, 3)
         // Inflate the layout for this fragment
 
@@ -63,6 +71,16 @@ class LocationFragment : Fragment() {
                 recyclerView.viewTreeObserver.removeOnGlobalLayoutListener(this)
             }
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        this.context!!.contentResolver.registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, false, observer)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        this.context!!.contentResolver.unregisterContentObserver(observer)
     }
 }
 /*

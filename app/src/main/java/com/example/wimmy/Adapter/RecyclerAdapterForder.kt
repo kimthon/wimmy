@@ -23,9 +23,7 @@ class RecyclerAdapterForder(val context: FragmentActivity?, var list: List<thumb
         var thumbnail = itemView.findViewById<ImageView>(R.id.thumbnail)
         var text = itemView.findViewById<TextView>(R.id.thumbnail_text)
 
-
         fun bind(data : thumbnailData) {
-            //photo_view의 내부 값 설정
             val layoutParam = thumbnail.layoutParams as ViewGroup.MarginLayoutParams
             thumbnail.layoutParams.width = size
             thumbnail.layoutParams.height = size
@@ -41,8 +39,6 @@ class RecyclerAdapterForder(val context: FragmentActivity?, var list: List<thumb
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val view = LayoutInflater.from(context).inflate(R.layout.thumbnail_forderview, parent, false)
-
-
         return Holder(view)
     }
 
