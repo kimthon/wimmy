@@ -20,7 +20,6 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
     private val inflater : LayoutInflater = LayoutInflater.from(context)
     private var inputMonth : Int = inputMonth
     private var size : Pair<Int, Int>? = size
-    private var requestFlag = false
     private var mLastClickTime: Long = 0
 
 
@@ -49,7 +48,7 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
         if(size != null) {
             view.layoutParams.width = size!!.first
             view.layoutParams.height = size!!.second
-            if(requestFlag) view.requestLayout()
+            view.requestLayout()
         }
 
         setExtraDay(textView, year, month, week, day)
@@ -63,10 +62,7 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
 
     fun setDateSize(size : Pair<Int, Int>) {
         this.size = size
-        //사이즈 새로 고침이 필요
-        requestFlag = true
         notifyDataSetChanged()
-        requestFlag = false
     }
 
     fun Update(cells : ArrayList<Date>, month : Int) {
