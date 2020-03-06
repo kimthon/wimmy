@@ -17,6 +17,12 @@ class PhotoRepository(application: Application) {
          }
       }
 
+      private class deleteTagByIdAsyncTask constructor(private val asyncTask: PhotoData_Dao) : AsyncTask<Long, Void, Void>() {
+         override fun doInBackground(vararg params: Long?): Void? {
+            asyncTask.deleteTagById(params[0]!!)
+            return null
+         }
+      }
       private class setCalendarTagAsyncTask(asyncTask: PhotoData_Dao, textView: TextView, inputCalendar: Calendar) : AsyncTask<Context, Void, String>() {
          private val asyncTask = asyncTask
          private val textView = textView
@@ -59,6 +65,10 @@ class PhotoRepository(application: Application) {
       insertTagAsyncTask(photoDao).execute(tag)
    }
 
+   fun deleteById(id: Long) {
+      deleteTagByIdAsyncTask(photoDao).execute(id)
+   }
+
    fun setCalendarTag(textView: TextView, inputCalendar: Calendar) {
        setCalendarTagAsyncTask(photoDao, textView, inputCalendar).execute(textView.context)
    }
@@ -71,6 +81,8 @@ class PhotoRepository(application: Application) {
    }
 
    fun getTag(id : Long) : List<String> {
-      return getTagByIdAsyncTask(photoDao).execute(id).get()
+      val tags = getTagByIdAsyncTask(photoDao).execute(id).get()
+      if(tags.isEmpty()) deleteById(id)
+      return tags
    }
 }
