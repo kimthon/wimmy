@@ -74,8 +74,6 @@ open class DateFragment(v: AppBarLayout) : Fragment() {
         val gesturedetector = GestureDetector(calendar_allheader.context, gestureListener)
         calendar_allheader.setOnTouchListener { v, event ->
             return@setOnTouchListener gesturedetector.onTouchEvent(event)
-
-
         }
         return view
     }

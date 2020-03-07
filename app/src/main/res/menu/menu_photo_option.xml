@@ -1,27 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/menu_bottom">
+    android:id="@+id/menu_photo_option">
+
 
     <item
-        android:id="@+id/menu_tag"
+        android:id="@+id/menu_tag_insert"
         android:icon="@drawable/ic_tag"
-        android:title="옵션1" />
+        android:title="특징삽입" />
 
     <item
-        android:id="@+id/menu_cal"
-        android:icon="@drawable/ic_cal"
-        android:title="옵션2" />
+        android:id="@+id/menu_share"
+        android:icon="@drawable/ic_share"
+        android:title="공유" />
 
     <item
-        android:id="@+id/menu_location"
-        android:icon="@drawable/ic_location"
-        android:title="옵션3" />
-
-    <item
-        android:id="@+id/menu_map"
-        android:icon="@drawable/ic_map"
-        android:title="옵션4" />
+        android:id="@+id/menu_delete"
+        android:icon="@drawable/ic_delete"
+        android:title="삭제" />
 
 
 </menu>

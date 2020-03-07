@@ -58,7 +58,7 @@
         android:layout_gravity="start|bottom"
         android:src="@drawable/ic_up"
         android:layout_margin="10dp"
-        android:alpha="0.3" />
+        android:alpha="0.25" />
 
     <ImageView
         android:id="@+id/down_button"
@@ -67,7 +67,7 @@
         android:layout_gravity="end|bottom"
         android:src="@drawable/ic_down"
         android:layout_margin="10dp"
-        android:alpha="0.3"/>
+        android:alpha="0.25" />
 
 
 

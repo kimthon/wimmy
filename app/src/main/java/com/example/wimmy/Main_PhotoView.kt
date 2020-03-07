@@ -6,21 +6,30 @@ import android.os.Bundle
 import android.os.SystemClock
 import android.util.DisplayMetrics
 import android.view.View
+import android.widget.AbsListView
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat.startActivityForResult
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import com.example.wimmy.db.*
 import kotlinx.android.synthetic.main.main_photoview.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import java.io.File
+import java.lang.Thread.sleep
 
 
 class Main_PhotoView: AppCompatActivity() {
@@ -45,7 +54,25 @@ class Main_PhotoView: AppCompatActivity() {
         setPhotoSize(3, 3)
         updown_Listener(recyclerView)
 
+        val onScrollListener = object:RecyclerView.OnScrollListener() {
+            var temp: Int = 0
+            override fun onScrolled(@NonNull recyclerView:RecyclerView, dx:Int, dy:Int) {
+                if(temp == 1) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    up_button.visibility = View.GONE
+                    down_button.visibility = View.GONE
+                }
+            }
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                up_button.visibility = View.VISIBLE
+                down_button.visibility = View.VISIBLE
+                temp = 1
+            }
         }
+        recyclerView?.setOnScrollListener(onScrollListener)
+
+    }
 
     private fun setView(view : View) {
         recyclerView = view.findViewById<RecyclerView>(R.id.photo_recyclerView)
@@ -61,17 +88,8 @@ class Main_PhotoView: AppCompatActivity() {
 
                 intent.putParcelableArrayListExtra("photo_list", PhotoList)
                 intent.putParcelableArrayListExtra("tag_list", TagList)
-                /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    val options = ActivityOptions.makeSceneTransitionAnimation(
-                        this,
-                        image, "pair_thumb"
-                    )
-                    startActivityForResult(intent, 100, options.toBundle())
 
-                } else {
-*/
-                    startActivityForResult(intent, 100)
-
+                startActivityForResult(intent, 100)
 
                 //}
             }
@@ -163,5 +181,6 @@ class Main_PhotoView: AppCompatActivity() {
             view?.smoothScrollToPosition(PhotoList.size)
         }
     }
+
 }
 
