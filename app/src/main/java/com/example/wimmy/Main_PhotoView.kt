@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import com.example.wimmy.db.*
+import kotlinx.android.synthetic.main.main_photoview.*
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -24,6 +25,7 @@ import java.io.File
 
 class Main_PhotoView: AppCompatActivity() {
     //private var PhotoArrayList = ArrayList<PhotoData>()
+
     private var TagList = ArrayList<TagData>()
     private var PhotoList = arrayListOf<PhotoData>()
 
@@ -35,13 +37,15 @@ class Main_PhotoView: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_photoview)
         val view: View = findViewById(R.id.photo_recyclerView)
-        getExtra(view)
 
-        setView(view)
+
+        getExtra(view)
         SetHeader()
+        setView(view)
         setPhotoSize(3, 3)
-        // Inflate the layout for this fragment
-    }
+        updown_Listener(recyclerView)
+
+        }
 
     private fun setView(view : View) {
         recyclerView = view.findViewById<RecyclerView>(R.id.photo_recyclerView)
@@ -50,6 +54,7 @@ class Main_PhotoView: AppCompatActivity() {
                     PhotoData, num, image ->  if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
                 Toast.makeText(this, "인덱스: ${num} 이름: ${PhotoData.name}", Toast.LENGTH_SHORT)
                     .show()
+
                 val intent = Intent(this, PhotoViewPager::class.java)
                 intent.putExtra("photo_num", num)
                 intent.putExtra("thumbnail", PhotoData.photo_id)
@@ -74,9 +79,8 @@ class Main_PhotoView: AppCompatActivity() {
             }
         recyclerView?.adapter = recyclerAdapter
 
-        val lm = GridLayoutManager(MainActivity(), 3)
+        val lm = GridLayoutManager(Main_PhotoView(), 3)
         recyclerView?.layoutManager = lm
-        recyclerView?.smoothScrollToPosition(-10)
     }
 
     private fun setPhotoSize(row : Int, padding : Int) {
@@ -147,6 +151,16 @@ class Main_PhotoView: AppCompatActivity() {
 
             title_type.setImageResource(R.drawable.ic_tag)
             title.text = getname
+        }
+    }
+
+    fun updown_Listener(view: RecyclerView?) {
+        up_button.setOnClickListener {
+            view?.smoothScrollToPosition(0)
+        }
+
+        down_button.setOnClickListener {
+            view?.smoothScrollToPosition(PhotoList.size)
         }
     }
 }

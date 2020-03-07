@@ -15,20 +15,28 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
+import com.example.wimmy.db.*
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.android.synthetic.main.main_activity.view.*
 import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.thumbnailData
 
 /**
  * A simple [Fragment] subclass.
  */
-class LocationFragment : Fragment() {
+class LocationFragment(v: AppBarLayout) : Fragment() {
     private var recyclerAdapter : RecyclerAdapterForder?= null
     private var thumbnailList = listOf<thumbnailData>()
     private lateinit var observer : DataBaseObserver
     private var mLastClickTime: Long = 0
+    val ab = v
 
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?,
                                savedInstanceState: Bundle? ): View? {
+        ab.main_toolbar.visibility = View.VISIBLE
+        ab.setExpanded(true,true)
+
         val view : View = inflater.inflate(R.layout.fragment_location, container, false)
         thumbnailList = MediaStore_Dao.getLocationDir(view.context)
         setView(view)
@@ -53,7 +61,6 @@ class LocationFragment : Fragment() {
 
         val lm = GridLayoutManager(MainActivity(), 3)
         recyclerView?.layoutManager = lm
-        recyclerView.smoothScrollToPosition(-10)
     }
 
     private fun setPhotoSize(view : View, row : Int, padding : Int) {
