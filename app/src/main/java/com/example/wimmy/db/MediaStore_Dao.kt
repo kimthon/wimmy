@@ -177,7 +177,7 @@ object MediaStore_Dao {
         )
 
         val cursor = context.contentResolver.query(uri, projection, selection, null, null)
-        if(cursorIsValid(cursor)) return photoList
+        if(!cursorIsValid(cursor)) return photoList
 
         do {
             val id = cursor!!.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
