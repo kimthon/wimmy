@@ -7,7 +7,7 @@ import android.widget.TextView
 import java.util.*
 
 class PhotoRepository(application: Application) {
-   val photoDao : PhotoData_Dao
+   private val photoDao : PhotoData_Dao
 
    companion object {
       private class insertTagAsyncTask constructor(private val asyncTask: PhotoData_Dao) : AsyncTask<TagData, Void, Void>() {

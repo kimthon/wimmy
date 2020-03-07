@@ -1,4 +1,4 @@
-package com.example.wimmy
+package com.example.wimmy.fragment
 
 import android.content.Intent
 import android.os.Build
@@ -15,16 +15,15 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
-import com.example.wimmy.db.*
+import com.example.wimmy.DataBaseObserver
+import com.example.wimmy.MainActivity
+import com.example.wimmy.Main_PhotoView
+import com.example.wimmy.R
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.main_activity.view.*
 import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.thumbnailData
 
-/**
- * A simple [Fragment] subclass.
- */
 class LocationFragment(v: AppBarLayout) : Fragment() {
     private var recyclerAdapter : RecyclerAdapterForder?= null
     private var thumbnailList = listOf<thumbnailData>()
@@ -43,6 +42,17 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
         observer = DataBaseObserver(Handler(), recyclerAdapter!!)
 
         return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setPhotoSize(this.view!!,3, 3)
+        this.context!!.contentResolver.registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, false, observer)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        this.context!!.contentResolver.unregisterContentObserver(observer)
     }
 
     private fun setView(view : View) {
@@ -74,17 +84,6 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
                 recyclerView.viewTreeObserver.removeOnGlobalLayoutListener(this)
             }
         })
-    }
-
-    override fun onResume() {
-        super.onResume()
-        setPhotoSize(this.view!!,3, 3)
-        this.context!!.contentResolver.registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, false, observer)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        this.context!!.contentResolver.unregisterContentObserver(observer)
     }
 }
 /*

@@ -3,7 +3,6 @@ package com.example.wimmy
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -13,7 +12,6 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -27,9 +25,12 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import com.example.wimmy.fragment.DateFragment
+import com.example.wimmy.fragment.LocationFragment
+import com.example.wimmy.fragment.NameFragment
+import com.example.wimmy.fragment.TagFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.main_activity.*
-import kotlinx.android.synthetic.main.main_activity.view.*
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat

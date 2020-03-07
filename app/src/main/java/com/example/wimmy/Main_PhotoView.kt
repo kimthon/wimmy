@@ -24,13 +24,10 @@ import java.io.File
 
 
 class Main_PhotoView: AppCompatActivity() {
-    //private var PhotoArrayList = ArrayList<PhotoData>()
-
-    private var TagList = ArrayList<TagData>()
-    private var PhotoList = arrayListOf<PhotoData>()
-
+    private var tagList = ArrayList<TagData>()
+    private var photoList = arrayListOf<PhotoData>()
     private var recyclerAdapter : RecyclerAdapterPhoto?= null
-    var recyclerView: RecyclerView? = null
+    private var recyclerView: RecyclerView? = null
     private var mLastClickTime: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,19 +35,21 @@ class Main_PhotoView: AppCompatActivity() {
         setContentView(R.layout.main_photoview)
         val view: View = findViewById(R.id.photo_recyclerView)
 
-
         getExtra(view)
         SetHeader()
         setView(view)
-        setPhotoSize(3, 3)
         updown_Listener(recyclerView)
-
         }
+
+    override fun onResume() {
+        super.onResume()
+        setPhotoSize(3, 3)
+    }
 
     private fun setView(view : View) {
         recyclerView = view.findViewById<RecyclerView>(R.id.photo_recyclerView)
         recyclerAdapter =
-            RecyclerAdapterPhoto(this, PhotoList) {
+            RecyclerAdapterPhoto(this, photoList) {
                     PhotoData, num, image ->  if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
                 Toast.makeText(this, "인덱스: ${num} 이름: ${PhotoData.name}", Toast.LENGTH_SHORT)
                     .show()
@@ -59,8 +58,8 @@ class Main_PhotoView: AppCompatActivity() {
                 intent.putExtra("photo_num", num)
                 intent.putExtra("thumbnail", PhotoData.photo_id)
 
-                intent.putParcelableArrayListExtra("photo_list", PhotoList)
-                intent.putParcelableArrayListExtra("tag_list", TagList)
+                intent.putParcelableArrayListExtra("photo_list", photoList)
+                intent.putParcelableArrayListExtra("tag_list", tagList)
                 /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     val options = ActivityOptions.makeSceneTransitionAnimation(
                         this,
@@ -119,14 +118,14 @@ class Main_PhotoView: AppCompatActivity() {
         if (intent.hasExtra("dir_name")) {
             getname = intent.getStringExtra("dir_name")
 
-            PhotoList = MediaStore_Dao.getNameDir(view.context, getname)
+            photoList = MediaStore_Dao.getNameDir(view.context, getname)
 
             title_type.setImageResource(R.drawable.ic_folder)
             title.text = File(getname).name
         }
         else if (intent.hasExtra("location_name")) {
             getname = intent.getStringExtra("location_name")
-            PhotoList = MediaStore_Dao.getLocationDir(view.context, getname)
+            photoList = MediaStore_Dao.getLocationDir(view.context, getname)
 
             title_type.setImageResource(R.drawable.ic_location)
             title.text = getname
@@ -136,7 +135,7 @@ class Main_PhotoView: AppCompatActivity() {
             val cal = Calendar.getInstance()
 
             cal.time = Date(date)
-            PhotoList = MediaStore_Dao.getDateDir(view.context, cal)
+            photoList = MediaStore_Dao.getDateDir(view.context, cal)
             val formatter = SimpleDateFormat("yyyy년 MM월 dd일")
             getname = formatter.format(Date(date))
 
@@ -147,7 +146,7 @@ class Main_PhotoView: AppCompatActivity() {
         else if (intent.hasExtra("tag_name")) {
             getname = intent.getStringExtra("tag_name")
             val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-            PhotoList = MediaStore_Dao.getTagDir(view.context, vm, getname)
+            photoList = MediaStore_Dao.getTagDir(view.context, vm, getname)
 
             title_type.setImageResource(R.drawable.ic_tag)
             title.text = getname
@@ -160,7 +159,7 @@ class Main_PhotoView: AppCompatActivity() {
         }
 
         down_button.setOnClickListener {
-            view?.smoothScrollToPosition(PhotoList.size)
+            view?.smoothScrollToPosition(photoList.size)
         }
     }
 }

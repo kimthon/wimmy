@@ -25,12 +25,6 @@ class PhotoViewPager : AppCompatActivity() {
     private var tagList = ArrayList<TagData>()
     private var index: Int = 0
     private var thumbnail: Long? = null
-    private var ck: Boolean = false
-    private var check: Boolean = false
-    private var check1: Boolean = false
-    private var check_index: Int = 0
-    private var list_temp = ArrayList<String>()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,7 +74,6 @@ class PhotoViewPager : AppCompatActivity() {
                 photoList, toolbar, bottombar
             )
 
-        //Log.d("asd",recyclerAdapter?.getThumbnailList())
         viewPager.adapter = recyclerAdapter
         viewPager.setCurrentItem(index, false)
 

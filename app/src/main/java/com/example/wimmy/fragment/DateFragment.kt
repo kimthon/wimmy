@@ -1,44 +1,29 @@
-package com.example.wimmy
+package com.example.wimmy.fragment
 
 import SwipeGesture
 import YearMonthPickerDialog
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.opengl.Visibility
-import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.*
-import android.widget.*
 import android.widget.GridView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatImageButton
-import androidx.core.view.isGone
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.example.wimmy.Adapter.DateAdapter
+import com.example.wimmy.Main_PhotoView
+import com.example.wimmy.R
 import com.example.wimmy.db.PhotoViewModel
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.android.synthetic.main.fragment_cal.*
-import kotlinx.android.synthetic.main.fragment_cal.view.*
-import kotlinx.android.synthetic.main.fragment_name.view.*
-import kotlinx.android.synthetic.main.main_activity.*
 import kotlinx.android.synthetic.main.main_activity.view.*
 import java.util.*
 import kotlin.collections.ArrayList
-
-
-/**
- * A simple [Fragment] subclass.
- */
 
 open class DateFragment(v: AppBarLayout) : Fragment() {
     private lateinit var header : LinearLayout
@@ -73,8 +58,8 @@ open class DateFragment(v: AppBarLayout) : Fragment() {
         val gesturedetector = GestureDetector(calendar_allheader.context, gestureListener)
         calendar_allheader.setOnTouchListener { v, event ->
             return@setOnTouchListener gesturedetector.onTouchEvent(event)
-
         }
+
         return view
     }
 
@@ -94,7 +79,6 @@ open class DateFragment(v: AppBarLayout) : Fragment() {
         val month_right_button = view.findViewById<AppCompatImageButton>(R.id.cal_month_right)
         val month_text = view.findViewById<TextView>(R.id.cal_month_text)
 
-
         month_left_button.setOnClickListener {
             calDate.add(Calendar.MONTH, -1)
             updateCalendar(view, calDate.clone() as Calendar)
@@ -108,13 +92,12 @@ open class DateFragment(v: AppBarLayout) : Fragment() {
         }
 
         // 다이얼로그
-        month_text.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                val pd: YearMonthPickerDialog<View> = YearMonthPickerDialog(view, "calendar")
-                //pd.setListener()
-                pd.show(childFragmentManager, "YearMonthPickerTest")
-            }
-        })
+        month_text.setOnClickListener {
+            val pd: YearMonthPickerDialog<View> = YearMonthPickerDialog(view, "calendar")
+            //pd.setListener()
+            pd.show(childFragmentManager, "YearMonthPickerTest")
+        }
+
         setHeaderDate(month_text)
     }
 
@@ -126,7 +109,7 @@ open class DateFragment(v: AppBarLayout) : Fragment() {
         val month = inputCalendar.get(Calendar.MONTH)
 
         //월의 시작 요일 계산
-        val monthBeginningCell = inputCalendar.get(Calendar.DAY_OF_WEEK) -1
+        val monthBeginningCell = inputCalendar.get(Calendar.DAY_OF_WEEK) - 1
         inputCalendar.add(Calendar.DAY_OF_MONTH, -monthBeginningCell)
 
         var count = 0
@@ -156,6 +139,7 @@ open class DateFragment(v: AppBarLayout) : Fragment() {
             this.count = count
         }
     }
+
     private fun setGridLayout(view : View) {
         val gridViewWrapper = view.findViewById<LinearLayout>(R.id.cal_grid_wrapper)
         val header = view.findViewById<LinearLayout>(R.id.calendar_header)
