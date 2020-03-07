@@ -2,6 +2,7 @@ package com.example.wimmy.Adapter
 
 import android.graphics.Color
 import android.graphics.Typeface
+import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,16 +22,15 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
     private var size : Pair<Int, Int>? = size
     private var mLastClickTime: Long = 0
 
-
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var view = convertView
         val calendar = Calendar.getInstance()
         val date = getItem(position)!!
 
         calendar.time = date
-        val day = calendar.get(Calendar.DATE)
+        //val day = calendar.get(Calendar.DATE)
         val month = calendar.get(Calendar.MONTH)
-        val year = calendar.get(Calendar.YEAR)
+        //val year = calendar.get(Calendar.YEAR)
         val week = calendar.get(Calendar.DAY_OF_WEEK)
 
         if (view == null) view = inflater.inflate(R.layout.calendar_day_layout, parent, false)
@@ -38,10 +38,10 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
         val tagView = view.findViewById<TextView>(R.id.calendar_day_tag)
 
         view.setOnClickListener {
-            if(mLastClickTime != date.time){
+            if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
                 itemClick(date)
-                mLastClickTime = date.time
             }
+            mLastClickTime = SystemClock.elapsedRealtime()
         }
 
         if(size != null) {
@@ -50,7 +50,7 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
             view.requestLayout()
         }
 
-        setExtraDay(textView, year, month, week, day)
+        setExtraDay(textView, month, week)
 
         textView.text = calendar.get(Calendar.DATE).toString()
         tagView.text = ""
@@ -71,7 +71,7 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
         notifyDataSetChanged()
     }
 
-    fun setToday(textView: TextView, year: Int, month: Int, day: Int) {
+    private fun setToday(textView: TextView, year: Int, month: Int, day: Int) {
         val calendarToday = Calendar.getInstance()
         if(year == calendarToday.get(Calendar.YEAR) &&
             month == calendarToday.get(Calendar.MONTH) &&
@@ -82,7 +82,7 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
         }
     }
 
-    fun setExtraDay(textView: TextView, year : Int, month : Int, week : Int, day : Int) {
+    private fun setExtraDay(textView: TextView, month : Int, week : Int) {
         //다른 달 날짜
         if (month != inputMonth) {
             textView.setTextColor(Color.GRAY)

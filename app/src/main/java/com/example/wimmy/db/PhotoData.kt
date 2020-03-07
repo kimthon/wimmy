@@ -16,13 +16,12 @@ fun Parcel.readDate(): Date? {
 }
 
 
-@Entity(tableName = "photo_data")
-class PhotoData(@PrimaryKey var photo_id: Long,
-                @ColumnInfo(name = "name") var name : String,
-                @ColumnInfo(name = "file_path") var file_path : String,
-                @ColumnInfo(name = "location_info") var location_info : String?,
-                @ColumnInfo(name = "date_info") var date_info : Date?,
-                @ColumnInfo(name = "favorite") var favorite : Boolean): Parcelable {
+class PhotoData(var photo_id: Long,
+                var name : String,
+                var file_path : String,
+                var location_info : String?,
+                var date_info : Date?,
+                var favorite : Boolean): Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readLong(),
         parcel.readString().toString(),

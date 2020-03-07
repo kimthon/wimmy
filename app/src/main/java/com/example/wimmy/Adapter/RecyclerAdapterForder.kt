@@ -61,4 +61,3 @@ class RecyclerAdapterForder(val context: FragmentActivity?, var list: List<thumb
         notifyDataSetChanged()
     }
 }
-
