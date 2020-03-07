@@ -36,7 +36,7 @@ class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<PhotoData
 
             text!!.text = data.name
             thumbnail.setImageResource(0)
-            setThumbnailAsyncTask(this, thumbnail,data.photo_id).execute(context!!.applicationContext)
+            ThumbnailAsyncTask(this, thumbnail,data.photo_id).execute(context!!.applicationContext)
 
             itemView.setOnClickListener { itemClick(data, num, thumbnail) }
         }

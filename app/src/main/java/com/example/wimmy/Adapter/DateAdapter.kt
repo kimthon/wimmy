@@ -14,8 +14,7 @@ import com.example.wimmy.db.PhotoViewModel
 import java.util.*
 
 class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : ArrayList<Date>, inputMonth : Int , val itemClick: (Date) -> Unit) :
-        ArrayAdapter<Date>(context,
-            R.layout.fragment_cal, days) {
+        ArrayAdapter<Date>(context, R.layout.fragment_cal, days) {
     private val vm = ViewModelProviders.of(context).get(PhotoViewModel::class.java)
     private val inflater : LayoutInflater = LayoutInflater.from(context)
     private var inputMonth : Int = inputMonth

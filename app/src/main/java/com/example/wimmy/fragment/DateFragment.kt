@@ -64,7 +64,6 @@ open class DateFragment(v: AppBarLayout) : Fragment() {
 
         setView(view)
         setHeader(view)
-        setGridLayout(view)
         vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
         updateCalendar(view, calDate.clone() as Calendar)
@@ -79,12 +78,18 @@ open class DateFragment(v: AppBarLayout) : Fragment() {
         return view
     }
 
-    fun setView(view : View) {
+    override fun onResume() {
+        super.onResume()
+        setGridLayout(this.view!!)
+        setColumnSize(this.view!!, count)
+    }
+
+    private fun setView(view : View) {
         header = view.findViewById(R.id.calendar_week)
         gridView = view.findViewById(R.id.cal_grid)
     }
 
-    fun setHeader(view : View) {
+    private fun setHeader(view : View) {
         val month_left_button = view.findViewById<AppCompatImageButton>(R.id.cal_month_left)
         val month_right_button = view.findViewById<AppCompatImageButton>(R.id.cal_month_right)
         val month_text = view.findViewById<TextView>(R.id.cal_month_text)
@@ -154,6 +159,7 @@ open class DateFragment(v: AppBarLayout) : Fragment() {
     private fun setGridLayout(view : View) {
         val gridViewWrapper = view.findViewById<LinearLayout>(R.id.cal_grid_wrapper)
         val header = view.findViewById<LinearLayout>(R.id.calendar_header)
+        val calendar_week =view.findViewById<LinearLayout>(R.id.calendar_week)
         val statusBar = resources.getIdentifier("status_bar_height", "dimen", "android")
         val statusBarHeight = resources.getDimensionPixelSize(statusBar)
 
@@ -195,6 +201,5 @@ open class DateFragment(v: AppBarLayout) : Fragment() {
         val year = calDate.get(Calendar.YEAR).toString()
         val month = (calDate.get(Calendar.MONTH) + 1).toString()
         month_text.text = "$year 년 $month 월"
-
     }
 }
