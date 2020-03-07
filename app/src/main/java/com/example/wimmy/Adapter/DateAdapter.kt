@@ -1,41 +1,26 @@
 package com.example.wimmy.Adapter
 
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
-import android.os.AsyncTask
 import android.os.SystemClock
-import android.util.Log
-import android.util.Log.d
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
-import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProviders
-import com.example.wimmy.DateFragment
-import com.example.wimmy.Main_PhotoView
 import com.example.wimmy.R
-import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoViewModel
-import java.text.SimpleDateFormat
-import com.example.wimmy.db.thumbnailData
 import java.util.*
-import kotlin.collections.ArrayList
+
 class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : ArrayList<Date>, inputMonth : Int , val itemClick: (Date) -> Unit) :
-        ArrayAdapter<Date>(context,
-            R.layout.fragment_cal, days) {
+        ArrayAdapter<Date>(context, R.layout.fragment_cal, days) {
     private val vm = ViewModelProviders.of(context).get(PhotoViewModel::class.java)
     private val inflater : LayoutInflater = LayoutInflater.from(context)
     private var inputMonth : Int = inputMonth
     private var size : Pair<Int, Int>? = size
-    private var requestFlag = false
     private var mLastClickTime: Long = 0
-
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var view = convertView
@@ -43,9 +28,9 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
         val date = getItem(position)!!
 
         calendar.time = date
-        val day = calendar.get(Calendar.DATE)
+        //val day = calendar.get(Calendar.DATE)
         val month = calendar.get(Calendar.MONTH)
-        val year = calendar.get(Calendar.YEAR)
+        //val year = calendar.get(Calendar.YEAR)
         val week = calendar.get(Calendar.DAY_OF_WEEK)
 
         if (view == null) view = inflater.inflate(R.layout.calendar_day_layout, parent, false)
@@ -53,19 +38,19 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
         val tagView = view.findViewById<TextView>(R.id.calendar_day_tag)
 
         view.setOnClickListener {
-            if(mLastClickTime != date.time){
+            if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
                 itemClick(date)
-                mLastClickTime = date.time
             }
+            mLastClickTime = SystemClock.elapsedRealtime()
         }
 
         if(size != null) {
             view.layoutParams.width = size!!.first
             view.layoutParams.height = size!!.second
-            if(requestFlag) view.requestLayout()
+            view.requestLayout()
         }
 
-        setExtraDay(textView, year, month, week, day)
+        setExtraDay(textView, month, week)
 
         textView.text = calendar.get(Calendar.DATE).toString()
         tagView.text = ""
@@ -76,10 +61,7 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
 
     fun setDateSize(size : Pair<Int, Int>) {
         this.size = size
-        //사이즈 새로 고침이 필요
-        requestFlag = true
         notifyDataSetChanged()
-        requestFlag = false
     }
 
     fun Update(cells : ArrayList<Date>, month : Int) {
@@ -89,7 +71,7 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
         notifyDataSetChanged()
     }
 
-    fun setToday(textView: TextView, year: Int, month: Int, day: Int) {
+    private fun setToday(textView: TextView, year: Int, month: Int, day: Int) {
         val calendarToday = Calendar.getInstance()
         if(year == calendarToday.get(Calendar.YEAR) &&
             month == calendarToday.get(Calendar.MONTH) &&
@@ -100,7 +82,7 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
         }
     }
 
-    fun setExtraDay(textView: TextView, year : Int, month : Int, week : Int, day : Int) {
+    private fun setExtraDay(textView: TextView, month : Int, week : Int) {
         //다른 달 날짜
         if (month != inputMonth) {
             textView.setTextColor(Color.GRAY)

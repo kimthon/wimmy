@@ -1,38 +1,37 @@
-package com.example.wimmy
+package com.example.wimmy.fragment
 
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.os.SystemClock
-import android.text.Layout
-import android.util.Log
-import android.view.*
+import android.provider.MediaStore
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
+import com.example.wimmy.DataBaseObserver
+import com.example.wimmy.MainActivity
+import com.example.wimmy.Main_PhotoView
+import com.example.wimmy.R
 import com.example.wimmy.db.MediaStore_Dao
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.example.wimmy.db.thumbnailData
 import com.google.android.material.appbar.AppBarLayout
-import kotlinx.android.synthetic.main.fragment_name.*
-import kotlinx.android.synthetic.main.main_activity.*
 import kotlinx.android.synthetic.main.main_activity.view.*
-import java.lang.Thread.sleep
 
-/**
- * A simple [Fragment] subclass.
- */
 class NameFragment(v: AppBarLayout) : Fragment() {
     private lateinit var recyclerView : RecyclerView
     private var recyclerAdapter : RecyclerAdapterForder?= null
-    var bottomNavigationView: BottomNavigationView? = null
     private var thumbnailList = listOf<thumbnailData>()
+    private lateinit var observer : DataBaseObserver
     private var mLastClickTime: Long = 0
-    val ab = v
+    private val ab = v
+
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle? ): View? {
         ab.main_toolbar.visibility = View.VISIBLE
@@ -40,9 +39,21 @@ class NameFragment(v: AppBarLayout) : Fragment() {
 
         val view : View = inflater.inflate(R.layout.fragment_name, container, false)
         thumbnailList = MediaStore_Dao.getNameDir(view.context)
-
         setView(view)
+        observer = DataBaseObserver(Handler(), recyclerAdapter!!)
+
         return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setPhotoSize(this.view!!,3, 3)
+        this.context!!.contentResolver.registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, false, observer)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        this.context!!.contentResolver.unregisterContentObserver(observer)
     }
 
     private fun setView(view : View) {
@@ -57,12 +68,10 @@ class NameFragment(v: AppBarLayout) : Fragment() {
                 }
                 mLastClickTime = SystemClock.elapsedRealtime()
             }
-        setPhotoSize(view,3, 3)
         recyclerView?.adapter = recyclerAdapter
 
         val lm = GridLayoutManager(MainActivity(), 3)
-        recyclerView!!.layoutManager = lm as RecyclerView.LayoutManager?
-
+        recyclerView!!.layoutManager = lm
     }
 
     private fun setPhotoSize(view : View, row : Int, padding : Int) {
@@ -77,8 +86,6 @@ class NameFragment(v: AppBarLayout) : Fragment() {
             }
         })
     }
-
-
 }
 /*
     inner class Scroll : RecyclerView.OnScrollListener() {

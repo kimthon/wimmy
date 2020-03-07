@@ -1,42 +1,29 @@
-package com.example.wimmy
+package com.example.wimmy.fragment
 
 import SwipeGesture
 import YearMonthPickerDialog
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.opengl.Visibility
-import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.*
-import android.widget.*
+import android.widget.GridView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatImageButton
-import androidx.core.view.isGone
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.example.wimmy.Adapter.DateAdapter
-import com.example.wimmy.db.MediaStore_Dao
+import com.example.wimmy.Main_PhotoView
+import com.example.wimmy.R
 import com.example.wimmy.db.PhotoViewModel
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.android.synthetic.main.fragment_cal.*
-import kotlinx.android.synthetic.main.fragment_cal.view.*
-import kotlinx.android.synthetic.main.fragment_name.view.*
-import kotlinx.android.synthetic.main.main_activity.*
 import kotlinx.android.synthetic.main.main_activity.view.*
 import java.util.*
 import kotlin.collections.ArrayList
-
-
-/**
- * A simple [Fragment] subclass.
- */
 
 open class DateFragment(v: AppBarLayout) : Fragment() {
     private lateinit var header : LinearLayout
@@ -58,38 +45,39 @@ open class DateFragment(v: AppBarLayout) : Fragment() {
         ab.setExpanded(true,false)
 
         val view : View = inflater.inflate(R.layout.fragment_cal, container, false)
-
         val calendar_allheader: View = view.findViewById(R.id.calendar_allheader) as View
-        // Inflate the layout for this fragment
+
         setView(view)
         setHeader(view)
-        setGridLayout(view)
         vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
         updateCalendar(view, calDate.clone() as Calendar)
-
 
         // 상단 스와이프 제스처
         val gestureListener: SwipeGesture = SwipeGesture(calendar_allheader)
         val gesturedetector = GestureDetector(calendar_allheader.context, gestureListener)
         calendar_allheader.setOnTouchListener { v, event ->
             return@setOnTouchListener gesturedetector.onTouchEvent(event)
-
-
         }
+
         return view
     }
 
-    fun setView(view : View) {
+    override fun onResume() {
+        super.onResume()
+        setGridLayout(this.view!!)
+        setColumnSize(this.view!!, count)
+    }
+
+    private fun setView(view : View) {
         header = view.findViewById(R.id.calendar_week)
         gridView = view.findViewById(R.id.cal_grid)
     }
 
-    fun setHeader(view : View) {
+    private fun setHeader(view : View) {
         val month_left_button = view.findViewById<AppCompatImageButton>(R.id.cal_month_left)
         val month_right_button = view.findViewById<AppCompatImageButton>(R.id.cal_month_right)
         val month_text = view.findViewById<TextView>(R.id.cal_month_text)
-
 
         month_left_button.setOnClickListener {
             calDate.add(Calendar.MONTH, -1)
@@ -104,13 +92,12 @@ open class DateFragment(v: AppBarLayout) : Fragment() {
         }
 
         // 다이얼로그
-        month_text.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                val pd: YearMonthPickerDialog<View> = YearMonthPickerDialog(view, "calendar")
-                //pd.setListener()
-                pd.show(childFragmentManager, "YearMonthPickerTest")
-            }
-        })
+        month_text.setOnClickListener {
+            val pd: YearMonthPickerDialog<View> = YearMonthPickerDialog(view, "calendar")
+            //pd.setListener()
+            pd.show(childFragmentManager, "YearMonthPickerTest")
+        }
+
         setHeaderDate(month_text)
     }
 
@@ -122,7 +109,7 @@ open class DateFragment(v: AppBarLayout) : Fragment() {
         val month = inputCalendar.get(Calendar.MONTH)
 
         //월의 시작 요일 계산
-        val monthBeginningCell = inputCalendar.get(Calendar.DAY_OF_WEEK) -1
+        val monthBeginningCell = inputCalendar.get(Calendar.DAY_OF_WEEK) - 1
         inputCalendar.add(Calendar.DAY_OF_MONTH, -monthBeginningCell)
 
         var count = 0
@@ -152,9 +139,11 @@ open class DateFragment(v: AppBarLayout) : Fragment() {
             this.count = count
         }
     }
+
     private fun setGridLayout(view : View) {
         val gridViewWrapper = view.findViewById<LinearLayout>(R.id.cal_grid_wrapper)
         val header = view.findViewById<LinearLayout>(R.id.calendar_header)
+        val calendar_week =view.findViewById<LinearLayout>(R.id.calendar_week)
         val statusBar = resources.getIdentifier("status_bar_height", "dimen", "android")
         val statusBarHeight = resources.getDimensionPixelSize(statusBar)
 
@@ -196,11 +185,5 @@ open class DateFragment(v: AppBarLayout) : Fragment() {
         val year = calDate.get(Calendar.YEAR).toString()
         val month = (calDate.get(Calendar.MONTH) + 1).toString()
         month_text.text = "$year 년 $month 월"
-
     }
-
 }
-
-
-
-

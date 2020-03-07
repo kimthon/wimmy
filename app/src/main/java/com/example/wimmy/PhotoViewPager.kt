@@ -8,14 +8,14 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.example.wimmy.Adapter.PagerRecyclerAdapter
-import com.example.wimmy.db.*
+import com.example.wimmy.db.PhotoData
+import com.example.wimmy.db.PhotoViewModel
+import com.example.wimmy.db.TagData
 import java.text.SimpleDateFormat
-import kotlin.collections.ArrayList
 
 class PhotoViewPager : AppCompatActivity() {
     private var recyclerAdapter : PagerRecyclerAdapter?= null
@@ -25,12 +25,6 @@ class PhotoViewPager : AppCompatActivity() {
     private var tagList = ArrayList<TagData>()
     private var index: Int = 0
     private var thumbnail: Long? = null
-    private var ck: Boolean = false
-    private var check: Boolean = false
-    private var check1: Boolean = false
-    private var check_index: Int = 0
-    private var list_temp = ArrayList<String>()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,7 +74,6 @@ class PhotoViewPager : AppCompatActivity() {
                 photoList, toolbar, bottombar
             )
 
-        //Log.d("asd",recyclerAdapter?.getThumbnailList())
         viewPager.adapter = recyclerAdapter
         viewPager.setCurrentItem(index, false)
 
@@ -98,16 +91,16 @@ class PhotoViewPager : AppCompatActivity() {
 
     @SuppressLint("SimpleDateFormat")
     fun toolbar_text(position: Int, name: AppCompatTextView, date: AppCompatTextView, location: AppCompatTextView, tag: AppCompatTextView){
-        name.setText(photoList[position].name)
+        name.text = photoList[position].name
 
         val formatter = SimpleDateFormat("yyyy년 MM월 dd일 (E) / HH:mm:ss")
         val date_string = (formatter).format(photoList[position].date_info)
         //var date_string: String = Date.parse("${photoList[position].date_info, formatter}")
-        date.setText(date_string)
-        location.setText(photoList[position].location_info)
+        date.text = date_string
+        location.text = photoList[position].location_info
 
         val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-        tag.setText(vm.getTag(photoList[position].photo_id).joinToString ( ", " ))
+        tag.text = vm.getTag(photoList[position].photo_id).joinToString ( ", " )
     }
 
     fun getExtra(){

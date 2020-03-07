@@ -1,35 +1,36 @@
-package com.example.wimmy
-
+package com.example.wimmy.fragment
 
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.os.SystemClock
-import android.view.*
+import android.provider.MediaStore
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.example.wimmy.DataBaseObserver
+import com.example.wimmy.MainActivity
+import com.example.wimmy.Main_PhotoView
+import com.example.wimmy.R
 import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.db.thumbnailData
 import com.google.android.material.appbar.AppBarLayout
 import kotlinx.android.synthetic.main.main_activity.view.*
 
-/**
- * A simple [Fragment] subclass.
- */
 class TagFragment(v: AppBarLayout) : Fragment() {
     private var recyclerAdapter : RecyclerAdapterForder?= null
-    var bottomNavigationView: BottomNavigationView? = null
     private var thumbnailList = listOf<thumbnailData>()
+    private lateinit var observer : DataBaseObserver
     private var mLastClickTime: Long = 0
     val ab = v
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?,
                                savedInstanceState: Bundle? ): View? {
@@ -39,11 +40,21 @@ class TagFragment(v: AppBarLayout) : Fragment() {
         val view : View = inflater.inflate(R.layout.fragment_tag, container, false)
         val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
         thumbnailList = vm.getTagDir()
-
         setView(view)
-        setPhotoSize(view,3, 3)
+        observer = DataBaseObserver(Handler(), recyclerAdapter!!)
 
         return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setPhotoSize(this.view!!,3, 3)
+        this.context!!.contentResolver.registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, false, observer)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        this.context!!.contentResolver.unregisterContentObserver(observer)
     }
 
     private fun setView(view : View) {
