@@ -197,8 +197,8 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 Log.i("REQUEST_TAKE_PHOTO", "${Activity.RESULT_OK}" + " " + "${resultCode}")
                 if (resultCode == RESULT_OK) {
                     try {
+                        galleryAddPic();
 
-                        galleryAddPic()
                     } catch (e: Exception) {
                         Log.e("REQUEST_TAKE_PHOTO", e.toString())
                     }

@@ -39,7 +39,6 @@
             android:layout_height="@dimen/top_info"
             android:minHeight="@dimen/top_info"
             android:theme="@style/AppTheme"
-
             android:visibility="invisible"
             app:titleMargin="0dp">
 
@@ -101,7 +100,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#FFFFFF" />
+
             </LinearLayout>
+
+            <ImageView
+                android:id="@+id/favorite"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="top|end"
+                android:layout_margin="10dp"
+                android:src="@drawable/ic_favorite" />
+
 
 
         </androidx.appcompat.widget.Toolbar>

@@ -15,7 +15,8 @@ class SplashActivity : AppCompatActivity() {
 
         val intent = Intent(this, MainActivity::class.java)
         val dlg: AlertDialog.Builder = AlertDialog.Builder(this@SplashActivity,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
-        dlg.setTitle("환영합니다.") //제목
+        dlg.setTitle("환영합니다") //제목
+
         dlg.setMessage("자동 태그 분석을 위해 와이파이나 데이터를 연결해주세요.") // 메시지
         dlg.setPositiveButton("확인", DialogInterface.OnClickListener { dialog, which ->
             startActivity(intent)
