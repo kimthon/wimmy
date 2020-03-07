@@ -23,6 +23,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.example.wimmy.Adapter.PagerRecyclerAdapter
+
 import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoData
 import com.example.wimmy.db.PhotoViewModel
@@ -34,6 +35,12 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
+import com.example.wimmy.db.PhotoData
+import com.example.wimmy.db.PhotoViewModel
+import com.example.wimmy.db.TagData
+import java.text.SimpleDateFormat
+
+
 class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener  {
     private var recyclerAdapter : PagerRecyclerAdapter?= null
     //private var subimg: ImageView? = null
@@ -42,11 +49,7 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
     private var tagList = ArrayList<TagData>()
     private var index: Int = 0
     private var thumbnail: Long? = null
-    private var ck: Boolean = false
     private var check: Int = 0
-    private var check1: Boolean = false
-    private var check_index: Int = 0
-    private var list_temp = ArrayList<String>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -111,7 +114,6 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
                 photoList, toolbar, bottombar
             )
 
-        //Log.d("asd",recyclerAdapter?.getThumbnailList())
         viewPager.adapter = recyclerAdapter
         viewPager.setCurrentItem(index, false)
 
@@ -128,16 +130,19 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
 
 
     @SuppressLint("SimpleDateFormat")
+
     fun toolbar_text(position: Int, name: AppCompatTextView, date: AppCompatTextView, location: AppCompatTextView, tag: AppCompatTextView, favorite: ImageView){
         name.setText(photoList[position].name)
+
 
         val formatter = SimpleDateFormat("yyyy년 MM월 dd일 (E) / HH:mm:ss")
         val date_string = (formatter).format(photoList[position].date_info)
         //var date_string: String = Date.parse("${photoList[position].date_info, formatter}")
-        date.setText(date_string)
-        location.setText(photoList[position].location_info)
+        date.text = date_string
+        location.text = photoList[position].location_info
 
         val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+
         tag.setText(vm.getTag(photoList[position].photo_id).joinToString ( ", " ))
         if(photoList[position].favorite == true) {
             favorite.setImageResource(R.drawable.ic_favorite_checked)
@@ -147,6 +152,7 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
             favorite.setImageResource(R.drawable.ic_favorite)
             check = 0
         }
+
     }
 
     fun getExtra(){
