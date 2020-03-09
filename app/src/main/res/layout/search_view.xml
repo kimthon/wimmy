@@ -8,13 +8,13 @@
     android:orientation="vertical">
 
     <!-- 프레임 -->
-    <!-- 상단바 -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/search_recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
+    <!-- 상단바 -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar3"
         android:layout_width="match_parent"

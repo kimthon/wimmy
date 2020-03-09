@@ -47,9 +47,11 @@
         </activity>
         <activity android:name=".Main_PhotoView">
         </activity>
-        <activity android:name=".PhotoViewPager"
+        <activity
+            android:name=".PhotoViewPager"
             android:theme="@style/PhotoTheme">
         </activity>
+
         <activity android:name=".SearchView">
         </activity>
 

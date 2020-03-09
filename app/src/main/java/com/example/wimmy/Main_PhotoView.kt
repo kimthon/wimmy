@@ -5,29 +5,39 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.View
+import android.widget.AbsListView
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat.startActivityForResult
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import com.example.wimmy.db.*
 import kotlinx.android.synthetic.main.main_photoview.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import java.io.File
-
+import java.lang.Thread.sleep
 
 class Main_PhotoView: AppCompatActivity() {
     private var tagList = ArrayList<TagData>()
     private var recyclerAdapter : RecyclerAdapterPhoto?= null
     private var recyclerView: RecyclerView? = null
     private var mLastClickTime: Long = 0
+    private var delete_check: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +49,27 @@ class Main_PhotoView: AppCompatActivity() {
         getExtra(view)
 
         updown_Listener(recyclerView)
+
+
+        val onScrollListener = object:RecyclerView.OnScrollListener() {
+            var temp: Int = 0
+            override fun onScrolled(@NonNull recyclerView:RecyclerView, dx:Int, dy:Int) {
+                if(temp == 1) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    up_button.visibility = View.GONE
+                    down_button.visibility = View.GONE
+                }
+            }
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                up_button.visibility = View.VISIBLE
+                down_button.visibility = View.VISIBLE
+                temp = 1
+            }
+
+        }
+        recyclerView?.setOnScrollListener(onScrollListener)
+
     }
 
     override fun onResume() {
@@ -60,19 +91,9 @@ class Main_PhotoView: AppCompatActivity() {
 
                 intent.putParcelableArrayListExtra("photo_list", recyclerAdapter!!.getThumbnailList())
                 intent.putParcelableArrayListExtra("tag_list", tagList)
-                /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    val options = ActivityOptions.makeSceneTransitionAnimation(
-                        this,
-                        image, "pair_thumb"
-                    )
-                    startActivityForResult(intent, 100, options.toBundle())
 
-                } else {
-*/
                 startActivityForResult(intent, 100)
 
-
-                //}
             }
                 mLastClickTime = SystemClock.elapsedRealtime()
             }
@@ -104,6 +125,12 @@ class Main_PhotoView: AppCompatActivity() {
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 100 -> {
+                    if(data!!.hasExtra("delete_list")) {
+                        PhotoList = data!!.getSerializableExtra("delete_list") as ArrayList<PhotoData>
+                        setView(photo_recyclerView)
+                        setPhotoSize(3, 3)
+                        delete_check = 1
+                    }
                     val doc = data!!.getIntExtra("index", 0)
                     recyclerView?.smoothScrollToPosition(doc)
                 }
@@ -162,6 +189,18 @@ class Main_PhotoView: AppCompatActivity() {
         down_button.setOnClickListener {
             view?.smoothScrollToPosition(recyclerAdapter!!.getSize())
         }
+    }
+
+    override fun onBackPressed() {
+        finishActivity()
+    }
+
+    private fun finishActivity() {
+        val intent = Intent()
+        if(delete_check == 1)
+            intent.putExtra("delete_check", delete_check)
+        setResult(Activity.RESULT_OK, intent)
+        finish()
     }
 }
 

@@ -7,17 +7,16 @@ import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.AdapterView
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
-import com.example.wimmy.db.MediaStore_Dao
-import com.example.wimmy.db.thumbnailData
+import com.example.wimmy.db.*
 import kotlinx.android.synthetic.main.search_view.*
 
 
@@ -51,7 +50,7 @@ class SearchView: AppCompatActivity() {
                 if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
                     val intent = Intent(this, Main_PhotoView::class.java)
                     intent.putExtra("dir_name", thumbnailData.data)
-                    startActivity(intent)
+                    startActivityForResult(intent, 205)
                 }
                 mLastClickTime = SystemClock.elapsedRealtime()
             }
@@ -76,9 +75,11 @@ class SearchView: AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
-                100 -> {
-                    val doc = data!!.getIntExtra("index", 0)
-                    recyclerView?.smoothScrollToPosition(doc)
+                205 -> {
+                    if(data!!.getIntExtra("delete_check", 0) == 1) {
+                        dateQuery()
+                        searchResult()
+                    }
                 }
             }
         }
@@ -137,8 +138,8 @@ class SearchView: AppCompatActivity() {
                 }
                 setView()
                 setPhotoSize(3, 3)
-                val imm: InputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(searchview.windowToken, 0)
+                val imm: InputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager;
+                imm.hideSoftInputFromWindow(searchview.getWindowToken(), 0)
                 return true
             }
 
