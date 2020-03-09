@@ -258,3 +258,5 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
     /*fun setTagList(list : List<TagData>) {
         tagList = list
     }*/
+
+
