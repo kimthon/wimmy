@@ -18,7 +18,7 @@ import kotlin.collections.ArrayList
 object MediaStore_Dao {
     val noLocationData = "위치 정보 없음"
     //@Query("SELECT photo_id, file_path as data FROM photo_data WHERE photo_id IN (SELECT MAX(photo_id) FROM photo_data GROUP BY file_path) ORDER BY data")
-    fun getNameDir(context: Context) : ArrayList<thumbnailData>{
+    fun getNameDir(context: Context?) : ArrayList<thumbnailData>{
         val dirList = arrayListOf<thumbnailData>()
 
         val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
@@ -34,7 +34,7 @@ object MediaStore_Dao {
         }
         val sortOrder = MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME + " ASC"
 
-        val cursor = context.contentResolver.query(uri, projection, selection, null, sortOrder)
+        val cursor = context!!.contentResolver.query(uri, projection, selection, null, sortOrder)
 
 
         if (cursor == null) {

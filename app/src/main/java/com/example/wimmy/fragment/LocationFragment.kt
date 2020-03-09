@@ -1,9 +1,11 @@
 package com.example.wimmy
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
+import android.util.Log
 import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
@@ -24,30 +26,41 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
     private var thumbnailList = listOf<thumbnailData>()
     private var mLastClickTime: Long = 0
     val ab = v
-
+    private var thisview: View? = null
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?,
                                savedInstanceState: Bundle? ): View? {
         ab.main_toolbar.visibility = View.VISIBLE
         ab.setExpanded(true,true)
 
-        val view : View = inflater.inflate(R.layout.fragment_location, container, false)
-        thumbnailList = MediaStore_Dao.getLocationDir(view.context)
-        setView(view)
-        setPhotoSize(view,3, 3)
-        // Inflate the layout for this fragment
+        thisview = inflater.inflate(R.layout.fragment_name, container, false)
+        thumbnailList = MediaStore_Dao.getNameDir(thisview?.context)
 
-        return view
+        setView(thisview)
+        return thisview
     }
 
-    private fun setView(view : View) {
-        val recyclerView = view.findViewById<RecyclerView>(R.id.locationRecycleView)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                202 -> {
+                    if(data!!.getIntExtra("delete_check", 0) == 1) {
+                        thumbnailList = MediaStore_Dao.getNameDir(thisview?.context!!)
+                        setView(thisview!!)
+                    }
+                }
+            }
+        }
+    }
+    private fun setView(view : View?) {
+        val recyclerView = view?.findViewById<RecyclerView>(R.id.locationRecycleView)
         recyclerAdapter =
             RecyclerAdapterForder(activity, thumbnailList)
             {thumbnailData ->
                 if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
                     val intent = Intent(activity, Main_PhotoView::class.java)
                     intent.putExtra("location_name", thumbnailData.data)
-                    startActivity(intent)
+                    startActivityForResult(intent, 201)
                 }
                 mLastClickTime = SystemClock.elapsedRealtime()
             }

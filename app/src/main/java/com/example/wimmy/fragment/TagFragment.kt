@@ -1,10 +1,12 @@
 package com.example.wimmy
 
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
+import android.util.Log
 import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
@@ -12,6 +14,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
+import com.example.wimmy.db.MediaStore_Dao
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.db.thumbnailData
@@ -27,6 +30,8 @@ class TagFragment(v: AppBarLayout) : Fragment() {
     private var thumbnailList = listOf<thumbnailData>()
     private var mLastClickTime: Long = 0
     val ab = v
+    private var thisview: View? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -40,21 +45,37 @@ class TagFragment(v: AppBarLayout) : Fragment() {
         val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
         thumbnailList = vm.getTagDir()
 
-        setView(view)
-        setPhotoSize(view,3, 3)
+        thisview = inflater.inflate(R.layout.fragment_name, container, false)
+        thumbnailList = MediaStore_Dao.getNameDir(thisview?.context)
 
-        return view
+        setView(thisview)
+        return thisview
     }
 
-    private fun setView(view : View) {
-        val recyclerView = view.findViewById<RecyclerView>(R.id.tagRecycleView)
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                203 -> {
+                    if(data!!.getIntExtra("delete_check", 0) == 1) {
+                        val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+                        thumbnailList = vm.getTagDir()
+                        setView(thisview)
+                    }
+                }
+            }
+        }
+    }
+    private fun setView(view : View?) {
+        val recyclerView = view?.findViewById<RecyclerView>(R.id.tagRecycleView)
         recyclerAdapter =
             RecyclerAdapterForder(activity, thumbnailList)
             {thumbnailData ->
                 if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
                     val intent = Intent(activity, Main_PhotoView::class.java)
                     intent.putExtra("tag_name", thumbnailData.data)
-                    startActivity(intent)
+                    startActivityForResult(intent, 203)
                 }
                 mLastClickTime = SystemClock.elapsedRealtime()
             }

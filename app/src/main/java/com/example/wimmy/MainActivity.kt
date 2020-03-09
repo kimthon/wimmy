@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     var mCurrentPhotoPath: String? = null
     private final var FINISH_INTERVAL_TIME: Long = 2000
     private var backPressedTime: Long = 0
+    var init_check: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -156,10 +157,13 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }
 
     fun init(): Boolean{
-        val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
-        val fragmentA = TagFragment(appbar)
-        transaction.replace(R.id.frame_layout, fragmentA, "tag")
-        transaction.commit()
+        if(init_check == 0) {
+            val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
+            val fragmentA = TagFragment(appbar)
+            transaction.replace(R.id.frame_layout, fragmentA, "tag")
+            transaction.commit()
+            init_check = 1
+        }
         return true
     }
 
