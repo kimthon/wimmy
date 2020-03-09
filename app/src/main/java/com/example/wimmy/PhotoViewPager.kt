@@ -11,14 +11,11 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
-import android.util.Log.e
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
-import android.widget.Toolbar
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -80,6 +77,7 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
                 bottom_photo_menu.visibility = View.VISIBLE
                 //subimg!!.setImageResource(0)    // 애니메이션
             }
+
             override fun onPageSelected(position: Int) {
                 index = position
                 toolbar_text(position, text_name, date_name, location_name, tag_name, favorite)
@@ -111,7 +109,6 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
                 photoList, toolbar, bottombar
             )
 
-        //Log.d("asd",recyclerAdapter?.getThumbnailList())
         viewPager.adapter = recyclerAdapter
         viewPager.setCurrentItem(index, false)
 
@@ -133,7 +130,7 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
         location.setText(photoList[position].location_info)
 
         val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-        tag.setText(vm.getTag(photoList[position].photo_id).joinToString ( ", " ))
+        vm.setTags(tag, photoList[position].photo_id)
         if(photoList[position].favorite == true) {
             favorite.setImageResource(R.drawable.ic_favorite_checked)
             check = 1
@@ -241,7 +238,6 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
 
         })
         dlg.show()
-
     }
 
     private fun finishActivity() {

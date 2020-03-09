@@ -25,10 +25,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
-import com.example.wimmy.fragment.DateFragment
-import com.example.wimmy.fragment.LocationFragment
-import com.example.wimmy.fragment.NameFragment
-import com.example.wimmy.fragment.TagFragment
+import com.example.wimmy.fragment.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.main_activity.*
 import java.io.File
