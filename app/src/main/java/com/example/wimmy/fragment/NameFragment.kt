@@ -4,8 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.os.SystemClock
-import android.util.Log
+import android.provider.MediaStore
 import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
@@ -13,13 +14,15 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
+import com.example.wimmy.DataBaseObserver
+import com.example.wimmy.MainActivity
+import com.example.wimmy.Main_PhotoView
+import com.example.wimmy.R
 import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoViewModel
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.example.wimmy.db.thumbnailData
 import com.google.android.material.appbar.AppBarLayout
 import kotlinx.android.synthetic.main.main_activity.view.*
-import kotlinx.android.synthetic.main.main_photoview.*
 
 class NameFragment(v: AppBarLayout) : Fragment() {
     private var thisview: View? = null
@@ -101,6 +104,7 @@ class NameFragment(v: AppBarLayout) : Fragment() {
         })
     }
 }
+
 /*
     inner class Scroll : RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int){

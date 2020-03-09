@@ -5,32 +5,23 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.View
-import android.widget.AbsListView
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.app.ActivityCompat.startActivityForResult
-import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import com.example.wimmy.db.*
 import kotlinx.android.synthetic.main.main_photoview.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import java.io.File
-import java.lang.Thread.sleep
 
 class Main_PhotoView: AppCompatActivity() {
     private var tagList = ArrayList<TagData>()
@@ -126,7 +117,7 @@ class Main_PhotoView: AppCompatActivity() {
             when (requestCode) {
                 100 -> {
                     if(data!!.hasExtra("delete_list")) {
-                        PhotoList = data!!.getSerializableExtra("delete_list") as ArrayList<PhotoData>
+                        val PhotoList = data!!.getSerializableExtra("delete_list") as ArrayList<PhotoData>
                         setView(photo_recyclerView)
                         setPhotoSize(3, 3)
                         delete_check = 1

@@ -5,8 +5,9 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.os.SystemClock
-import android.util.Log
+import android.provider.MediaStore
 import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
@@ -14,8 +15,10 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
-import com.example.wimmy.db.MediaStore_Dao
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.example.wimmy.DataBaseObserver
+import com.example.wimmy.MainActivity
+import com.example.wimmy.Main_PhotoView
+import com.example.wimmy.R
 import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.db.thumbnailData
 import com.google.android.material.appbar.AppBarLayout
@@ -34,7 +37,7 @@ class TagFragment(v: AppBarLayout) : Fragment() {
         ab.main_toolbar.visibility = View.VISIBLE
         ab.setExpanded(true,true)
 
-        thisview : View = inflater.inflate(R.layout.fragment_tag, container, false)
+        thisview = inflater.inflate(R.layout.fragment_tag, container, false)
         val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
         setView(thisview)
@@ -62,7 +65,7 @@ class TagFragment(v: AppBarLayout) : Fragment() {
                 203 -> {
                     if(data!!.getIntExtra("delete_check", 0) == 1) {
                         val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-                        thumbnailList = vm.getTagDir()
+                        vm.setTagDir(recyclerAdapter!!)
                         setView(thisview)
                     }
                 }

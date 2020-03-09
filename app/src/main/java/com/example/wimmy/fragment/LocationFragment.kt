@@ -4,8 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.os.SystemClock
-import android.util.Log
+import android.provider.MediaStore
 import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
@@ -13,9 +14,12 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
+import com.example.wimmy.DataBaseObserver
+import com.example.wimmy.MainActivity
+import com.example.wimmy.Main_PhotoView
+import com.example.wimmy.R
 import com.example.wimmy.db.*
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.main_activity.view.*
 import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.db.thumbnailData
@@ -34,10 +38,11 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
         ab.setExpanded(true,true)
 
         thisview = inflater.inflate(R.layout.fragment_name, container, false)
-        thumbnailList = MediaStore_Dao.getNameDir(thisview?.context)
-
         val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-        setView(view)
+
+        setView(thisview)
+        vm.setNameDir(recyclerAdapter!!)
+        observer = DataBaseObserver(Handler(), recyclerAdapter!!)
 
         return thisview
     }
