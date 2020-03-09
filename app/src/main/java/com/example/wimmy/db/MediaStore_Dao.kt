@@ -1,5 +1,6 @@
 package com.example.wimmy.db
 
+import android.app.Activity
 import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
@@ -10,18 +11,19 @@ import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import android.util.Size
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProviders
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
 
 object MediaStore_Dao {
+    private val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
     val noLocationData = "위치 정보 없음"
 
-    //@Query("SELECT photo_id, file_path as data FROM photo_data WHERE photo_id IN (SELECT MAX(photo_id) FROM photo_data GROUP BY file_path) ORDER BY data")
     fun getNameDir(context: Context) : ArrayList<thumbnailData>{
         val thumbList = arrayListOf<thumbnailData>()
 
-        val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         val projection = arrayOf(
             MediaStore.Images.ImageColumns._ID, //photo_id
             MediaStore.Images.ImageColumns.DATA// folder + name
@@ -51,54 +53,37 @@ object MediaStore_Dao {
         return thumbList
     }
 
-    //@Query("SELECT photo_id, location_info as data FROM photo_data WHERE photo_id IN (SELECT MAX(photo_id) FROM photo_data GROUP BY location_info) ORDER BY data")
-    fun getLocationDir(context: Context) : List<thumbnailData>{
-        val thumbList = arrayListOf<thumbnailData>()
-
-        val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+    fun getLocation(context: Context, id : Long) : String{
         val projection = arrayOf(
-            MediaStore.Images.ImageColumns._ID, //photo_id
-            MediaStore.Images.ImageColumns.DATA,
             MediaStore.Images.ImageColumns.LATITUDE,
             MediaStore.Images.ImageColumns.LONGITUDE
         )
 
-        val selection = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            MediaStore.Images.ImageColumns._ID + " IN (SELECT " + MediaStore.Images.ImageColumns._ID +
-                    " FROM images GROUP BY " + MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME + " OR " + MediaStore.Images.ImageColumns.LONGITUDE+ ")"
-        }else {
-            "1) GROUP BY (" + MediaStore.Images.ImageColumns.LATITUDE + " OR " + MediaStore.Images.ImageColumns.LONGITUDE
-        }
+        val selection = MediaStore.Images.ImageColumns._ID + " = " + id
 
         val cursor = context.contentResolver.query(uri, projection, selection, null, null)
-        if(!cursorIsValid(cursor)) return thumbList
+        if(!cursorIsValid(cursor)) return noLocationData
 
-        do {
-            val id = cursor!!.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
-            val path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA))
+        val lat = cursor!!.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LATITUDE))
+        val lon = cursor.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LONGITUDE))
+        val geo = Geocoder(context)
 
-            val lat = cursor.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LATITUDE))
-            val lon = cursor.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LONGITUDE))
-            val geo = Geocoder(context)
+        var loc : String = noLocationData
+        val locTmp = geo.getFromLocation(lat, lon, 1)
+        if(locTmp != null && locTmp.isNotEmpty()) {
+            loc = locTmp[0].countryName
+            if(locTmp[0].locality != null) loc += " ${locTmp[0].locality}"
+            if(locTmp[0].subLocality != null) loc += " ${locTmp[0].subLocality}"
+        }
 
-            var loc : String = noLocationData
-            val locTmp = geo.getFromLocation(lat, lon, 1)
-            if(locTmp != null && locTmp.isNotEmpty()) {
-                loc = locTmp[0].countryName
-                if(locTmp[0].locality != null) loc += " ${locTmp[0].locality}"
-                if(locTmp[0].subLocality != null) loc += " ${locTmp[0].subLocality}"
-            }
-            thumbList.add(thumbnailData(id, loc))
-        } while (cursor!!.moveToNext())
         cursor.close()
 
-        return thumbList
+        return loc
     }
-    //@Query("SELECT tag FROM photo_data, tag_data WHERE date_info BETWEEN :from AND :to AND photo_data.photo_id = tag_data.photo_id GROUP BY tag ORDER BY count(*) LIMIT 1")
+
     fun getDateIdInfo(context: Context, cal : Calendar) : ArrayList<Long>{
         val IdList = arrayListOf<Long>()
 
-        val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         val projection = arrayOf(
             MediaStore.Images.ImageColumns._ID //photo_id
         )
@@ -116,53 +101,22 @@ object MediaStore_Dao {
         return IdList
     }
 
-    //@Query("SELECT photo_data.photo_id, tag as data FROM photo_data, (SELECT MAX(photo_id) as photo_id, tag FROM tag_data GROUP BY tag) tag_data WHERE photo_data.photo_id = tag_data.photo_id ORDER BY data")
-    //fun getTagDir(context: Context) : ArrayList<thumbnailData> room에 구현됨
-
-    //@Query("SELECT * FROM photo_data where file_path = :name")
     fun getNameDir(context: Context, path : String) : ArrayList<PhotoData>{
         val selection = MediaStore.Images.ImageColumns.DATA + " LIKE '" + path + "/%' AND " +
                 MediaStore.Images.ImageColumns.DATA + " NOT LIKE '" + path + "/%/%'"
         return getDir(context, selection)
     }
-    //@Query("SELECT * FROM photo_data where location_info = :loc")
-    fun getLocationDir(context: Context, loc : String) : ArrayList<PhotoData>{
-        var selection : String?
-        if(loc.compareTo(noLocationData) == 0) {
-            selection = MediaStore.Images.ImageColumns.LATITUDE + " IS NULL AND " +
-                    MediaStore.Images.ImageColumns.LONGITUDE + " IS NULL"
-        } else {
-            val geo = Geocoder(context)
-            var lat: Double = 0.0
-            var lon: Double = 0.0
-            val adress = geo.getFromLocationName(loc, 1)
-            if (adress.isNotEmpty()) {
-                lat = adress[0].latitude
-                lon = adress[0].longitude
-            }
-
-            selection = MediaStore.Images.ImageColumns.LATITUDE + "='" + lat + "' AND " +
-                    MediaStore.Images.ImageColumns.LONGITUDE + " = '" + lon + "'"
-        }
-        return getDir(context, selection)
+    fun getLocationDir(context: Context, idList: List<Long>?) : ArrayList<PhotoData>{
+        return getDirByIdList(context, idList)
     }
-    //@Query("SELECT * FROM photo_data where date_info = :date")
+
     fun getDateDir(context: Context, cal : Calendar) : ArrayList<PhotoData>{
         val selection = MediaStore.Images.ImageColumns.DATE_TAKEN + " BETWEEN " + getDateStart(cal) + " AND " + getDateEnd(cal)
         return getDir(context, selection)
     }
-    //@Query("SELECT photo_data.* FROM photo_data, tag_data where (photo_data.photo_id = tag_data.photo_id) AND (tag_data.tag = :tag)")
-    fun getTagDir(context: Context, vm: PhotoViewModel, tag : String) : ArrayList<PhotoData> {
-        val idList = vm.getTagDirIdList(tag)
 
-        var selection = MediaStore.Images.ImageColumns._ID + " IN ("
-        for( id in idList) {
-            selection += "$id ,"
-        }
-        selection = selection.substring(0, selection.length - 1)
-        selection += ")"
-
-        return getDir(context, selection)
+    fun getTagDir(context: Context, idList : List<Long>?) : ArrayList<PhotoData> {
+        return getDirByIdList(context, idList)
     }
 
     fun getDir(context: Context, selection : String) : ArrayList<PhotoData>{
@@ -206,6 +160,43 @@ object MediaStore_Dao {
         return photoList
     }
 
+    fun getDirByIdList(context: Context, idList: List<Long>?) : ArrayList<PhotoData> {
+        if(idList.isNullOrEmpty()) return ArrayList()
+        var selection = MediaStore.Images.ImageColumns._ID + " IN ("
+        for( id in idList) {
+            selection += "$id ,"
+        }
+        selection = selection.substring(0, selection.length - 1)
+        selection += ")"
+
+        return getDir(context, selection)
+    }
+
+    fun getLocationInfo(context: Context, id : Long) : String {
+        var loc : String = noLocationData
+
+        val projection = arrayOf(
+            MediaStore.Images.ImageColumns.LATITUDE,
+            MediaStore.Images.ImageColumns.LONGITUDE
+        )
+        val selection =  MediaStore.Images.ImageColumns._ID + " = " + id
+
+        val cursor = context.contentResolver.query(uri, projection, selection, null, null)
+        if(!cursorIsValid(cursor)) return loc
+
+        val lat = cursor!!.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LATITUDE))
+        val lon = cursor!!.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LONGITUDE))
+
+        val geo = Geocoder(context)
+        val locTmp = geo.getFromLocation(lat, lon, 1)
+        if(locTmp != null && locTmp.isNotEmpty()) {
+            loc = locTmp[0].countryName
+            if(locTmp[0].locality != null) loc += " ${locTmp[0].locality}"
+            if(locTmp[0].subLocality != null) loc += " ${locTmp[0].subLocality}"
+        }
+        return loc
+    }
+
     fun LoadThumbnailById(context: Context, id : Long) : Bitmap{
         var bitmap : Bitmap = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
@@ -218,7 +209,6 @@ object MediaStore_Dao {
     }
 
     fun modifyOrientaionById(context: Context, id: Long, bitmap: Bitmap) : Bitmap {
-        val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         val projection = arrayOf(
             MediaStore.Images.ImageColumns.ORIENTATION
         )

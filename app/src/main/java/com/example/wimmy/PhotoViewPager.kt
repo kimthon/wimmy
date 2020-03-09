@@ -57,8 +57,10 @@ class PhotoViewPager : AppCompatActivity() {
                 bt.visibility = View.VISIBLE
                 //subimg!!.setImageResource(0)    // 애니메이션
             }
+
             override fun onPageSelected(position: Int) {
                 index = position
+
                 toolbar_text(position, text_name, date_name, location_name, tag_name)
             }
         })
@@ -100,7 +102,7 @@ class PhotoViewPager : AppCompatActivity() {
         location.text = photoList[position].location_info
 
         val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-        tag.text = vm.getTag(photoList[position].photo_id).joinToString ( ", " )
+        vm.setTags(tag, photoList[position].photo_id)
     }
 
     fun getExtra(){

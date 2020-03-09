@@ -56,8 +56,11 @@ class RecyclerAdapterForder(val context: FragmentActivity?, var list: List<thumb
         notifyDataSetChanged()
     }
 
-    fun setThumbnailList(list : List<thumbnailData>) {
-        this.list = list
-        notifyDataSetChanged()
+    fun setThumbnailList(list : List<thumbnailData>?) {
+        if(list.isNullOrEmpty()) this.list = listOf<thumbnailData>()
+        else {
+            this.list = list
+            notifyDataSetChanged()
+        }
     }
 }

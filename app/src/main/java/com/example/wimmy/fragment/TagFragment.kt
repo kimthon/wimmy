@@ -39,8 +39,9 @@ class TagFragment(v: AppBarLayout) : Fragment() {
 
         val view : View = inflater.inflate(R.layout.fragment_tag, container, false)
         val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-        thumbnailList = vm.getTagDir()
+
         setView(view)
+        vm.setTagDir(recyclerAdapter!!)
         observer = DataBaseObserver(Handler(), recyclerAdapter!!)
 
         return view

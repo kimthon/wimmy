@@ -25,7 +25,6 @@ import java.io.File
 
 class Main_PhotoView: AppCompatActivity() {
     private var tagList = ArrayList<TagData>()
-    private var photoList = arrayListOf<PhotoData>()
     private var recyclerAdapter : RecyclerAdapterPhoto?= null
     private var recyclerView: RecyclerView? = null
     private var mLastClickTime: Long = 0
@@ -35,11 +34,12 @@ class Main_PhotoView: AppCompatActivity() {
         setContentView(R.layout.main_photoview)
         val view: View = findViewById(R.id.photo_recyclerView)
 
-        getExtra(view)
         SetHeader()
         setView(view)
+        getExtra(view)
+
         updown_Listener(recyclerView)
-        }
+    }
 
     override fun onResume() {
         super.onResume()
@@ -49,7 +49,7 @@ class Main_PhotoView: AppCompatActivity() {
     private fun setView(view : View) {
         recyclerView = view.findViewById<RecyclerView>(R.id.photo_recyclerView)
         recyclerAdapter =
-            RecyclerAdapterPhoto(this, photoList) {
+            RecyclerAdapterPhoto(this, arrayListOf()) {
                     PhotoData, num, image ->  if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
                 Toast.makeText(this, "인덱스: ${num} 이름: ${PhotoData.name}", Toast.LENGTH_SHORT)
                     .show()
@@ -58,7 +58,7 @@ class Main_PhotoView: AppCompatActivity() {
                 intent.putExtra("photo_num", num)
                 intent.putExtra("thumbnail", PhotoData.photo_id)
 
-                intent.putParcelableArrayListExtra("photo_list", photoList)
+                intent.putParcelableArrayListExtra("photo_list", recyclerAdapter!!.getThumbnailList())
                 intent.putParcelableArrayListExtra("tag_list", tagList)
                 /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     val options = ActivityOptions.makeSceneTransitionAnimation(
@@ -69,7 +69,7 @@ class Main_PhotoView: AppCompatActivity() {
 
                 } else {
 */
-                    startActivityForResult(intent, 100)
+                startActivityForResult(intent, 100)
 
 
                 //}
@@ -115,17 +115,19 @@ class Main_PhotoView: AppCompatActivity() {
         val getname: String?
         val title_type: ImageView = findViewById(R.id.title_type)
         val title: TextView = findViewById(R.id.title_name)
+        val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+
         if (intent.hasExtra("dir_name")) {
             getname = intent.getStringExtra("dir_name")
 
-            photoList = MediaStore_Dao.getNameDir(view.context, getname)
+            vm.setOpenNameDir(recyclerAdapter!!, getname)
 
             title_type.setImageResource(R.drawable.ic_folder)
             title.text = File(getname).name
         }
         else if (intent.hasExtra("location_name")) {
             getname = intent.getStringExtra("location_name")
-            photoList = MediaStore_Dao.getLocationDir(view.context, getname)
+            vm.setOpenLocationDir(recyclerAdapter!!, getname)
 
             title_type.setImageResource(R.drawable.ic_location)
             title.text = getname
@@ -133,9 +135,9 @@ class Main_PhotoView: AppCompatActivity() {
         else if(intent.hasExtra("date_name")) {
             val date = intent.getLongExtra("date_name", 0)
             val cal = Calendar.getInstance()
-
             cal.time = Date(date)
-            photoList = MediaStore_Dao.getDateDir(view.context, cal)
+
+            vm.setOpenDateDir(recyclerAdapter!!, cal)
             val formatter = SimpleDateFormat("yyyy년 MM월 dd일")
             getname = formatter.format(Date(date))
 
@@ -145,8 +147,7 @@ class Main_PhotoView: AppCompatActivity() {
         }
         else if (intent.hasExtra("tag_name")) {
             getname = intent.getStringExtra("tag_name")
-            val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-            photoList = MediaStore_Dao.getTagDir(view.context, vm, getname)
+            vm.setOpenTagDir(recyclerAdapter!!, getname)
 
             title_type.setImageResource(R.drawable.ic_tag)
             title.text = getname
@@ -159,7 +160,7 @@ class Main_PhotoView: AppCompatActivity() {
         }
 
         down_button.setOnClickListener {
-            view?.smoothScrollToPosition(photoList.size)
+            view?.smoothScrollToPosition(recyclerAdapter!!.getSize())
         }
     }
 }

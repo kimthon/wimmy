@@ -56,6 +56,13 @@ class PhotoData(var photo_id: Long,
     }
 }
 
+@Entity(tableName = "extra_photo_data",
+    primaryKeys = ["photo_id"])
+class ExtraPhotoData(
+    var photo_id: Long,
+    var location : String,
+    var favorite: Boolean
+)
 
 @Entity(tableName = "tag_data",
     primaryKeys = ["photo_id", "tag"]
@@ -68,8 +75,7 @@ class TagData(
         parcel.readLong(),
         parcel.readString().toString(),
         parcel.readString().toString()
-    ) {
-    }
+    )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeLong(photo_id)
@@ -95,16 +101,3 @@ class TagData(
 
 data class thumbnailData( var photo_id : Long,
                           var data : String)
-
-class Converters {
-    @TypeConverter
-    fun fromTimestamp(value: Long?): Date? {
-        return value?.let { Date(it) }
-    }
-
-    @TypeConverter
-    fun dateToTimestamp(date: Date?): Long? {
-        return date?.time
-    }
-}
-
