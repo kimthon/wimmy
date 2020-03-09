@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.View
 import android.widget.AbsListView
 import android.widget.ImageView
@@ -38,6 +39,8 @@ class Main_PhotoView: AppCompatActivity() {
     private var recyclerAdapter : RecyclerAdapterPhoto?= null
     private var recyclerView: RecyclerView? = null
     private var mLastClickTime: Long = 0
+    private var delete_check: Int = 0
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -125,6 +128,12 @@ class Main_PhotoView: AppCompatActivity() {
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 100 -> {
+                    if(data!!.hasExtra("delete_list")) {
+                        PhotoList = data!!.getSerializableExtra("delete_list") as ArrayList<PhotoData>
+                        setView(photo_recyclerView)
+                        setPhotoSize(3, 3)
+                        delete_check = 1
+                    }
                     val doc = data!!.getIntExtra("index", 0)
                     recyclerView?.smoothScrollToPosition(doc)
                 }
@@ -182,6 +191,18 @@ class Main_PhotoView: AppCompatActivity() {
         down_button.setOnClickListener {
             view?.smoothScrollToPosition(photoList.size)
         }
+    }
+
+    override fun onBackPressed() {
+        finishActivity()
+    }
+
+    private fun finishActivity() {
+        val intent = Intent()
+        if(delete_check == 1)
+            intent.putExtra("delete_check", delete_check)
+        setResult(Activity.RESULT_OK, intent)
+        finish()
     }
 
 }

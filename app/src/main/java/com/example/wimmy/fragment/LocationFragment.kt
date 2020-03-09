@@ -1,69 +1,66 @@
-package com.example.wimmy.fragment
+package com.example.wimmy
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.os.SystemClock
-import android.provider.MediaStore
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.ViewTreeObserver
+import android.util.Log
+import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
-import com.example.wimmy.DataBaseObserver
-import com.example.wimmy.MainActivity
-import com.example.wimmy.Main_PhotoView
-import com.example.wimmy.R
+import com.example.wimmy.db.*
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.main_activity.view.*
-import com.example.wimmy.db.MediaStore_Dao
-import com.example.wimmy.db.thumbnailData
 
+/**
+ * A simple [Fragment] subclass.
+ */
 class LocationFragment(v: AppBarLayout) : Fragment() {
     private var recyclerAdapter : RecyclerAdapterForder?= null
+    var bottomNavigationView: BottomNavigationView? = null
     private var thumbnailList = listOf<thumbnailData>()
-    private lateinit var observer : DataBaseObserver
     private var mLastClickTime: Long = 0
     val ab = v
-
+    private var thisview: View? = null
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?,
                                savedInstanceState: Bundle? ): View? {
         ab.main_toolbar.visibility = View.VISIBLE
         ab.setExpanded(true,true)
 
-        val view : View = inflater.inflate(R.layout.fragment_location, container, false)
-        thumbnailList = MediaStore_Dao.getLocationDir(view.context)
-        setView(view)
-        observer = DataBaseObserver(Handler(), recyclerAdapter!!)
+        thisview = inflater.inflate(R.layout.fragment_name, container, false)
+        thumbnailList = MediaStore_Dao.getNameDir(thisview?.context)
 
-        return view
+        setView(thisview)
+        return thisview
     }
 
-    override fun onResume() {
-        super.onResume()
-        setPhotoSize(this.view!!,3, 3)
-        this.context!!.contentResolver.registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, false, observer)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                202 -> {
+                    if(data!!.getIntExtra("delete_check", 0) == 1) {
+                        thumbnailList = MediaStore_Dao.getNameDir(thisview?.context!!)
+                        setView(thisview!!)
+                    }
+                }
+            }
+        }
     }
-
-    override fun onPause() {
-        super.onPause()
-        this.context!!.contentResolver.unregisterContentObserver(observer)
-    }
-
-    private fun setView(view : View) {
-        val recyclerView = view.findViewById<RecyclerView>(R.id.locationRecycleView)
+    private fun setView(view : View?) {
+        val recyclerView = view?.findViewById<RecyclerView>(R.id.locationRecycleView)
         recyclerAdapter =
             RecyclerAdapterForder(activity, thumbnailList)
             {thumbnailData ->
                 if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
                     val intent = Intent(activity, Main_PhotoView::class.java)
                     intent.putExtra("location_name", thumbnailData.data)
-                    startActivity(intent)
+                    startActivityForResult(intent, 201)
                 }
                 mLastClickTime = SystemClock.elapsedRealtime()
             }
