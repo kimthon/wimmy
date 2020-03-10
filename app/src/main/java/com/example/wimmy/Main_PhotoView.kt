@@ -40,26 +40,9 @@ class Main_PhotoView: AppCompatActivity() {
         getExtra(view)
 
         updown_Listener(recyclerView)
+        updownEvent()
 
 
-        val onScrollListener = object:RecyclerView.OnScrollListener() {
-            var temp: Int = 0
-            override fun onScrolled(@NonNull recyclerView:RecyclerView, dx:Int, dy:Int) {
-                if(temp == 1) {
-                    super.onScrolled(recyclerView, dx, dy)
-                    up_button.visibility = View.GONE
-                    down_button.visibility = View.GONE
-                }
-            }
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-                up_button.visibility = View.VISIBLE
-                down_button.visibility = View.VISIBLE
-                temp = 1
-            }
-
-        }
-        recyclerView?.setOnScrollListener(onScrollListener)
 
     }
 
@@ -78,10 +61,6 @@ class Main_PhotoView: AppCompatActivity() {
 
                 val intent = Intent(this, PhotoViewPager::class.java)
                 intent.putExtra("photo_num", num)
-                intent.putExtra("thumbnail", PhotoData.photo_id)
-
-                intent.putParcelableArrayListExtra("photo_list", recyclerAdapter!!.getThumbnailList())
-                intent.putParcelableArrayListExtra("tag_list", tagList)
 
                 startActivityForResult(intent, 100)
 
@@ -116,14 +95,13 @@ class Main_PhotoView: AppCompatActivity() {
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 100 -> {
-                    if(data!!.hasExtra("delete_list")) {
-                        val PhotoList = data!!.getSerializableExtra("delete_list") as ArrayList<PhotoData>
+                    if(data!!.hasExtra("delete_check")) {
                         setView(photo_recyclerView)
                         setPhotoSize(3, 3)
                         delete_check = 1
                     }
                     val doc = data!!.getIntExtra("index", 0)
-                    recyclerView?.smoothScrollToPosition(doc)
+                    recyclerView?.scrollToPosition(doc)
                 }
             }
         }
@@ -193,5 +171,28 @@ class Main_PhotoView: AppCompatActivity() {
         setResult(Activity.RESULT_OK, intent)
         finish()
     }
+
+    fun updownEvent() {
+        updown_Listener(recyclerView)
+        val onScrollListener = object : RecyclerView.OnScrollListener() {
+            var temp: Int = 0
+            override fun onScrolled(@NonNull recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (temp == 1) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    up_button.visibility = View.GONE
+                    down_button.visibility = View.GONE
+                }
+            }
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                up_button.visibility = View.VISIBLE
+                down_button.visibility = View.VISIBLE
+                temp = 1
+            }
+        }
+
+        recyclerView?.setOnScrollListener(onScrollListener)
+    }
+
 }
 
