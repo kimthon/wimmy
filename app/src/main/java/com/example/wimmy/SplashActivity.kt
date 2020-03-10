@@ -31,7 +31,10 @@ class SplashActivity : AppCompatActivity() {
             })
             dlg.show()
         }
-        else startActivity(intent)
+        else {
+            startActivity(intent)
+            finish()
+        }
     }
 }
 
