@@ -37,11 +37,11 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
         ab.main_toolbar.visibility = View.VISIBLE
         ab.setExpanded(true,true)
 
-        thisview = inflater.inflate(R.layout.fragment_name, container, false)
+        thisview = inflater.inflate(R.layout.fragment_location, container, false)
         val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
         setView(thisview)
-        vm.setNameDir(recyclerAdapter!!)
+        vm.setLocationDir(recyclerAdapter!!)
         observer = DataBaseObserver(Handler(), recyclerAdapter!!)
 
         return thisview

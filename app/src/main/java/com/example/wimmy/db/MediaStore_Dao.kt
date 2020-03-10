@@ -167,31 +167,6 @@ object MediaStore_Dao {
         return getDir(adapter, selection)
     }
 
-    fun getLocationInfo(context: Context, id : Long) : String {
-        var loc : String = noLocationData
-
-        val projection = arrayOf(
-            MediaStore.Images.ImageColumns.LATITUDE,
-            MediaStore.Images.ImageColumns.LONGITUDE
-        )
-        val selection =  MediaStore.Images.ImageColumns._ID + " = " + id
-
-        val cursor = context.contentResolver.query(uri, projection, selection, null, null)
-        if(!cursorIsValid(cursor)) return loc
-
-        val lat = cursor!!.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LATITUDE))
-        val lon = cursor!!.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LONGITUDE))
-
-        val geo = Geocoder(context)
-        val locTmp = geo.getFromLocation(lat, lon, 1)
-        if(locTmp != null && locTmp.isNotEmpty()) {
-            loc = locTmp[0].countryName
-            if(locTmp[0].locality != null) loc += " ${locTmp[0].locality}"
-            if(locTmp[0].subLocality != null) loc += " ${locTmp[0].subLocality}"
-        }
-        return loc
-    }
-
     fun LoadThumbnailById(context: Context, id : Long) : Bitmap{
         var bitmap : Bitmap = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)

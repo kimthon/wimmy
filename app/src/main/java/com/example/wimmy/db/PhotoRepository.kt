@@ -2,6 +2,7 @@ package com.example.wimmy.db
 
 import android.app.Application
 import android.content.Context
+import android.net.ConnectivityManager
 import android.os.AsyncTask
 import android.widget.TextView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
@@ -129,22 +130,23 @@ class PhotoRepository(application: Application) {
          }
       }
 
-      private class setOpenFavoriteDirAsyncTask(asyncTask: PhotoData_Dao, adapter: RecyclerAdapterPhoto) : AsyncTask<Void, Void, ArrayList<PhotoData>>() {
+      private class setOpenFavoriteDirAsyncTask(asyncTask: PhotoData_Dao, adapter: RecyclerAdapterPhoto) : AsyncTask<Void, Void, List<Long>>() {
          private val asyncTask = asyncTask
          private val  adapter = adapter
 
-         override fun doInBackground(vararg params: Void?): ArrayList<PhotoData>? {
+         override fun doInBackground(vararg params: Void?): List<Long>? {
             val idList = asyncTask.getFavoriteDir()
-            val list =  MediaStore_Dao.getLocationDir(adapter, idList)
-            for(id in list) {
-               setExtraData(asyncTask, adapter, id).execute()
-            }
-
-            return list
+            return idList
          }
 
-         override fun onPostExecute(result: ArrayList<PhotoData>?) {
-            adapter.setThumbnailList(result)
+         override fun onPostExecute(result: List<Long>?) {
+            //임시
+            val list = MediaStore_Dao.getLocationDir(adapter, result)
+            if(!result.isNullOrEmpty()) {
+               for (id in list) {
+                  setExtraData(asyncTask, adapter, id).execute()
+               }
+            }
          }
       }
 
@@ -170,6 +172,9 @@ class PhotoRepository(application: Application) {
          override fun doInBackground(vararg params: Void?): Void? {
             var extra = asyncTask.getExtraPhotoData(data.photo_id)
             if(extra == null) {
+               //인터넷 연결안될 시 패스
+               if(!NetworkIsValid(adapter.context!!)) return null
+
                val loc = MediaStore_Dao.getLocation(adapter.context!!.applicationContext, data.photo_id)
                extra = ExtraPhotoData(data.photo_id, loc, false)
                asyncTask.insert(extra)
@@ -180,6 +185,11 @@ class PhotoRepository(application: Application) {
 
             return null
          }
+      }
+
+      private fun NetworkIsValid(context: Context) : Boolean {
+         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+         return cm.activeNetworkInfo != null
       }
    }
 
