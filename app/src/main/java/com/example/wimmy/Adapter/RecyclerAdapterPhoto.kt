@@ -57,14 +57,19 @@ class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<PhotoData
         notifyDataSetChanged()
     }
 
-    fun setThumbnailList(list : ArrayList<PhotoData>) : ArrayList<PhotoData>{
-        this.list = list
-        notifyDataSetChanged()
+    fun setThumbnailList(list : ArrayList<PhotoData>?) {
+        if(list.isNullOrEmpty()) this.list = ArrayList<PhotoData>()
+        else {
+            this.list = list
+            notifyDataSetChanged()
+        }
+    }
+
+    fun getThumbnailList() : ArrayList<PhotoData> {
         return list
     }
 
-    fun setThumbnailList(list : List<PhotoData>) {
-        this.list.addAll(list)
-        notifyDataSetChanged()
+    fun getSize() : Int {
+        return list.size
     }
 }
