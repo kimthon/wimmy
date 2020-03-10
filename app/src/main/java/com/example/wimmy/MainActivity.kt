@@ -25,6 +25,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import com.example.wimmy.fragment.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.main_activity.*
 import java.io.File
@@ -60,7 +61,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         go_camera.setOnClickListener {
             captureCamera()
         }
-
+        checkPermission()
     }
 
 
@@ -244,7 +245,56 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     // 안드로이드 앱 개발시 TargetSDK가 마시멜로 버전(APK 23)이상인 경우, 디바이스의 특정 기능을 사용할 때 권한을 요구하는데
     // 그 권한 중에 위험 권한으로 분류된 권한은 개발자가 직접 사용자에게 권한 허용을 물을 수 있도록 작성해야한다.
     // 즉, 코드로 작성해야함.
+    private fun checkPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !== PackageManager.PERMISSION_GRANTED)
+        {
+            // 다시 보지 않기 버튼을 만드려면 이 부분에 바로 요청을 하도록 하면 됨 (아래 else{..} 부분 제거)
+            // ActivityCompat.requestPermissions((Activity)mContext, new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSION_CAMERA);
+            // 처음 호출시엔 if()안의 부분은 false로 리턴 됨 -> else{..}의 요청으로 넘어감
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))
+            {
+                AlertDialog.Builder(this)
+                    .setTitle("알림")
+                    .setMessage("저장소 권한이 거부되었습니다. 사용을 원하시면 설정에서 해당 권한을 직접 허용하셔야 합니다.")
+                    .setNeutralButton("설정", object: DialogInterface.OnClickListener {
+                        override fun onClick(dialogInterface:DialogInterface, i:Int) {
+                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                            intent.data = Uri.parse("package:" + packageName)
+                            startActivity(intent)
+                        }
+                    })
+                    .setPositiveButton("확인", object:DialogInterface.OnClickListener {
+                        override fun onClick(dialogInterface:DialogInterface, i:Int) {
+                            finish()
+                        }
+                    })
+                    .setCancelable(false)
+                    .create()
+                    .show()
+            }
+            else
+            {
+                ActivityCompat.requestPermissions(this, arrayOf<String>(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), MY_PERMISSION_STORAGE)
+            }
+        }
+    }
 
+    override fun onRequestPermissionsResult(requestCode:Int, @NonNull permissions:Array<String>, @NonNull grantResults:IntArray) {
+        when (requestCode) {
+            MY_PERMISSION_STORAGE -> for (i in grantResults.indices)
+            {
+                // grantResults[] : 허용된 권한은 0, 거부한 권한은 -1
+                if (grantResults[i] < 0)
+                {
+                    Toast.makeText(this@MainActivity, "해당 권한을 활성화 하셔야 합니다.", Toast.LENGTH_SHORT).show()
+                    return
+                }
+            }
+        }// 허용했다면 이 부분에서..
+    }
+    companion object {
+        private val MY_PERMISSION_STORAGE = 1111
+    }
 
 }
 
