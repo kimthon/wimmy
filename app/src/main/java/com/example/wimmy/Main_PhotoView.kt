@@ -7,17 +7,13 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.SystemClock
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.View
-import android.widget.AbsListView
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.app.ActivityCompat.startActivityForResult
-import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -52,6 +48,7 @@ class Main_PhotoView: AppCompatActivity(), CoroutineScope {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_photoview)
         val view: View = findViewById(R.id.photo_recyclerView)
+
         mJob = Job()
         getExtra(view)
         SetHeader()
@@ -63,16 +60,16 @@ class Main_PhotoView: AppCompatActivity(), CoroutineScope {
     private fun setView(view : View) {
         recyclerView = view.findViewById<RecyclerView>(R.id.photo_recyclerView)
         recyclerAdapter =
-            RecyclerAdapterPhoto(this, photoList) {
+            RecyclerAdapterPhoto(this, arrayListOf()) {
                     PhotoData, num, image ->  if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
                 Toast.makeText(this, "인덱스: ${num} 이름: ${PhotoData.name}", Toast.LENGTH_SHORT)
                     .show()
 
                 val intent = Intent(this, PhotoViewPager::class.java)
                 intent.putExtra("photo_num", num)
+
                 startActivityForResult(intent, 100)
 
-                //}
             }
                 mLastClickTime = SystemClock.elapsedRealtime()
             }
@@ -104,6 +101,7 @@ class Main_PhotoView: AppCompatActivity(), CoroutineScope {
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 100 -> {
+
                     if(data!!.hasExtra("delete_check")) {
                         setView(photo_recyclerView)
                         setPhotoSize(3, 3)
@@ -175,7 +173,7 @@ class Main_PhotoView: AppCompatActivity(), CoroutineScope {
         }
 
         down_button.setOnClickListener {
-            view?.smoothScrollToPosition(photoList.size)
+            view?.smoothScrollToPosition(recyclerAdapter!!.getSize())
         }
     }
 
@@ -195,6 +193,7 @@ class Main_PhotoView: AppCompatActivity(), CoroutineScope {
         setResult(Activity.RESULT_OK, intent)
         finish()
     }
+
 
     fun loading() {
         //로딩
@@ -235,6 +234,7 @@ class Main_PhotoView: AppCompatActivity(), CoroutineScope {
 
         recyclerView?.setOnScrollListener(onScrollListener)
     }
+
 
 }
 

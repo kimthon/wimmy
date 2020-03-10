@@ -31,19 +31,5 @@ class TagData(
     var tag: String,
     @ColumnInfo var type: String)
 
-
 data class thumbnailData( var photo_id : Long,
                           var data : String)
-
-class Converters {
-    @TypeConverter
-    fun fromTimestamp(value: Long?): Date? {
-        return value?.let { Date(it) }
-    }
-
-    @TypeConverter
-    fun dateToTimestamp(date: Date?): Long? {
-        return date?.time
-    }
-}
-

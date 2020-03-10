@@ -1,42 +1,61 @@
-package com.example.wimmy
+package com.example.wimmy.fragment
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.os.SystemClock
-import android.util.Log
+import android.provider.MediaStore
 import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
+import com.example.wimmy.DataBaseObserver
+import com.example.wimmy.MainActivity
+import com.example.wimmy.Main_PhotoView
+import com.example.wimmy.R
 import com.example.wimmy.db.*
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.main_activity.view.*
+import com.example.wimmy.db.PhotoViewModel
+import com.example.wimmy.db.thumbnailData
 
-/**
- * A simple [Fragment] subclass.
- */
 class LocationFragment(v: AppBarLayout) : Fragment() {
+    private var thisview: View? = null
     private var recyclerAdapter : RecyclerAdapterForder?= null
-    var bottomNavigationView: BottomNavigationView? = null
     private var thumbnailList = listOf<thumbnailData>()
+    private lateinit var observer : DataBaseObserver
     private var mLastClickTime: Long = 0
     val ab = v
-    private var thisview: View? = null
+
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?,
                                savedInstanceState: Bundle? ): View? {
         ab.main_toolbar.visibility = View.VISIBLE
         ab.setExpanded(true,true)
 
         thisview = inflater.inflate(R.layout.fragment_name, container, false)
-        thumbnailList = MediaStore_Dao.getNameDir(thisview?.context)
+        val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
         setView(thisview)
+        vm.setNameDir(recyclerAdapter!!)
+        observer = DataBaseObserver(Handler(), recyclerAdapter!!)
+
         return thisview
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setPhotoSize(this.view!!,3, 3)
+        this.context!!.contentResolver.registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, false, observer)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        this.context!!.contentResolver.unregisterContentObserver(observer)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -52,6 +71,7 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
             }
         }
     }
+
     private fun setView(view : View?) {
         val recyclerView = view?.findViewById<RecyclerView>(R.id.locationRecycleView)
         recyclerAdapter =
