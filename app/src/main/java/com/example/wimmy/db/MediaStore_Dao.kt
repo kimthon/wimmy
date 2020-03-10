@@ -1,6 +1,5 @@
 package com.example.wimmy.db
 
-import android.app.Activity
 import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
@@ -11,8 +10,6 @@ import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import android.util.Size
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
@@ -106,7 +103,7 @@ object MediaStore_Dao {
                 MediaStore.Images.ImageColumns.DATA + " NOT LIKE '" + path + "/%/%'"
         return getDir(context, selection)
     }
-    fun getLocationDir(context: Context, idList: List<Long>?) : ArrayList<PhotoData>{
+    fun getLocationDir(context: Context, idList: List<Long>) : ArrayList<PhotoData>{
         return getDirByIdList(context, idList)
     }
 

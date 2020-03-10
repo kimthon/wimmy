@@ -258,11 +258,11 @@ class PhotoRepository(application: Application) {
    }
 
    fun setOpenLocationDir(adapter: RecyclerAdapterPhoto, loc : String) {
-       setOpenLocationDirAsyncTask(photoDao, adapter).execute(loc)
+      setOpenLocationDirAsyncTask(photoDao, adapter).execute(loc)
    }
 
    fun setOpenNameDir(adapter: RecyclerAdapterPhoto, path : String) {
-       setOpenNameDirAsyncTask(photoDao, adapter).execute(path)
+      setOpenNameDirAsyncTask(photoDao, adapter).execute(path)
    }
 
    fun setOpenTagDir(adapter: RecyclerAdapterPhoto, tag : String) {

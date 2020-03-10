@@ -6,15 +6,6 @@ import androidx.room.*
 import java.util.*
 
 
-fun Parcel.writeDate(date: Date?) {
-    writeLong(date?.time ?: -1)
-}
-
-fun Parcel.readDate(): Date? {
-    val long = readLong()
-    return if (long != -1L) Date(long) else null
-}
-
 
 class PhotoData(var photo_id: Long,
                 var name : String,

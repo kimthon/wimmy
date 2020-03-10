@@ -18,7 +18,7 @@ abstract class PhotoDB: RoomDatabase() {
                 //synchronized : 중복 방지
                 synchronized(PhotoDB::class) {
                     INSTANCE = Room.databaseBuilder(context.applicationContext,
-                        PhotoDB::class.java, "photo.db")
+                            PhotoDB::class.java, "photo.db")
                         .fallbackToDestructiveMigration()
                         .build()
                 }
