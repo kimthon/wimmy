@@ -43,8 +43,8 @@ class SplashActivity : AppCompatActivity() {
             translation_api()
         }
 
-
-
+        /*val cm = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if(cm.activeNetworkInfo == null) { }*/
 
     }
     fun translation_api() {

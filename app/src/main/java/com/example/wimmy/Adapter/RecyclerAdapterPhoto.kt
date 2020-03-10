@@ -22,7 +22,6 @@ class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<PhotoData
 
     inner class Holder(itemView: View?) : RecyclerView.ViewHolder(itemView!!) {
         //thumbnail_imgview 변수 받아오기
-
         var thumbnail: ImageView = itemView!!.findViewById<ImageView>(R.id.thumbnail_img)
         var text = itemView?.findViewById<TextView>(R.id.thumbnail_img_text)
 

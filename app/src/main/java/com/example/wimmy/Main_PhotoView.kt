@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -24,11 +25,15 @@ import kotlin.collections.ArrayList
 import java.io.File
 
 class Main_PhotoView: AppCompatActivity() {
-    private var tagList = ArrayList<TagData>()
     private var recyclerAdapter : RecyclerAdapterPhoto?= null
     private var recyclerView: RecyclerView? = null
     private var mLastClickTime: Long = 0
     private var delete_check: Int = 0
+
+    companion object {
+        var tagList = ArrayList<TagData>()
+        var photoList = arrayListOf<PhotoData>()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,8 +46,6 @@ class Main_PhotoView: AppCompatActivity() {
 
         updown_Listener(recyclerView)
         updownEvent()
-
-
 
     }
 
@@ -58,12 +61,11 @@ class Main_PhotoView: AppCompatActivity() {
                     PhotoData, num, image ->  if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
                 Toast.makeText(this, "인덱스: ${num} 이름: ${PhotoData.name}", Toast.LENGTH_SHORT)
                     .show()
-
                 val intent = Intent(this, PhotoViewPager::class.java)
                 intent.putExtra("photo_num", num)
 
                 startActivityForResult(intent, 100)
-
+                Log.d("에러","ㅇ")
             }
                 mLastClickTime = SystemClock.elapsedRealtime()
             }
@@ -96,9 +98,9 @@ class Main_PhotoView: AppCompatActivity() {
             when (requestCode) {
                 100 -> {
                     if(data!!.hasExtra("delete_check")) {
-                        setView(photo_recyclerView)
+                        /*setView(photo_recyclerView)
                         setPhotoSize(3, 3)
-                        delete_check = 1
+                        delete_check = 1*/
                     }
                     val doc = data!!.getIntExtra("index", 0)
                     recyclerView?.scrollToPosition(doc)

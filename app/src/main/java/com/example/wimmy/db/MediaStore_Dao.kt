@@ -14,6 +14,7 @@ import android.util.Size
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
+import com.example.wimmy.Main_PhotoView.Companion.photoList
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
@@ -121,7 +122,7 @@ object MediaStore_Dao {
     }
 
     fun getDir(adapter: RecyclerAdapterPhoto, selection : String) : ArrayList<PhotoData>{
-        val photoList = ArrayList<PhotoData>()
+        photoList.clear()
         val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         val projection = arrayOf(
             MediaStore.Images.ImageColumns._ID, //photo_id
@@ -143,7 +144,6 @@ object MediaStore_Dao {
 
             val dateTaken = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN))
             val date = Date(dateTaken)
-
             var loc : String? = noLocationData
 
             val photoData = PhotoData(id, name, path, loc, date, false)

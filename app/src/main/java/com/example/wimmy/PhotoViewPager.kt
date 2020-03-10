@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
@@ -24,6 +25,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.example.wimmy.Adapter.PagerRecyclerAdapter
+import com.example.wimmy.Main_PhotoView.Companion.photoList
 import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoData
 import com.example.wimmy.db.PhotoViewModel
@@ -42,10 +44,7 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
     private var recyclerAdapter : PagerRecyclerAdapter?= null
     //private var subimg: ImageView? = null
     internal lateinit var viewPager: ViewPager
-    private var photoList = ArrayList<PhotoData>()
-    private var tagList = ArrayList<TagData>()
     private var index: Int = 0
-    private var thumbnail: Long? = null
     private var check: Int = 0
     private var delete_check: Int = 0
 
@@ -54,10 +53,7 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        /*getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        val uiOptions = getWindow().getDecorView().getSystemUiVisibility();
-        var newUiOptions = uiOptions;*/
+
         setContentView(R.layout.photoview_frame)
         val view: View = findViewById(R.id.imgViewPager)
         getExtra()
@@ -148,7 +144,6 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
 
     fun getExtra(){
         if (intent.hasExtra("photo_num")) {
-            thumbnail = intent.getLongExtra("thumbnail", 0)
             //subimg = findViewById(R.id.sub_img) as ImageView // 뷰페이저로 넘어올 때, 애니메이션을 위한 눈속임
             //subimg!!.setImageBitmap(MediaStore_Dao.LoadThumbnail(this, thumbnail!!))
 
@@ -162,6 +157,7 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
             val translator = FirebaseNaturalLanguage.getInstance().getTranslator(options)
 
             var bitmap = BitmapFactory.decodeFile(photoList[index].file_path +'/'+ photoList[index].name)
+
             bitmap =  MediaStore_Dao.modifyOrientaionById(this, photoList[index].photo_id, bitmap)
             val image = FirebaseVisionImage.fromBitmap(bitmap)
             val labeler = FirebaseVision.getInstance().getOnDeviceImageLabeler()

@@ -52,7 +52,7 @@
             android:name=".PhotoViewPager"
             android:theme="@style/PhotoTheme">
         </activity>
-
+        <activity android:name=".Main_Map"/>
         <activity android:name=".SearchView">
         </activity>
         <meta-data

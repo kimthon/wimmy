@@ -244,9 +244,9 @@ class PhotoRepository(application: Application) {
    fun setOpenNameDir(adapter: RecyclerAdapterPhoto, path : String) {
       val list = MediaStore_Dao.getNameDir(adapter, path)
       if(!list.isNullOrEmpty()) {
-         for (id in list) {
+         /*for (id in list) {
             setExtraData(photoDao, adapter, id).execute()
-         }
+         }*/
       }
    }
 
