@@ -24,18 +24,11 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.example.wimmy.Adapter.PagerRecyclerAdapter
-import com.example.wimmy.Main_PhotoView.Companion.photoList
-import com.example.wimmy.Main_PhotoView.Companion.tagList
 import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoData
 import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.db.TagData
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.firebase.ml.naturallanguage.FirebaseNaturalLanguage
-import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslateLanguage
-import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslatorOptions
-import com.google.firebase.ml.vision.FirebaseVision
-import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import kotlinx.android.synthetic.main.photoview_frame.*
 import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
@@ -44,8 +37,8 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
     private var recyclerAdapter : PagerRecyclerAdapter?= null
     //private var subimg: ImageView? = null
     internal lateinit var viewPager: ViewPager
-    //private var photoList = ArrayList<PhotoData>()
-    //private var tagList = ArrayList<TagData>()
+    private var photoList = ArrayList<PhotoData>()
+    private var tagList = ArrayList<TagData>()
     private var index: Int = 0
     private var thumbnail: Long? = null
     private var check: Int = 0
@@ -56,7 +49,10 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        /*getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        val uiOptions = getWindow().getDecorView().getSystemUiVisibility();
+        var newUiOptions = uiOptions;*/
         setContentView(R.layout.photoview_frame)
         val view: View = findViewById(R.id.imgViewPager)
         getExtra()
@@ -143,48 +139,20 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
             favorite.setImageResource(R.drawable.ic_favorite)
             check = 0
         }
-
-        // 번역 API, 이미지 분석 API Test
-        val options = FirebaseTranslatorOptions.Builder()
-            .setSourceLanguage(FirebaseTranslateLanguage.EN)
-            .setTargetLanguage(FirebaseTranslateLanguage.KO)
-            .build()
-        val translator = FirebaseNaturalLanguage.getInstance().getTranslator(options)
-
-        var bitmap = BitmapFactory.decodeFile(photoList[index].file_path +'/'+ photoList[index].name)
-        bitmap =  MediaStore_Dao.modifyOrientaionById(this, photoList[index].photo_id, bitmap)
-        val image = FirebaseVisionImage.fromBitmap(bitmap)
-        val labeler = FirebaseVision.getInstance().getOnDeviceImageLabeler()
-        labeler.processImage(image)
-            .addOnSuccessListener { labels ->
-                translator.downloadModelIfNeeded()
-                    .addOnSuccessListener {
-                        for (label in labels) {
-                            translator.translate(label.text)
-                                .addOnSuccessListener { translatedText ->
-                                    if(label.confidence >= 0.7) {
-                                        println("번호[" + index + "] " + "태그: " + translatedText)
-                                        println("번호[" + index + "] " + "신뢰도: " + "${label.confidence}")
-                                    }
-                                }
-                                .addOnFailureListener { exception ->
-
-                                }
-
-                        }
-                    }
-                    .addOnFailureListener { exception ->
-                    }
-            }
-            .addOnFailureListener { e ->
-
-            }
-
     }
 
     fun getExtra(){
-        if (intent.hasExtra("photo_num")) {
+        if (intent.hasExtra("photo_num") && intent.hasExtra("photo_list")) {
+            thumbnail = intent.getLongExtra("thumbnail", 0)
+            //subimg = findViewById(R.id.sub_img) as ImageView // 뷰페이저로 넘어올 때, 애니메이션을 위한 눈속임
+            //subimg!!.setImageBitmap(MediaStore_Dao.LoadThumbnail(this, thumbnail!!))
+
             index = intent.getIntExtra("photo_num", 0)
+            photoList = intent.getSerializableExtra("photo_list") as ArrayList<PhotoData>
+
+
+            tagList = intent.getSerializableExtra("tag_list") as ArrayList<TagData>
+
         }
         else {
             Toast.makeText(this, "전달된 이름이 없습니다", Toast.LENGTH_SHORT).show()
@@ -276,7 +244,7 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
         val intent = Intent()
         intent.putExtra("index", index)
         if(delete_check == 1)
-            intent.putExtra("delete_check", delete_check)
+            intent.putParcelableArrayListExtra("delete_list", photoList)
         setResult(Activity.RESULT_OK, intent)
         finish()
     }
