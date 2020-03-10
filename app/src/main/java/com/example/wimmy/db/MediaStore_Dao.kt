@@ -13,6 +13,7 @@ import android.util.Log
 import android.util.Size
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
@@ -101,25 +102,25 @@ object MediaStore_Dao {
         return IdList
     }
 
-    fun getNameDir(context: Context, path : String) : ArrayList<PhotoData>{
+    fun getNameDir(adapter : RecyclerAdapterPhoto, path : String) : ArrayList<PhotoData>{
         val selection = MediaStore.Images.ImageColumns.DATA + " LIKE '" + path + "/%' AND " +
                 MediaStore.Images.ImageColumns.DATA + " NOT LIKE '" + path + "/%/%'"
-        return getDir(context, selection)
+        return getDir(adapter, selection)
     }
-    fun getLocationDir(context: Context, idList: List<Long>?) : ArrayList<PhotoData>{
-        return getDirByIdList(context, idList)
+    fun getLocationDir(adapter: RecyclerAdapterPhoto, idList: List<Long>?) : ArrayList<PhotoData>{
+        return getDirByIdList(adapter, idList)
     }
 
-    fun getDateDir(context: Context, cal : Calendar) : ArrayList<PhotoData>{
+    fun getDateDir(adapter: RecyclerAdapterPhoto, cal : Calendar) : ArrayList<PhotoData>{
         val selection = MediaStore.Images.ImageColumns.DATE_TAKEN + " BETWEEN " + getDateStart(cal) + " AND " + getDateEnd(cal)
-        return getDir(context, selection)
+        return getDir(adapter, selection)
     }
 
-    fun getTagDir(context: Context, idList : List<Long>?) : ArrayList<PhotoData> {
-        return getDirByIdList(context, idList)
+    fun getTagDir(adapter: RecyclerAdapterPhoto, idList : List<Long>?) : ArrayList<PhotoData> {
+        return getDirByIdList(adapter, idList)
     }
 
-    fun getDir(context: Context, selection : String) : ArrayList<PhotoData>{
+    fun getDir(adapter: RecyclerAdapterPhoto, selection : String) : ArrayList<PhotoData>{
         val photoList = ArrayList<PhotoData>()
         val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         val projection = arrayOf(
@@ -130,7 +131,7 @@ object MediaStore_Dao {
             MediaStore.Images.ImageColumns.DATE_TAKEN //date
         )
 
-        val cursor = context.contentResolver.query(uri, projection, selection, null, null)
+        val cursor = adapter.context!!.contentResolver.query(uri, projection, selection, null, null)
         if(!cursorIsValid(cursor)) return photoList
 
         do {
@@ -143,24 +144,18 @@ object MediaStore_Dao {
             val dateTaken = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN))
             val date = Date(dateTaken)
 
-            val lat = cursor.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LATITUDE))
-            val lon = cursor.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LONGITUDE))
-            val geo = Geocoder(context)
             var loc : String? = noLocationData
-            val locTmp = geo.getFromLocation(lat, lon, 1)
-            if(locTmp != null && locTmp.isNotEmpty()) {
-                loc = locTmp[0].countryName
-                if(locTmp[0].locality != null) loc += " ${locTmp[0].locality}"
-                if(locTmp[0].subLocality != null) loc += " ${locTmp[0].subLocality}"
-            }
-            photoList.add(PhotoData(id, name, path, loc, date, false))
+
+            val photoData = PhotoData(id, name, path, loc, date, false)
+            adapter.addThumbnailList(photoData)
+            photoList.add(photoData)
         } while (cursor!!.moveToNext())
         cursor.close()
 
         return photoList
     }
 
-    fun getDirByIdList(context: Context, idList: List<Long>?) : ArrayList<PhotoData> {
+    fun getDirByIdList(adapter: RecyclerAdapterPhoto, idList: List<Long>?) : ArrayList<PhotoData> {
         if(idList.isNullOrEmpty()) return ArrayList()
         var selection = MediaStore.Images.ImageColumns._ID + " IN ("
         for( id in idList) {
@@ -169,7 +164,7 @@ object MediaStore_Dao {
         selection = selection.substring(0, selection.length - 1)
         selection += ")"
 
-        return getDir(context, selection)
+        return getDir(adapter, selection)
     }
 
     fun getLocationInfo(context: Context, id : Long) : String {

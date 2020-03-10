@@ -22,7 +22,7 @@ import kotlinx.android.synthetic.main.search_view.*
 
 class SearchView: AppCompatActivity() {
 
-    private var thumbnailList = listOf<thumbnailData>()
+    private var thumbnailList = arrayListOf<thumbnailData>()
 
     private var recyclerAdapter : RecyclerAdapterForder?= null
     var recyclerView: RecyclerView? = null
@@ -111,7 +111,7 @@ class SearchView: AppCompatActivity() {
     fun searchResult(){
         searchview.setOnQueryTextListener (object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
-                thumbnailList = emptyList()
+                thumbnailList = arrayListOf()
                 when(searchview_spinner.selectedItemPosition) {
 
                     0 -> {
