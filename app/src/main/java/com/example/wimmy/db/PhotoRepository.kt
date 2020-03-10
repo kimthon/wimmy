@@ -129,22 +129,23 @@ class PhotoRepository(application: Application) {
          }
       }
 
-      private class setOpenFavoriteDirAsyncTask(asyncTask: PhotoData_Dao, adapter: RecyclerAdapterPhoto) : AsyncTask<Void, Void, ArrayList<PhotoData>>() {
+      private class setOpenFavoriteDirAsyncTask(asyncTask: PhotoData_Dao, adapter: RecyclerAdapterPhoto) : AsyncTask<Void, Void, List<Long>>() {
          private val asyncTask = asyncTask
          private val  adapter = adapter
 
-         override fun doInBackground(vararg params: Void?): ArrayList<PhotoData>? {
+         override fun doInBackground(vararg params: Void?): List<Long>? {
             val idList = asyncTask.getFavoriteDir()
-            val list =  MediaStore_Dao.getLocationDir(adapter, idList)
-            for(id in list) {
-               setExtraData(asyncTask, adapter, id).execute()
-            }
-
-            return list
+            return idList
          }
 
-         override fun onPostExecute(result: ArrayList<PhotoData>?) {
-            adapter.setThumbnailList(result)
+         override fun onPostExecute(result: List<Long>?) {
+            //임시
+            val list = MediaStore_Dao.getLocationDir(adapter, result)
+            if(!result.isNullOrEmpty()) {
+               for (id in list) {
+                  setExtraData(asyncTask, adapter, id).execute()
+               }
+            }
          }
       }
 
