@@ -2,6 +2,7 @@ package com.example.wimmy.Adapter
 
 import android.app.Activity
 import android.graphics.Bitmap
+import android.os.AsyncTask
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
@@ -38,7 +39,7 @@ class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<PhotoData
 
             if(bitmapList[adapterPosition] == null) {
                 thumbnail.setImageResource(0)
-                ThumbnailAsyncTask( this, thumbnail, data.photo_id, bitmapList).execute(context!!.applicationContext)
+                ThumbnailAsyncTask( this, thumbnail, data.photo_id, bitmapList).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, context!!.applicationContext)
             }
             else thumbnail.setImageBitmap(bitmapList[adapterPosition])
 

@@ -1,6 +1,7 @@
 package com.example.wimmy.Adapter
 
 import android.graphics.Bitmap
+import android.os.AsyncTask
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,7 +34,7 @@ class RecyclerAdapterForder(val context: FragmentActivity?, var list: List<thumb
 
             if(bitmapList[adapterPosition] == null) {
                 thumbnail.setImageResource(0)
-                ThumbnailAsyncTask( this, thumbnail, data.photo_id, bitmapList).execute(context!!.applicationContext)
+                ThumbnailAsyncTask( this, thumbnail, data.photo_id, bitmapList).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, context!!.applicationContext)
             }
             else thumbnail.setImageBitmap(bitmapList[adapterPosition])
 
