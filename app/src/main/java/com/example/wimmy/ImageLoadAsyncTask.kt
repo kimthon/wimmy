@@ -9,12 +9,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoData
 
-class ThumbnailAsyncTask(holder: RecyclerView.ViewHolder, imageView: ImageView, id : Long, bitmapList: MutableList<Bitmap?>) : AsyncTask<Context, Void, Bitmap>() {
+class ThumbnailAsyncTask(holder: RecyclerView.ViewHolder, imageView: ImageView, id : Long) : AsyncTask<Context, Void, Bitmap>() {
     private val holder = holder
     private val holderPosition = holder.adapterPosition
     private val imageView: ImageView = imageView
     private val id = id
-    private val bitmapList = bitmapList
 
     override fun doInBackground(vararg params: Context?): Bitmap? {
         return if(holder.adapterPosition == holderPosition) {
@@ -25,7 +24,6 @@ class ThumbnailAsyncTask(holder: RecyclerView.ViewHolder, imageView: ImageView, 
     override fun onPostExecute(result: Bitmap?) {
         if(holder.adapterPosition == holderPosition) {
             imageView.setImageBitmap(result)
-            bitmapList[holderPosition] = result
         }
     }
 }

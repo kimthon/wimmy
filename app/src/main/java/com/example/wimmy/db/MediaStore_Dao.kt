@@ -103,26 +103,9 @@ object MediaStore_Dao {
         return IdList
     }
 
-    fun getNameDir(adapter : RecyclerAdapterPhoto, path : String) : ArrayList<PhotoData>{
+    fun getNameDir(adapter : RecyclerAdapterPhoto, path : String) : Cursor?{
         val selection = MediaStore.Images.ImageColumns.DATA + " LIKE '" + path + "/%' AND " +
                 MediaStore.Images.ImageColumns.DATA + " NOT LIKE '" + path + "/%/%'"
-        return getDir(adapter, selection)
-    }
-    fun getLocationDir(adapter: RecyclerAdapterPhoto, idList: List<Long>?) : ArrayList<PhotoData>{
-        return getDirByIdList(adapter, idList)
-    }
-
-    fun getDateDir(adapter: RecyclerAdapterPhoto, cal : Calendar) : ArrayList<PhotoData>{
-        val selection = MediaStore.Images.ImageColumns.DATE_TAKEN + " BETWEEN " + getDateStart(cal) + " AND " + getDateEnd(cal)
-        return getDir(adapter, selection)
-    }
-
-    fun getTagDir(adapter: RecyclerAdapterPhoto, idList : List<Long>?) : ArrayList<PhotoData> {
-        return getDirByIdList(adapter, idList)
-    }
-
-    fun getDir(adapter: RecyclerAdapterPhoto, selection : String) : ArrayList<PhotoData>{
-        photoList.clear()
         val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         val projection = arrayOf(
             MediaStore.Images.ImageColumns._ID, //photo_id
@@ -133,30 +116,47 @@ object MediaStore_Dao {
         )
 
         val cursor = adapter.context!!.contentResolver.query(uri, projection, selection, null, null)
-        if(!cursorIsValid(cursor)) return photoList
-
-        do {
-            val id = cursor!!.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
-            val allPath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA))
-            val file = File(allPath)
-            val name = file.name
-            val path = allPath.subSequence(0, (allPath.length - name.length - 1)).toString()
-
-            val dateTaken = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN))
-            val date = Date(dateTaken)
-            var loc : String? = noLocationData
-
-            val photoData = PhotoData(id, name, path, loc, date, false)
-            adapter.addThumbnailList(photoData)
-            photoList.add(photoData)
-        } while (cursor!!.moveToNext())
-        cursor.close()
-
-        return photoList
+        return cursor
+    }
+    fun getLocationDir(adapter: RecyclerAdapterPhoto, idList: List<Long>?) : Cursor?{
+        return getDirByIdList(adapter, idList)
     }
 
-    fun getDirByIdList(adapter: RecyclerAdapterPhoto, idList: List<Long>?) : ArrayList<PhotoData> {
-        if(idList.isNullOrEmpty()) return ArrayList()
+    fun getDateDir(adapter: RecyclerAdapterPhoto, cal : Calendar) : Cursor? {
+        val selection = MediaStore.Images.ImageColumns.DATE_TAKEN + " BETWEEN " + getDateStart(cal) + " AND " + getDateEnd(cal)
+        return getDir(adapter, selection)
+    }
+
+    fun getTagDir(adapter: RecyclerAdapterPhoto, idList : List<Long>?) : Cursor? {
+        return getDirByIdList(adapter, idList)
+    }
+
+    fun getDir(adapter: RecyclerAdapterPhoto, selection : String) : Cursor? {
+        val photoList = ArrayList<PhotoData>()
+        val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        val projection = arrayOf(
+            MediaStore.Images.ImageColumns._ID, //photo_id
+            MediaStore.Images.ImageColumns.DATA, // folder + name
+            MediaStore.Images.ImageColumns.LATITUDE,
+            MediaStore.Images.ImageColumns.LONGITUDE,
+            MediaStore.Images.ImageColumns.DATE_TAKEN //date
+        )
+
+        val cursor = adapter.context!!.contentResolver.query(uri, projection, selection, null, null)
+        return cursor
+    }
+
+    fun getDataById(adapter: RecyclerAdapterPhoto, id : Long) : PhotoData? {
+        val selection = MediaStore.Images.ImageColumns._ID + " = " + id
+        val cursor = getDir(adapter, selection)
+        if(cursorIsValid(cursor)) {
+            return getPhotoData(cursor!!)
+        }
+        else return null
+    }
+
+    fun getDirByIdList(adapter: RecyclerAdapterPhoto, idList: List<Long>?) : Cursor? {
+        if(idList.isNullOrEmpty()) return null
         var selection = MediaStore.Images.ImageColumns._ID + " IN ("
         for( id in idList) {
             selection += "$id ,"
@@ -196,7 +196,23 @@ object MediaStore_Dao {
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
 
-    private fun cursorIsValid(cursor: Cursor?) : Boolean {
+    fun getPhotoData(cursor: Cursor) : PhotoData {
+        val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
+        val allPath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA))
+        val file = File(allPath)
+        val name = file.name
+        val path = allPath.subSequence(0, (allPath.length - name.length - 1)).toString()
+
+        val dateTaken = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN))
+        val date = Date(dateTaken)
+
+        var loc : String? = noLocationData
+
+        val photoData = PhotoData(id, name, path, loc, date, false)
+        return photoData
+    }
+
+    fun cursorIsValid(cursor: Cursor?) : Boolean {
         if (cursor == null) {
             Log.e("TAG", "cursor null or cursor is empty")
             return false
