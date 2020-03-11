@@ -19,7 +19,6 @@ class RecyclerAdapterForder(val context: FragmentActivity?, var list: List<thumb
 {
     private var size : Int = 200
     private var padding_size = 200
-    private var bitmapList = MutableList<Bitmap?>(list.size) { _ -> null }
 
     inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         //thumbnail_imgview 변수 받아오기
@@ -32,11 +31,8 @@ class RecyclerAdapterForder(val context: FragmentActivity?, var list: List<thumb
             thumbnail.layoutParams.height = size
             layoutParam.setMargins(padding_size, padding_size, padding_size, padding_size)
 
-            if(bitmapList[adapterPosition] == null) {
-                thumbnail.setImageResource(0)
-                ThumbnailAsyncTask( this, thumbnail, data.photo_id, bitmapList).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, context!!.applicationContext)
-            }
-            else thumbnail.setImageBitmap(bitmapList[adapterPosition])
+            thumbnail.setImageResource(0)
+            ThumbnailAsyncTask( this, thumbnail, data.photo_id).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, context!!.applicationContext)
 
             text.text = File(data.data).name
             itemView.setOnClickListener { itemClick(data) }
@@ -66,7 +62,6 @@ class RecyclerAdapterForder(val context: FragmentActivity?, var list: List<thumb
         if(list.isNullOrEmpty()) this.list = listOf<thumbnailData>()
         else {
             this.list = list
-            bitmapList = MutableList<Bitmap?>(list.size) { _ -> null }
             notifyDataSetChanged()
         }
     }

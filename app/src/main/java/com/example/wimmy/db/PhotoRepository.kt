@@ -313,7 +313,7 @@ class PhotoRepository(application: Application) {
    }
 
    fun setCalendarTag(textView: TextView, inputCalendar: Calendar) {
-      setCalendarTagAsyncTask(photoDao, textView, inputCalendar).execute(textView.context)
+      setCalendarTagAsyncTask(photoDao, textView, inputCalendar).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, textView.context)
    }
 
    //폴더 내용 생성
