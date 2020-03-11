@@ -1,5 +1,6 @@
 package com.example.wimmy.db
 
+import android.database.Cursor
 import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
 
@@ -33,11 +34,11 @@ interface PhotoData_Dao {
     fun getLocationDir() : List<thumbnailData>
 
     @Query("SELECT photo_id FROM tag_data where tag = :tag")
-    fun getTagDir(tag : String) : List<Long>
+    fun getTagDir(tag : String) : Cursor
     @Query("SELECT photo_id FROM extra_photo_data where location = :location")
-    fun getLocationDir(location : String) : List<Long>
+    fun getLocationDir(location : String) : Cursor
     @Query("SELECT photo_id FROM extra_photo_data where favorite = 'true'")
-    fun getFavoriteDir() : List<Long>
+    fun getFavoriteDir() : Cursor
 
     @Query("SELECT tag FROM tag_data WHERE photo_id = :id")
     fun getTags(id : Long) : List<String>

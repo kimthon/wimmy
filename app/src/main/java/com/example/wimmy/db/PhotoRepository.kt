@@ -4,9 +4,14 @@ import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.AsyncTask
+import android.os.Handler
+import android.os.Looper
+import android.provider.MediaStore
 import android.widget.TextView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
+import com.example.wimmy.db.MediaStore_Dao.noLocationData
+import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -28,7 +33,7 @@ class PhotoRepository(application: Application) {
          }
       }
 
-      private class deleteTagByIdAsyncTask constructor(private val asyncTask: PhotoData_Dao) : AsyncTask<Long, Void, Void>() {
+      private class deleteByIdAsyncTask constructor(private val asyncTask: PhotoData_Dao) : AsyncTask<Long, Void, Void>() {
          override fun doInBackground(vararg params: Long?): Void? {
             asyncTask.deleteTagById(params[0]!!)
             asyncTask.deleteExtraById(params[0]!!)
@@ -91,62 +96,146 @@ class PhotoRepository(application: Application) {
       }
 
       // 폴더 내용 생성
-      private class setOpenLocationDirAsyncTask(asyncTask: PhotoData_Dao, adapter: RecyclerAdapterPhoto) : AsyncTask<String, Void, List<Long>>() {
+      private class setOpenDateDirAsyncTask(asyncTask: PhotoData_Dao, adapter: RecyclerAdapterPhoto) : AsyncTask<Calendar, PhotoData, Void>() {
          private val asyncTask = asyncTask
          private val  adapter = adapter
+         private val handler = Handler(Looper.getMainLooper())
+         private var r : Runnable = Runnable{ adapter.notifyItemInserted(adapter.getSize()) }
 
-         override fun doInBackground(vararg params: String?): List<Long>? {
-            val idList = asyncTask.getLocationDir(params[0]!!)
-            return idList
+         override fun doInBackground(vararg params: Calendar?): Void? {
+            val cursor = MediaStore_Dao.getDateDir(adapter, params[0]!!)
+            if(MediaStore_Dao.cursorIsValid(cursor)) {
+               do {
+                  val photoData = MediaStore_Dao.getPhotoData(cursor!!)
+                  adapter.addThumbnailList(photoData)
+                  onProgressUpdate(photoData)
+               } while (cursor!!.moveToNext())
+               cursor.close()
+            }
+            return null
          }
 
-         override fun onPostExecute(result: List<Long>?) {
-            val list = MediaStore_Dao.getLocationDir(adapter, result)
-            if(!result.isNullOrEmpty()) {
-               for (id in list) {
-                  setExtraData(asyncTask, adapter, id).execute()
-               }
-            }
+         override fun onProgressUpdate(vararg values: PhotoData) {
+            handler.post(r)
+            setExtraData(asyncTask, adapter, values[0]!!).execute()
          }
       }
 
-      private class setOpenTagDirAsyncTask(asyncTask: PhotoData_Dao, adapter: RecyclerAdapterPhoto) : AsyncTask<String, Void, List<Long>>() {
+      private class setOpenLocationDirAsyncTask(asyncTask: PhotoData_Dao, adapter: RecyclerAdapterPhoto) : AsyncTask<String, PhotoData, Void>() {
          private val asyncTask = asyncTask
          private val  adapter = adapter
+         private val handler = Handler(Looper.getMainLooper())
+         private var r : Runnable = Runnable{ adapter.notifyItemInserted(adapter.getSize()) }
 
-         override fun doInBackground(vararg params: String?): List<Long>? {
-            var idList = asyncTask.getTagDir(params[0]!!)
-            return idList
+         override fun doInBackground(vararg params: String?): Void? {
+            val idCursor = asyncTask.getLocationDir(params[0]!!)
+
+            if(MediaStore_Dao.cursorIsValid(idCursor)) {
+               do {
+                  val id = idCursor!!.getLong(idCursor.getColumnIndex("photo_id"))
+                  var photoData = MediaStore_Dao.getDataById(adapter, id)
+                  if(photoData != null) {
+                     adapter.addThumbnailList(photoData)
+                     onProgressUpdate(photoData)
+                  }
+                  else {
+                     asyncTask.deleteTagById(id)
+                     asyncTask.deleteExtraById(id)
+                  }
+               } while (idCursor!!.moveToNext())
+               idCursor.close()
+            }
+            return null
          }
 
-         override fun onPostExecute(result: List<Long>?) {
-            //adapter.setThumbnailList(result)
-            val list =  MediaStore_Dao.getTagDir(adapter, result)
-            if(!result.isNullOrEmpty()) {
-               for (id in list) {
-                  setExtraData(asyncTask, adapter, id).execute()
-               }
-            }
+         override fun onProgressUpdate(vararg values: PhotoData) {
+            handler.post(r)
+            setExtraData(asyncTask, adapter, values[0]!!).execute()
          }
       }
 
-      private class setOpenFavoriteDirAsyncTask(asyncTask: PhotoData_Dao, adapter: RecyclerAdapterPhoto) : AsyncTask<Void, Void, List<Long>>() {
+      private class setOpenNameDirAsyncTask(asyncTask: PhotoData_Dao, adapter: RecyclerAdapterPhoto) : AsyncTask<String, PhotoData, Void>() {
          private val asyncTask = asyncTask
          private val  adapter = adapter
+         private val handler = Handler(Looper.getMainLooper())
+         private var r : Runnable = Runnable{ adapter.notifyItemInserted(adapter.getSize()) }
 
-         override fun doInBackground(vararg params: Void?): List<Long>? {
-            val idList = asyncTask.getFavoriteDir()
-            return idList
+         override fun doInBackground(vararg params: String?): Void? {
+            val cursor = MediaStore_Dao.getNameDir(adapter, params[0]!!)
+            if(MediaStore_Dao.cursorIsValid(cursor)) {
+               do {
+                  val photoData = MediaStore_Dao.getPhotoData(cursor!!)
+                  adapter.addThumbnailList(photoData)
+                  onProgressUpdate(photoData)
+               } while (cursor!!.moveToNext())
+               cursor.close()
+            }
+            return null
          }
 
-         override fun onPostExecute(result: List<Long>?) {
-            //임시
-            val list = MediaStore_Dao.getLocationDir(adapter, result)
-            if(!result.isNullOrEmpty()) {
-               for (id in list) {
-                  setExtraData(asyncTask, adapter, id).execute()
+         override fun onProgressUpdate(vararg values: PhotoData) {
+            handler.post(r)
+            setExtraData(asyncTask, adapter, values[0]!!).execute()
+         }
+      }
+
+      private class setOpenTagDirAsyncTask(asyncTask: PhotoData_Dao, adapter: RecyclerAdapterPhoto) : AsyncTask<String, PhotoData, Void>() {
+         private val asyncTask = asyncTask
+         private val  adapter = adapter
+         private val handler = Handler(Looper.getMainLooper())
+         private var r : Runnable = Runnable{ adapter.notifyItemInserted(adapter.getSize()) }
+
+         override fun doInBackground(vararg params: String?): Void? {
+            var idCursor = asyncTask.getTagDir(params[0]!!)
+            do {
+               val id = idCursor!!.getLong(idCursor.getColumnIndex("photo_id"))
+               var photoData = MediaStore_Dao.getDataById(adapter, id)
+               if(photoData != null) {
+                  adapter.addThumbnailList(photoData)
+                  onProgressUpdate(photoData)
                }
-            }
+               else {
+                  asyncTask.deleteTagById(id)
+                  asyncTask.deleteExtraById(id)
+               }
+            } while (idCursor!!.moveToNext())
+            idCursor.close()
+            return null
+         }
+
+      override fun onProgressUpdate(vararg values: PhotoData) {
+            handler.post(r)
+            setExtraData(asyncTask, adapter, values[0]!!).execute()
+         }
+      }
+
+      private class setOpenFavoriteDirAsyncTask(asyncTask: PhotoData_Dao, adapter: RecyclerAdapterPhoto) : AsyncTask<Void, PhotoData, Void>() {
+         private val asyncTask = asyncTask
+         private val  adapter = adapter
+         private val handler = Handler(Looper.getMainLooper())
+         private var r : Runnable = Runnable{ adapter.notifyItemInserted(adapter.getSize()) }
+
+         override fun doInBackground(vararg params: Void?): Void? {
+            val idCursor = asyncTask.getFavoriteDir()
+            do {
+               val id = idCursor!!.getLong(idCursor.getColumnIndex("photo_id"))
+               var photoData = MediaStore_Dao.getDataById(adapter, id)
+               if(photoData != null) {
+                  adapter.addThumbnailList(photoData)
+                  onProgressUpdate(photoData)
+               }
+               else {
+                  asyncTask.deleteTagById(id)
+                  asyncTask.deleteExtraById(id)
+               }
+            } while (idCursor!!.moveToNext())
+            idCursor.close()
+            return null
+         }
+
+         override fun onProgressUpdate(vararg values: PhotoData) {
+            handler.post(r)
+            setExtraData(asyncTask, adapter, values[0]!!).execute()
          }
       }
 
@@ -207,7 +296,7 @@ class PhotoRepository(application: Application) {
    }
 
    fun deleteById(id: Long) {
-      deleteTagByIdAsyncTask(photoDao).execute(id)
+      deleteByIdAsyncTask(photoDao).execute(id)
    }
 
    // 폴더 생성
@@ -229,12 +318,7 @@ class PhotoRepository(application: Application) {
 
    //폴더 내용 생성
    fun setOpenDateDir(adapter: RecyclerAdapterPhoto, cal : Calendar) {
-      val list = MediaStore_Dao.getDateDir(adapter, cal)
-      if(!list.isNullOrEmpty()) {
-         for (id in list) {
-            setExtraData(photoDao, adapter, id).execute()
-         }
-      }
+       setOpenDateDirAsyncTask(photoDao, adapter).execute(cal)
    }
 
    fun setOpenLocationDir(adapter: RecyclerAdapterPhoto, loc : String) {
@@ -242,12 +326,7 @@ class PhotoRepository(application: Application) {
    }
 
    fun setOpenNameDir(adapter: RecyclerAdapterPhoto, path : String) {
-      val list = MediaStore_Dao.getNameDir(adapter, path)
-      if(!list.isNullOrEmpty()) {
-         for (id in list) {
-            setExtraData(photoDao, adapter, id).execute()
-         }
-      }
+      setOpenNameDirAsyncTask(photoDao, adapter).execute(path)
    }
 
    fun setOpenTagDir(adapter: RecyclerAdapterPhoto, tag : String) {

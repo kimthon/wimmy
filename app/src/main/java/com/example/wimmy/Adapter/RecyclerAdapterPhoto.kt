@@ -2,6 +2,8 @@ package com.example.wimmy.Adapter
 
 import android.app.Activity
 import android.graphics.Bitmap
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +21,7 @@ class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<PhotoData
     private var size : Int = 200
     private var padding_size = 200
     private var bitmapList = MutableList<Bitmap?>(list.size) { _ -> null }
+    var count = 0
 
     inner class Holder(itemView: View?) : RecyclerView.ViewHolder(itemView!!) {
         //thumbnail_imgview 변수 받아오기
@@ -79,7 +82,6 @@ class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<PhotoData
     fun addThumbnailList(photoData : PhotoData) {
         list.add(photoData)
         bitmapList.add(null)
-        notifyDataSetChanged()
     }
 
     fun getSize() : Int {
