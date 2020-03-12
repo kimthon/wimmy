@@ -44,4 +44,10 @@ interface PhotoData_Dao {
     fun getTags(id : Long) : List<String>
     @Query("SELECT * FROM extra_photo_data WHERE photo_id = :id")
     fun getExtraPhotoData(id : Long) : ExtraPhotoData?
+
+    @Query("SELECT photo_id FROM extra_photo_data WHERE photo_id = :id")
+    fun IsItInserted(id : Long) : Long?
+
+    @Query("DELETE FROM extra_photo_data")
+    fun dropTable()
 }

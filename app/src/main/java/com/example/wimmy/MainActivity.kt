@@ -25,6 +25,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.ViewModelProviders
+import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.fragment.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.main_activity.*
@@ -50,6 +52,8 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
         SetHeader()
         init()
+        val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+        vm.Drop()
 
         val go_search = findViewById<ImageView>(R.id.main_search_button)
         go_search.setOnClickListener {

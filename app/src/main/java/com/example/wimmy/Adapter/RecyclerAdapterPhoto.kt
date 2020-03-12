@@ -15,6 +15,7 @@ import com.example.wimmy.R
 import com.example.wimmy.ThumbnailAsyncTask
 import com.example.wimmy.db.PhotoData
 import com.example.wimmy.db.thumbnailData
+import java.util.concurrent.RejectedExecutionException
 
 class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<PhotoData>, val itemClick: (PhotoData, Int, ImageView) -> Unit) :
     RecyclerView.Adapter<RecyclerAdapterPhoto.Holder>()
@@ -37,7 +38,11 @@ class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<PhotoData
             layoutParam.setMargins(padding_size, padding_size, padding_size, padding_size)
 
             thumbnail.setImageResource(0)
-            ThumbnailAsyncTask( this, thumbnail, data.photo_id).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, context!!.applicationContext)
+            try {
+                ThumbnailAsyncTask( this, thumbnail, data.photo_id).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, context!!.applicationContext)
+            } catch ( e : RejectedExecutionException) {
+                ThumbnailAsyncTask( this, thumbnail, data.photo_id).execute()
+            }
 
             text!!.text = data.name
             itemView.setOnClickListener { itemClick(data, num, thumbnail) }

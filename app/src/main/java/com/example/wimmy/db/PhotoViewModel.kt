@@ -1,6 +1,7 @@
 package com.example.wimmy.db
 
 import android.app.Application
+import android.content.Context
 import android.widget.TextView
 import androidx.lifecycle.AndroidViewModel
 import com.example.wimmy.Adapter.RecyclerAdapterForder
@@ -56,7 +57,16 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         repo.setOpenFavoriteDir(adapter)
     }
 
+    // 기타 기능
     fun setTags(textView: TextView, id : Long) {
         repo.setTags(textView, id)
+    }
+
+    fun CheckAddedData(context: Context) {
+        repo.checkAddedData(context)
+    }
+
+    fun Drop() {
+        repo.Drop()
     }
 }

@@ -1,6 +1,5 @@
 package com.example.wimmy.db
 
-import android.app.Activity
 import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
@@ -11,8 +10,6 @@ import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import android.util.Size
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import java.io.File
 import java.util.*
@@ -105,20 +102,14 @@ object MediaStore_Dao {
     fun getNameDir(adapter : RecyclerAdapterPhoto, path : String) : Cursor?{
         val selection = MediaStore.Images.ImageColumns.DATA + " LIKE '" + path + "/%' AND " +
                 MediaStore.Images.ImageColumns.DATA + " NOT LIKE '" + path + "/%/%'"
-        val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         val projection = arrayOf(
             MediaStore.Images.ImageColumns._ID, //photo_id
             MediaStore.Images.ImageColumns.DATA, // folder + name
-            MediaStore.Images.ImageColumns.LATITUDE,
-            MediaStore.Images.ImageColumns.LONGITUDE,
             MediaStore.Images.ImageColumns.DATE_TAKEN //date
         )
 
         val cursor = adapter.context!!.contentResolver.query(uri, projection, selection, null, null)
         return cursor
-    }
-    fun getLocationDir(adapter: RecyclerAdapterPhoto, idList: List<Long>?) : Cursor?{
-        return getDirByIdList(adapter, idList)
     }
 
     fun getDateDir(adapter: RecyclerAdapterPhoto, cal : Calendar) : Cursor? {
@@ -126,18 +117,10 @@ object MediaStore_Dao {
         return getDir(adapter, selection)
     }
 
-    fun getTagDir(adapter: RecyclerAdapterPhoto, idList : List<Long>?) : Cursor? {
-        return getDirByIdList(adapter, idList)
-    }
-
     fun getDir(adapter: RecyclerAdapterPhoto, selection : String) : Cursor? {
-        val photoList = ArrayList<PhotoData>()
-        val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         val projection = arrayOf(
             MediaStore.Images.ImageColumns._ID, //photo_id
             MediaStore.Images.ImageColumns.DATA, // folder + name
-            MediaStore.Images.ImageColumns.LATITUDE,
-            MediaStore.Images.ImageColumns.LONGITUDE,
             MediaStore.Images.ImageColumns.DATE_TAKEN //date
         )
 
@@ -154,16 +137,14 @@ object MediaStore_Dao {
         else return null
     }
 
-    fun getDirByIdList(adapter: RecyclerAdapterPhoto, idList: List<Long>?) : Cursor? {
-        if(idList.isNullOrEmpty()) return null
-        var selection = MediaStore.Images.ImageColumns._ID + " IN ("
-        for( id in idList) {
-            selection += "$id ,"
-        }
-        selection = selection.substring(0, selection.length - 1)
-        selection += ")"
+    fun getNewlySortedCurosr(context: Context) : Cursor? {
+        val projection = arrayOf(
+            MediaStore.Images.ImageColumns._ID
+        )
+        val sortOrder = MediaStore.Images.ImageColumns.DATE_ADDED + " DESC"
+        val cursor = context.contentResolver.query(uri, projection, null, null, sortOrder)
 
-        return getDir(adapter, selection)
+        return cursor
     }
 
     fun LoadThumbnailById(context: Context, id : Long) : Bitmap{

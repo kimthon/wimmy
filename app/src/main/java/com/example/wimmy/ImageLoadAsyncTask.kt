@@ -16,13 +16,13 @@ class ThumbnailAsyncTask(holder: RecyclerView.ViewHolder, imageView: ImageView, 
     private val id = id
 
     override fun doInBackground(vararg params: Context?): Bitmap? {
-        return if(holder.adapterPosition == holderPosition) {
+        return if(holder?.adapterPosition == holderPosition) {
             MediaStore_Dao.LoadThumbnailById(params[0]!!, id)
         } else null
     }
 
     override fun onPostExecute(result: Bitmap?) {
-        if(holder.adapterPosition == holderPosition) {
+        if(holder?.adapterPosition == holderPosition) {
             imageView.setImageBitmap(result)
         }
     }
