@@ -10,6 +10,7 @@ import android.provider.MediaStore
 import android.widget.TextView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
+import com.example.wimmy.Main_PhotoView.Companion.photoList
 import com.example.wimmy.db.MediaStore_Dao.noLocationData
 import java.io.File
 import java.util.*
@@ -108,6 +109,8 @@ class PhotoRepository(application: Application) {
                do {
                   val photoData = MediaStore_Dao.getPhotoData(cursor!!)
                   adapter.addThumbnailList(photoData)
+                  photoList.add(photoData)
+
                   onProgressUpdate(photoData)
                } while (cursor!!.moveToNext())
                cursor.close()
@@ -136,6 +139,8 @@ class PhotoRepository(application: Application) {
                   var photoData = MediaStore_Dao.getDataById(adapter, id)
                   if(photoData != null) {
                      adapter.addThumbnailList(photoData)
+                     photoList.add(photoData)
+
                      onProgressUpdate(photoData)
                   }
                   else {
@@ -160,13 +165,17 @@ class PhotoRepository(application: Application) {
          private val handler = Handler(Looper.getMainLooper())
          private var r : Runnable = Runnable{ adapter.notifyItemInserted(adapter.getSize()) }
 
+
          override fun doInBackground(vararg params: String?): Void? {
             val cursor = MediaStore_Dao.getNameDir(adapter, params[0]!!)
             if(MediaStore_Dao.cursorIsValid(cursor)) {
                do {
                   val photoData = MediaStore_Dao.getPhotoData(cursor!!)
                   adapter.addThumbnailList(photoData)
+
+                  photoList.add(photoData)
                   onProgressUpdate(photoData)
+
                } while (cursor!!.moveToNext())
                cursor.close()
             }
@@ -192,6 +201,8 @@ class PhotoRepository(application: Application) {
                var photoData = MediaStore_Dao.getDataById(adapter, id)
                if(photoData != null) {
                   adapter.addThumbnailList(photoData)
+                  photoList.add(photoData)
+
                   onProgressUpdate(photoData)
                }
                else {
@@ -326,6 +337,7 @@ class PhotoRepository(application: Application) {
    }
 
    fun setOpenNameDir(adapter: RecyclerAdapterPhoto, path : String) {
+
       setOpenNameDirAsyncTask(photoDao, adapter).execute(path)
    }
 

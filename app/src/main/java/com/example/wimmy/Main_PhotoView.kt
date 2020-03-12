@@ -40,6 +40,7 @@ class Main_PhotoView: AppCompatActivity() {
         setContentView(R.layout.main_photoview)
         val view: View = findViewById(R.id.photo_recyclerView)
 
+        photoList.clear()
         SetHeader()
         setView(view)
         getExtra(view)

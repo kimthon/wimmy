@@ -1,6 +1,5 @@
 package com.example.wimmy.db
 
-import android.app.Activity
 import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
@@ -11,10 +10,9 @@ import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import android.util.Size
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
-import com.example.wimmy.Main_PhotoView.Companion.photoList
+import com.example.wimmy.Main_Map.Companion.latlngdata
+import com.google.android.gms.maps.model.LatLng
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
@@ -202,6 +200,12 @@ object MediaStore_Dao {
         val file = File(allPath)
         val name = file.name
         val path = allPath.subSequence(0, (allPath.length - name.length - 1)).toString()
+
+        // 위/경도 저장
+        val lat = cursor!!.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LATITUDE))
+        Log.d("TAG12", "${lat}")
+        val lon = cursor.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LONGITUDE))
+        latlngdata.add(LatLngData(LatLng(lat,lon)))
 
         val dateTaken = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN))
         val date = Date(dateTaken)

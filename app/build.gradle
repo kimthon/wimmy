@@ -60,6 +60,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-ml-natural-language:22.0.0'
     implementation 'com.google.firebase:firebase-ml-natural-language-translate-model:20.0.7'
     implementation 'com.android.support:multidex:1.0.3'
+    implementation 'com.google.maps.android:android-maps-utils:0.4'
+
+
 }
 
 apply plugin: 'com.google.gms.google-services'
