@@ -41,7 +41,7 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
     private var tagList = ArrayList<TagData>()
     private var index: Int = 0
     private var thumbnail: Long? = null
-    private var check: Int = 0
+    private var check: Boolean = false
     private var delete_check: Int = 0
 
 
@@ -86,15 +86,9 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
 
         //TODO("DB코드 달아야함")
         favorite.setOnClickListener {
-            if(check == 0) {
-                favorite.setImageResource(R.drawable.ic_favorite_checked)
-                check = 1
-            }
-            else {
-                favorite.setImageResource(R.drawable.ic_favorite)
-                check = 0
-            }
-
+            if(!check) favorite.setImageResource(R.drawable.ic_favorite_checked)
+            else favorite.setImageResource(R.drawable.ic_favorite)
+            check = !check
         }
 
     }
@@ -123,22 +117,20 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
     fun toolbar_text(position: Int, name: AppCompatTextView, date: AppCompatTextView, location: AppCompatTextView, tag: AppCompatTextView, favorite: ImageView){
         name.setText(photoList[position].name)
 
-        val formatter = SimpleDateFormat("yyyy년 MM월 dd일 (E) / HH:mm:ss")
-        val date_string = (formatter).format(photoList[position].date_info)
-        //var date_string: String = Date.parse("${photoList[position].date_info, formatter}")
-        date.setText(date_string)
-        location.setText(photoList[position].location_info)
-
         val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-        vm.setTags(tag, photoList[position].photo_id)
-        if(photoList[position].favorite == true) {
-            favorite.setImageResource(R.drawable.ic_favorite_checked)
-            check = 1
+
+        val formatter = SimpleDateFormat("yyyy년 MM월 dd일 (E) / HH:mm:ss")
+        val id = photoList[position].photo_id
+        val date_info = photoList[position].date_info
+        date.text = if(date_info == null) {
+            ""
+        } else {
+            (formatter).format(photoList[position].date_info)
         }
-        else {
-            favorite.setImageResource(R.drawable.ic_favorite)
-            check = 0
-        }
+
+        vm.setLocation(location, id)
+        vm.setTags(tag, id)
+        vm.checkFavorite(favorite, id, this)
     }
 
     fun getExtra(){
@@ -149,10 +141,7 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
 
             index = intent.getIntExtra("photo_num", 0)
             photoList = intent.getSerializableExtra("photo_list") as ArrayList<PhotoData>
-
-
             tagList = intent.getSerializableExtra("tag_list") as ArrayList<TagData>
-
         }
         else {
             Toast.makeText(this, "전달된 이름이 없습니다", Toast.LENGTH_SHORT).show()
@@ -167,22 +156,20 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
 
         when(p0.itemId){
             R.id.menu_tag_insert -> {
-                val et: EditText = EditText(this@PhotoViewPager);
+                val et = EditText(this@PhotoViewPager)
                 val dlg: AlertDialog.Builder = AlertDialog.Builder(this@PhotoViewPager,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
                 dlg.setTitle("특징 삽입")
                 dlg.setView(et)
                 dlg.setMessage("삽입할 사진의 특징을 입력해주세요 ")
                 dlg.setIcon(R.drawable.ic_tag)
-                dlg.setPositiveButton("확인", DialogInterface.OnClickListener { dialog, which ->
+                dlg.setPositiveButton("확인") { _, _ ->
                     Toast.makeText(this, "입력 완료 되었습니다.", Toast.LENGTH_SHORT).show()
-                })
-                dlg.setNegativeButton("취소", DialogInterface.OnClickListener { dialog, which ->
-
-                })
+                }
+                dlg.setNegativeButton("취소") { _, _ -> }
                 dlg.show()
             }
             R.id.menu_share -> {
-                val intent = Intent(android.content.Intent.ACTION_SEND)
+                val intent = Intent(Intent.ACTION_SEND)
                 var bitmap = BitmapFactory.decodeFile(photoList[index].file_path +'/'+ photoList[index].name)
                 bitmap =  MediaStore_Dao.modifyOrientaionById(this, photoList[index].photo_id, bitmap)
                 val uri: Uri? = getImageUri(this, bitmap)
@@ -218,25 +205,22 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
 
         dlg.setMessage("정말 삭제하시겠습니까? ")
         dlg.setIcon(R.drawable.ic_delete)
-        dlg.setPositiveButton("확인", DialogInterface.OnClickListener { dialog, which ->
+        dlg.setPositiveButton("확인") { _, _ ->
             photoList.removeAt(index)
             Toast.makeText(this, "삭제 완료 되었습니다.", Toast.LENGTH_SHORT).show()
             //TODO 삭제 쿼리 필요
             if(index == 0 && photoList.size == 0) {
                 finishActivity()
-            }
-            else {
+            } else {
                 if (index >= photoList.size) {
-                    index = index - 1
+                    index -= 1
                 }
                 setView(view, toolbar, bottombar)
                 toolbar_text(index, imgView_text, imgView_date, imgView_location, imgView_tag, favorite)
             }
             delete_check = 1
-        })
-        dlg.setNegativeButton("취소", DialogInterface.OnClickListener { dialog, which ->
-
-        })
+        }
+        dlg.setNegativeButton("취소") { _, _ -> }
         dlg.show()
     }
 
@@ -247,6 +231,10 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
             intent.putParcelableArrayListExtra("delete_list", photoList)
         setResult(Activity.RESULT_OK, intent)
         finish()
+    }
+
+    fun setCheck(boolean: Boolean) {
+        check = boolean
     }
 }
 

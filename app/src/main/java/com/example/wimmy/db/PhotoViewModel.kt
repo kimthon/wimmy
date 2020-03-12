@@ -2,10 +2,12 @@ package com.example.wimmy.db
 
 import android.app.Application
 import android.content.Context
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.AndroidViewModel
 import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
+import com.example.wimmy.PhotoViewPager
 import java.util.*
 
 class PhotoViewModel(application: Application) : AndroidViewModel(application) {
@@ -58,8 +60,17 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // 기타 기능
+    fun setLocation(textView: TextView, id : Long) {
+        repo.setLocation(textView, id)
+
+    }
+
     fun setTags(textView: TextView, id : Long) {
         repo.setTags(textView, id)
+    }
+
+    fun checkFavorite(imageView: ImageView, id: Long, photoView : PhotoViewPager) {
+        repo.checkFavorite(imageView, id, photoView)
     }
 
     fun CheckAddedData(context: Context) {

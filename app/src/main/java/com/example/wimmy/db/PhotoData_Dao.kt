@@ -40,8 +40,12 @@ interface PhotoData_Dao {
     @Query("SELECT photo_id FROM extra_photo_data where favorite = 'true'")
     fun getFavoriteDir() : Cursor
 
+    @Query("SELECT location FROM extra_photo_data WHERE photo_id = :id")
+    fun getLocation(id : Long) : String
     @Query("SELECT tag FROM tag_data WHERE photo_id = :id")
     fun getTags(id : Long) : List<String>
+    @Query("SELECT favorite FROM extra_photo_data WHERE photo_id = :id")
+    fun getFavorite(id : Long) : Boolean
     @Query("SELECT * FROM extra_photo_data WHERE photo_id = :id")
     fun getExtraPhotoData(id : Long) : ExtraPhotoData?
 

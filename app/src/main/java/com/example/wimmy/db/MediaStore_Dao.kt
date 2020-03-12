@@ -12,6 +12,7 @@ import android.util.Log
 import android.util.Size
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import java.io.File
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -148,7 +149,7 @@ object MediaStore_Dao {
     }
 
     fun LoadThumbnailById(context: Context, id : Long) : Bitmap{
-        var bitmap : Bitmap = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        val bitmap : Bitmap = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
             context.contentResolver.loadThumbnail( uri, Size(100, 100), null)
         }
@@ -186,7 +187,7 @@ object MediaStore_Dao {
         val dateTaken = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN))
         val date = Date(dateTaken)
 
-        var loc : String? = noLocationData
+        val loc : String? = noLocationData
 
         val photoData = PhotoData(id, name, path, loc, date, false)
         return photoData

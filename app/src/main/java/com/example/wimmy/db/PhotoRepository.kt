@@ -7,10 +7,14 @@ import android.os.AsyncTask
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
+import android.widget.ImageView
 import android.widget.TextView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
+import com.example.wimmy.PhotoViewPager
+import com.example.wimmy.R
 import com.example.wimmy.db.MediaStore_Dao.noLocationData
+import kotlinx.android.synthetic.main.photoview_frame.*
 import java.io.File
 import java.lang.Error
 import java.util.*
@@ -22,7 +26,6 @@ class PhotoRepository(application: Application) {
 
    companion object {
       private val handler = Handler(Looper.getMainLooper())
-      val pool = ThreadPoolExecutor(0, Integer.MAX_VALUE, 1L, TimeUnit.MILLISECONDS, SynchronousQueue())
 
       private class insertTagAsyncTask constructor(private val asyncTask: PhotoData_Dao) : AsyncTask<TagData, Void, Void>() {
          override fun doInBackground(vararg params: TagData?): Void? {
@@ -113,7 +116,6 @@ class PhotoRepository(application: Application) {
                   val photoData = MediaStore_Dao.getPhotoData(cursor!!)
                   adapter.addThumbnailList(photoData)
                   handler.post(r)
-                  pool.execute(setExtraData(asyncTask, adapter, photoData))
                } while (cursor!!.moveToNext())
                cursor.close()
             }
@@ -132,11 +134,10 @@ class PhotoRepository(application: Application) {
             if(MediaStore_Dao.cursorIsValid(idCursor)) {
                do {
                   val id = idCursor!!.getLong(idCursor.getColumnIndex("photo_id"))
-                  var photoData = MediaStore_Dao.getDataById(adapter, id)
+                  val photoData = MediaStore_Dao.getDataById(adapter, id)
                   if(photoData != null) {
                      adapter.addThumbnailList(photoData)
                      handler.post(r)
-                     pool.execute(setExtraData(asyncTask, adapter, photoData))
                   }
                   else {
                      asyncTask.deleteTagById(id)
@@ -161,7 +162,6 @@ class PhotoRepository(application: Application) {
                   val photoData = MediaStore_Dao.getPhotoData(cursor!!)
                   adapter.addThumbnailList(photoData)
                   handler.post(r)
-                  pool.execute(setExtraData(asyncTask, adapter, photoData))
                } while (cursor!!.moveToNext())
                cursor.close()
             }
@@ -175,15 +175,14 @@ class PhotoRepository(application: Application) {
          private var r : Runnable = Runnable{ adapter.notifyItemInserted(adapter.getSize()) }
 
          override fun doInBackground(vararg params: String?): Void? {
-            var idCursor = asyncTask.getTagDir(params[0]!!)
+            val idCursor = asyncTask.getTagDir(params[0]!!)
             if(MediaStore_Dao.cursorIsValid(idCursor)) {
                do {
                   val id = idCursor!!.getLong(idCursor.getColumnIndex("photo_id"))
-                  var photoData = MediaStore_Dao.getDataById(adapter, id)
+                  val photoData = MediaStore_Dao.getDataById(adapter, id)
                   if (photoData != null) {
                      adapter.addThumbnailList(photoData)
                      handler.post(r)
-                     pool.execute(setExtraData(asyncTask, adapter, photoData))
                   } else {
                      asyncTask.deleteTagById(id)
                      asyncTask.deleteExtraById(id)
@@ -204,11 +203,10 @@ class PhotoRepository(application: Application) {
             val idCursor = asyncTask.getFavoriteDir()
             do {
                val id = idCursor!!.getLong(idCursor.getColumnIndex("photo_id"))
-               var photoData = MediaStore_Dao.getDataById(adapter, id)
+               val photoData = MediaStore_Dao.getDataById(adapter, id)
                if(photoData != null) {
                   adapter.addThumbnailList(photoData)
                   handler.post(r)
-                  pool.execute(setExtraData(asyncTask, adapter, photoData))
                }
                else {
                   asyncTask.deleteTagById(id)
@@ -221,6 +219,20 @@ class PhotoRepository(application: Application) {
       }
 
       // 기타 기능
+      private class setLocationAsyncTask(asyncTask: PhotoData_Dao, textView: TextView) : AsyncTask<Long, Void, String>() {
+         private val asyncTask  = asyncTask
+         private val textView = textView
+
+         override fun doInBackground(vararg params: Long?): String? {
+            return asyncTask.getLocation(params[0]!!)
+         }
+
+         override fun onPostExecute(result: String?) {
+            if(result.isNullOrEmpty()) textView.text = ""
+            else textView.text = result
+         }
+      }
+
       private class setTagsAsyncTask(asyncTask: PhotoData_Dao, textView: TextView) : AsyncTask<Long, Void, List<String>>() {
          private val asyncTask  = asyncTask
          private val textView = textView
@@ -235,33 +247,27 @@ class PhotoRepository(application: Application) {
          }
       }
 
-      private class setExtraData(asyncTask: PhotoData_Dao, adapter: RecyclerAdapterPhoto, data: PhotoData) : Runnable {
+      private class checkFavoriteAsyncTask(asyncTask: PhotoData_Dao, imageView: ImageView, photoView: PhotoViewPager) : AsyncTask<Long, Void, Boolean>() {
          private val asyncTask  = asyncTask
-         private val adapter = adapter
-         private val data = data
+         private val imageView = imageView
+         private var photoView = photoView
 
-         override fun run() {
-            var extra = asyncTask.getExtraPhotoData(data.photo_id)
-            if(extra == null) {
-               //인터넷 연결안될 시 패스
-               if(!NetworkIsValid(adapter.context!!)) return
+         override fun doInBackground(vararg params: Long?): Boolean? {
+            return asyncTask.getFavorite(params[0]!!)
+         }
 
-               val loc = MediaStore_Dao.getLocation(adapter.context!!.applicationContext, data.photo_id)
-               extra = ExtraPhotoData(data.photo_id, loc, false)
-               asyncTask.insert(extra)
-            }
-
-            data.location_info = extra.location
-            data.favorite  = extra.favorite
+         override fun onPostExecute(result: Boolean) {
+            if(result == true) imageView.setImageResource(R.drawable.ic_favorite_checked)
+            else imageView.setImageResource(R.drawable.ic_favorite)
+            photoView.setCheck(result)
          }
       }
 
-
-      private class CheckAddedData(asyncTask: PhotoData_Dao, context: Context) : Runnable {
+      private class CheckAddedDataAsyncTask(asyncTask: PhotoData_Dao, context: Context) : AsyncTask<Void, Void, Void>() {
          private val asyncTask = asyncTask
          private val context = context
 
-         override fun run() {
+         override fun doInBackground(vararg params: Void): Void? {
             // 가장 최근 추가된 순서대로
             val cursor = MediaStore_Dao.getNewlySortedCurosr(context)
             if(MediaStore_Dao.cursorIsValid(cursor)) {
@@ -275,6 +281,7 @@ class PhotoRepository(application: Application) {
                } while (cursor!!.moveToNext())
                cursor.close()
             }
+            return null
          }
       }
 
@@ -347,12 +354,20 @@ class PhotoRepository(application: Application) {
    }
 
    // 기타 기능
+   fun setLocation(textView: TextView, id : Long) {
+      setLocationAsyncTask(photoDao, textView).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, id)
+   }
+
    fun setTags(textView: TextView, id : Long) {
-      setTagsAsyncTask(photoDao, textView).execute(id)
+      setTagsAsyncTask(photoDao, textView).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, id)
+   }
+
+   fun checkFavorite(imageView: ImageView, id: Long, photoView: PhotoViewPager) {
+      checkFavoriteAsyncTask(photoDao, imageView, photoView).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, id)
    }
 
    fun checkAddedData(context: Context) {
-       pool.execute(CheckAddedData(photoDao, context))
+       CheckAddedDataAsyncTask(photoDao, context).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
    }
 
    fun Drop() {
