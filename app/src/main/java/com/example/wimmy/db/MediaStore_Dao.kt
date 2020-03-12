@@ -20,6 +20,7 @@ import kotlin.collections.ArrayList
 object MediaStore_Dao {
     private val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
     val noLocationData = "위치 정보 없음"
+    private var index:Int = 0
 
     fun getNameDir(context: Context) : ArrayList<thumbnailData>{
         val thumbList = arrayListOf<thumbnailData>()
@@ -203,9 +204,9 @@ object MediaStore_Dao {
 
         // 위/경도 저장
         val lat = cursor!!.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LATITUDE))
-        Log.d("TAG12", "${lat}")
         val lon = cursor.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LONGITUDE))
-        latlngdata.add(LatLngData(LatLng(lat,lon)))
+        latlngdata.add(LatLngData(index, LatLng(lat,lon)))
+        index++
 
         val dateTaken = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN))
         val date = Date(dateTaken)

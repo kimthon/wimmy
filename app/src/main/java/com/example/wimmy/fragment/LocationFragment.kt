@@ -13,11 +13,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.wimmy.*
 import com.example.wimmy.Adapter.RecyclerAdapterForder
-import com.example.wimmy.DataBaseObserver
-import com.example.wimmy.MainActivity
-import com.example.wimmy.Main_PhotoView
-import com.example.wimmy.R
 import com.example.wimmy.db.*
 import com.google.android.material.appbar.AppBarLayout
 import kotlinx.android.synthetic.main.main_activity.view.*
@@ -43,7 +40,6 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
         setView(thisview)
         vm.setLocationDir(recyclerAdapter!!)
         observer = DataBaseObserver(Handler(), recyclerAdapter!!)
-
         return thisview
     }
 
@@ -63,10 +59,10 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 202 -> {
-                    if(data!!.getIntExtra("delete_check", 0) == 1) {
+                   /* if(data!!.getIntExtra("delete_check", 0) == 1) {
                         thumbnailList = MediaStore_Dao.getNameDir(thisview?.context!!)
                         setView(thisview!!)
-                    }
+                    }*/
                 }
             }
         }

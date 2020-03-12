@@ -19,6 +19,7 @@ class PhotoData(
 )
 
 class LatLngData(
+    var index : Int,
     var latlng: LatLng) : ClusterItem {
     override fun getPosition(): LatLng {
         return latlng
