@@ -12,16 +12,18 @@ import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.wimmy.db.LatLngData
 import com.example.wimmy.db.PhotoData
 import com.google.android.gms.maps.*
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
+import com.google.android.material.internal.ContextUtils.getActivity
+import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterManager
+import com.google.maps.android.clustering.view.DefaultClusterRenderer
+import com.google.maps.android.ui.IconGenerator
 import java.util.*
 
 
@@ -32,6 +34,7 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
     lateinit var tag_marker: TextView
     private var testphotoList = arrayListOf<PhotoData>()
     private var mLastClickTime: Long = 0
+    private lateinit var mClusterManager: ClusterManager<LatLngData>
 
     companion object {
         var latlngdata = arrayListOf<LatLngData>()
@@ -58,7 +61,7 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
 
         mMap = googleMap
 
-        mMap.setOnMarkerClickListener(object: GoogleMap.OnMarkerClickListener {
+        /*mMap.setOnMarkerClickListener(object: GoogleMap.OnMarkerClickListener {
 
             override fun onMarkerClick(marker: Marker): Boolean {
                 val center: CameraUpdate = CameraUpdateFactory.newLatLng(marker.getPosition())
@@ -71,21 +74,21 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
             override fun onMapClick(p0: LatLng?) {
                 changeSelectedMarker(null);
             }
-        })
+        })*/
 
-        val mClusterManager: ClusterManager<LatLngData> = ClusterManager<LatLngData>(this, mMap)
+        mClusterManager = ClusterManager<LatLngData>(this, mMap)
+        mClusterManager.setRenderer( MarkerClusterRenderer(this, mMap, mClusterManager))
         mMap.setOnCameraChangeListener (mClusterManager)
 
-        setCustomMarkerView()
+        //setCustomMarkerView()
 
         for (i in latlngdata.indices) {
             //var marker = addMarker(testphotoList[i], latlngdata[i], false)
             //marker.tag = i
             mClusterManager.addItem(latlngdata[i])
+            mClusterManager.cluster()
         }
     }
-
-
 
     private fun setCustomMarkerView() {
         marker_view = LayoutInflater.from(this).inflate(R.layout.marker_layout, null)
@@ -119,7 +122,7 @@ fun getExtra(view: View){
 
 }
 
-    private fun addMarker(photodata: PhotoData, latlngdata: LatLngData, isSelectedMarker:Boolean): Marker{
+    /*private fun addMarker(photodata: PhotoData, latlngdata: LatLngData, isSelectedMarker:Boolean): Marker{
         var geocoder: Geocoder = Geocoder(this)
         var list: List<Address>? = null
         var lat: Double
@@ -145,9 +148,42 @@ fun getExtra(view: View){
             )
             return mMap.addMarker(markerOptions)
 
+    }*/
+
+
+
+}
+
+class MarkerClusterRenderer(context: Context?, map: GoogleMap?, clusterManager: ClusterManager<LatLngData>?
+) : DefaultClusterRenderer<LatLngData>(context, map, clusterManager) {
+    private var iconGenerator: IconGenerator? = null
+    private var markerImageView: ImageView? = null
+    private var context = context
+    fun MarkerClusterRenderer(context: Context?, map: GoogleMap?, clusterManager: ClusterManager<LatLngData?>?) {
+
     }
 
-    private fun createDrawableFromView(context: Context, view: View): Bitmap {
+    protected override fun onBeforeClusterItemRendered(item: LatLngData, markerOptions: MarkerOptions) { // 5
+        iconGenerator = IconGenerator(context) // 3
+        markerImageView = ImageView(context)
+
+        markerImageView!!.setLayoutParams(
+            ViewGroup.LayoutParams(
+                MARKER_DIMENSION,
+                MARKER_DIMENSION
+            )
+        )
+        iconGenerator!!.setContentView(markerImageView) // 4
+        markerImageView?.setImageResource(R.drawable.ic_marker_phone) // 6
+        val icon: Bitmap = iconGenerator!!.makeIcon()
+        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon)) // 8
+        markerOptions.icon(
+            BitmapDescriptorFactory.fromBitmap(icon)
+        )
+        //markerOptions.title(item.getTitle())
+    }
+
+    /*private fun createDrawableFromView(context: Context, view: View): Bitmap {
         val displayMetrics = DisplayMetrics()
         (context as Activity).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics)
         view.setLayoutParams(
@@ -167,29 +203,10 @@ fun getExtra(view: View){
         val canvas = Canvas(bitmap)
         view.draw(canvas)
         return bitmap
-    }
+    }*/
 
-    private fun changeSelectedMarker(marker: Marker?) {
-        // 선택했던 마커 되돌리기
-        if(selectedMarker != marker) {
-            if (selectedMarker != null) {
-                val markertag = addMarker(selectedMarker!!, false)
-                markertag.tag = selectedMarker?.tag
-                selectedMarker!!.remove()
-            }
-
-            // 선택한 마커 표시
-            if (marker != null) {
-                selectedMarker = addMarker(marker, true)
-                selectedMarker!!.tag = marker.tag
-                marker.remove()
-            }
-            else
-                selectedMarker = null
-        }
-    }
-    private fun addMarker(marker: Marker, isSelectedMarker: Boolean): Marker {
-        val temp = testphotoList[marker.tag as Int]
-        return addMarker(temp, latlngdata[marker.tag as Int], isSelectedMarker)
+    companion object {
+        // 1
+        private const val MARKER_DIMENSION = 48 // 2
     }
 }
