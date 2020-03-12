@@ -54,6 +54,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         init()
         val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
         vm.Drop()
+        vm.CheckAddedData(this)
 
         val go_search = findViewById<ImageView>(R.id.main_search_button)
         go_search.setOnClickListener {

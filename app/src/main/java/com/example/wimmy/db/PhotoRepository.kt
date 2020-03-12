@@ -257,10 +257,12 @@ class PhotoRepository(application: Application) {
       }
 
 
-      private class CheckAddedDataAsyncTask(asyncTask: PhotoData_Dao, context: Context) : AsyncTask<Void, Void, Void>(){
+      private class CheckAddedData(asyncTask: PhotoData_Dao, context: Context) : Runnable {
          private val asyncTask = asyncTask
          private val context = context
-         override fun doInBackground(vararg params: Void?): Void? {
+
+         override fun run() {
+            // 가장 최근 추가된 순서대로
             val cursor = MediaStore_Dao.getNewlySortedCurosr(context)
             if(MediaStore_Dao.cursorIsValid(cursor)) {
                do {
@@ -273,7 +275,6 @@ class PhotoRepository(application: Application) {
                } while (cursor!!.moveToNext())
                cursor.close()
             }
-            return null
          }
       }
 
@@ -351,7 +352,7 @@ class PhotoRepository(application: Application) {
    }
 
    fun checkAddedData(context: Context) {
-      CheckAddedDataAsyncTask(photoDao, context).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+       pool.execute(CheckAddedData(photoDao, context))
    }
 
    fun Drop() {
