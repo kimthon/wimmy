@@ -10,6 +10,7 @@ import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import com.example.wimmy.PhotoViewPager
 import com.example.wimmy.Main_Map
 import com.example.wimmy.Main_PhotoView
+import com.google.android.gms.maps.GoogleMap
 import com.google.maps.android.clustering.ClusterManager
 import java.util.*
 
@@ -54,8 +55,8 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // test
-    fun setOpenLocationDir(context: Context, loc : String, map: Main_Map, mClusterManager: ClusterManager<LatLngData>) {
-        repo.setOpenLocationDir(context, loc, map, mClusterManager)
+    fun setOpenLocationDir(context: Context, loc : String, map: Main_Map) {
+        repo.setOpenLocationDir(context, loc, map)
     }
 
 
@@ -72,9 +73,16 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // 기타 기능
+    fun setName(textView: TextView, id: Long) {
+        repo.setName(textView, id)
+    }
+
+    fun setDate(textView: TextView, id: Long) {
+        repo.setDate(textView, id)
+    }
+
     fun setLocation(textView: TextView, id : Long) {
         repo.setLocation(textView, id)
-
     }
 
     fun setTags(textView: TextView, id : Long) {

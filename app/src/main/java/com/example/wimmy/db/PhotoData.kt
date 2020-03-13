@@ -19,8 +19,9 @@ class PhotoData(
 )
 
 class LatLngData(
-    var index : Int,
-    var latlng: LatLng) : ClusterItem {
+    val index : Int,
+    val id : Long,
+    val latlng: LatLng) : ClusterItem {
     override fun getPosition(): LatLng {
         return latlng
     }

@@ -21,7 +21,6 @@ import com.example.wimmy.db.*
 import kotlinx.android.synthetic.main.main_photoview.*
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 import java.io.File
 
 class Main_PhotoView: AppCompatActivity() {
@@ -31,16 +30,15 @@ class Main_PhotoView: AppCompatActivity() {
     private var delete_check: Int = 0
 
     companion object {
-        var tagList = ArrayList<TagData>()
-        var photoList = arrayListOf<PhotoData>()
+        var list = arrayListOf<thumbnailData>()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_photoview)
+
         val view: View = findViewById(R.id.photo_recyclerView)
 
-        photoList.clear()
         SetHeader()
         setView(view)
         getExtra(view)
@@ -59,22 +57,24 @@ class Main_PhotoView: AppCompatActivity() {
         recyclerView = view.findViewById<RecyclerView>(R.id.photo_recyclerView)
         recyclerAdapter =
             RecyclerAdapterPhoto(this, arrayListOf()) {
-                    PhotoData, num, image ->  if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
+                    data, num, image ->  if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
+                //TODO
+                /*
                 Toast.makeText(this, "인덱스: ${num} 이름: ${PhotoData.name}", Toast.LENGTH_SHORT)
                     .show()
+                 */
 
                 val intent = Intent(this, PhotoViewPager::class.java)
-                intent.putExtra("photo_num", num)
-
+                intent.putExtra("index", num)
 
                 startActivityForResult(intent, 100)
-
             }
                 mLastClickTime = SystemClock.elapsedRealtime()
             }
         recyclerView?.adapter = recyclerAdapter
-
+        list = recyclerAdapter!!.getThumbnailList()
         val lm = GridLayoutManager(Main_PhotoView(), 3)
+
         recyclerView?.layoutManager = lm
     }
 
