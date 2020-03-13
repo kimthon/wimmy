@@ -8,17 +8,18 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import com.example.wimmy.Main_Map
 import com.example.wimmy.Main_PhotoView.Companion.photoList
-import com.example.wimmy.db.MediaStore_Dao.noLocationData
 import com.google.maps.android.clustering.ClusterManager
 import java.io.File
 import com.example.wimmy.PhotoViewPager
 import com.example.wimmy.R
+import kotlinx.android.synthetic.main.main_map.*
 import java.util.*
 import java.util.concurrent.*
 
@@ -123,6 +124,28 @@ class PhotoRepository(application: Application) {
                } while (idCursor.moveToNext())
                idCursor.close()
             }
+      }
+   }
+
+   // test
+   fun setOpenLocationDir(context: Context, loc : String, map: Main_Map, clusterManager: ClusterManager<LatLngData>) {
+      DirectoryThread.execute {
+         val idCursor = photoDao.getLocationDir(loc)
+         if(MediaStore_Dao.cursorIsValid(idCursor)) {
+            do {
+               val id = idCursor.getLong(idCursor.getColumnIndex("photo_id"))
+               val photoData = MediaStore_Dao.getDataById(context, id, map, clusterManager)
+               if(photoData != null) {
+                  photoList.add(photoData)
+               }
+               else {
+                  photoDao.deleteTagById(id)
+                  photoDao.deleteExtraById(id)
+               }
+            } while (idCursor.moveToNext())
+            Log.d("이제?","ㄴ")
+            idCursor.close()
+         }
       }
    }
 

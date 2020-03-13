@@ -65,9 +65,7 @@ class Main_PhotoView: AppCompatActivity() {
 
                 val intent = Intent(this, PhotoViewPager::class.java)
                 intent.putExtra("photo_num", num)
-                intent.putExtra("thumbnail", PhotoData.photo_id)
 
-                intent.putParcelableArrayListExtra("photo_list", recyclerAdapter!!.getThumbnailList())
 
                 startActivityForResult(intent, 100)
 

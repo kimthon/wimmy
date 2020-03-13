@@ -46,7 +46,6 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
     //private var subimg: ImageView? = null
     internal lateinit var viewPager: ViewPager
     private lateinit var vm : PhotoViewModel
-    private var photoList = ArrayList<PhotoData>()
     private var index: Int = 0
     private lateinit var tag_name : AppCompatTextView
     private var thumbnail: Long? = null
@@ -141,7 +140,6 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
             //subimg!!.setImageBitmap(MediaStore_Dao.LoadThumbnail(this, thumbnail!!))
 
             index = intent.getIntExtra("photo_num", 0)
-            photoList = intent.getSerializableExtra("photo_list") as ArrayList<PhotoData>
 
             // 번역 API, 이미지 분석 API Test
             val options = FirebaseTranslatorOptions.Builder()
@@ -266,8 +264,6 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
     private fun finishActivity() {
         val intent = Intent()
         intent.putExtra("index", index)
-        if(delete_check == 1)
-            intent.putParcelableArrayListExtra("delete_list", photoList)
         setResult(Activity.RESULT_OK, intent)
         finish()
     }

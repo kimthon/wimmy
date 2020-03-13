@@ -7,6 +7,8 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.location.Address
+import android.location.Geocoder
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.DisplayMetrics
@@ -42,6 +44,8 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
     private var mLastClickTime: Long = 0
     private lateinit var mClusterManager: ClusterManager<LatLngData>
     private val ZoomLevel: Int = 12
+    private val builder: LatLngBounds.Builder = LatLngBounds.builder()
+    private var bounds: LatLngBounds? = null
 
     companion object {
         var latlngdata = arrayListOf<LatLngData>()
@@ -59,9 +63,9 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         Log.d("몇번","ㅇ")
         mMap = googleMap
-
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
+
 
         mClusterManager = ClusterManager<LatLngData>(this, mMap)
         getExtra()
@@ -70,14 +74,9 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
         mMap.setOnCameraChangeListener (mClusterManager)
         mMap.setOnMarkerClickListener(mClusterManager)
 
-        if(latlngdata.size != 0) {
-            val builder: LatLngBounds.Builder =
-                LatLngBounds.builder() // Bounds 모든 데이터를 맵 안으로 보여주게 하기 위함
-            //val bounds: LatLngBounds = addItems(builder) // 클러스터 Marker 추가
-            //mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, ZoomLevel))
-            //val zoom: Float = mMap.getCameraPosition().zoom - 0.5f
-           //mMap.animateCamera(CameraUpdateFactory.zoomTo(zoom))
-        }
+
+
+
         mMap.setOnInfoWindowClickListener(object : GoogleMap.OnInfoWindowClickListener {
             override fun onInfoWindowClick(marker: Marker?) {}
         })
@@ -89,6 +88,10 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
 
         clusterItemClick(mMap)
         clusterClick(mMap)
+
+        appbar2.setOnClickListener() {
+            Log.d("dsfsd","d")
+        }
 
 
 
@@ -195,7 +198,8 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
 
     fun addItems(mClusterManager: ClusterManager<LatLngData>, laglngdata: LatLngData){
         mClusterManager.addItem(laglngdata)
-
+        builder.include(laglngdata.latlng)
+        bounds = builder.build()
     }
 
     private fun createDrawableFromView(context: Context?, view: View): Bitmap {
@@ -221,6 +225,10 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
     }
 
 fun getExtra(){
+    val geocoder: Geocoder = Geocoder(this)
+    val addr: List<Address>
+    var lat: Double = 0.0
+    var lon: Double = 0.0
     val getname: String?
     val title: TextView = findViewById(R.id.title_location_name)
     val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
@@ -228,9 +236,17 @@ fun getExtra(){
     if (intent.hasExtra("location_name")) {
         getname = intent.getStringExtra("location_name")
         vm.setOpenLocationDir(this, getname, this@Main_Map, mClusterManager)
-
         title.text = getname
+
+        addr = geocoder.getFromLocationName(getname, 5)
+        if(addr != null)
+            for(i in addr.indices) {
+                lat = addr.get(i).latitude
+                lon = addr.get(i).longitude
+            }
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(lat, lon), 12F))
     }
+
 
 
 }

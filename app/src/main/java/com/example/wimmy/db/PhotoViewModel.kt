@@ -3,7 +3,6 @@ package com.example.wimmy.db
 import android.app.Application
 import android.content.Context
 import android.widget.ImageView
-import android.content.Context
 import android.widget.TextView
 import androidx.lifecycle.AndroidViewModel
 import com.example.wimmy.Adapter.RecyclerAdapterForder

@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         SetHeader()
         init()
         val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-        vm.Drop()
+        //vm.Drop()
         vm.checkChangedData(this)
 
         observer = ChangeObserver( Handler(), vm, this )
