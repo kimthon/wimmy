@@ -8,6 +8,9 @@ import androidx.lifecycle.AndroidViewModel
 import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import com.example.wimmy.PhotoViewPager
+import com.example.wimmy.Main_Map
+import com.example.wimmy.Main_PhotoView
+import com.google.maps.android.clustering.ClusterManager
 import java.util.*
 
 class PhotoViewModel(application: Application) : AndroidViewModel(application) {
@@ -49,6 +52,12 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
     fun setOpenLocationDir(adapter: RecyclerAdapterPhoto, loc : String) {
         repo.setOpenLocationDir(adapter, loc)
     }
+
+    // test
+    fun setOpenLocationDir(context: Context, loc : String, map: Main_Map, mClusterManager: ClusterManager<LatLngData>) {
+        repo.setOpenLocationDir(context, loc, map, mClusterManager)
+    }
+
 
     fun setOpenNameDir(adapter: RecyclerAdapterPhoto, path : String) {
         repo.setOpenNameDir(adapter, path)

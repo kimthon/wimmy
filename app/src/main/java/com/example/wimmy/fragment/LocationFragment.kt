@@ -13,11 +13,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.wimmy.*
 import com.example.wimmy.Adapter.RecyclerAdapterForder
-import com.example.wimmy.DataBaseObserver
-import com.example.wimmy.MainActivity
-import com.example.wimmy.Main_PhotoView
-import com.example.wimmy.R
 import com.example.wimmy.db.*
 import com.google.android.material.appbar.AppBarLayout
 import kotlinx.android.synthetic.main.main_activity.view.*
@@ -43,7 +40,6 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
         setView(thisview)
         vm.setLocationDir(recyclerAdapter!!)
         observer = DataBaseObserver(Handler(), recyclerAdapter!!)
-
         return thisview
     }
 
@@ -63,10 +59,10 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 202 -> {
-                    if(data!!.getIntExtra("delete_check", 0) == 1) {
+                   /* if(data!!.getIntExtra("delete_check", 0) == 1) {
                         thumbnailList = MediaStore_Dao.getNameDir(thisview?.context!!)
                         setView(thisview!!)
-                    }
+                    }*/
                 }
             }
         }
@@ -78,9 +74,16 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
             RecyclerAdapterForder(activity, thumbnailList)
             {thumbnailData ->
                 if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
-                    val intent = Intent(activity, Main_PhotoView::class.java)
-                    intent.putExtra("location_name", thumbnailData.data)
-                    startActivityForResult(intent, 201)
+                    if(thumbnailData.data == "위치 정보 없음") {
+                        val intent = Intent(activity, Main_PhotoView::class.java)
+                        intent.putExtra("location_name", thumbnailData.data)
+                        startActivityForResult(intent, 201)
+                    }
+                    else {
+                        val intent = Intent(activity, Main_Map::class.java)
+                        intent.putExtra("location_name", thumbnailData.data)
+                        startActivityForResult(intent, 900)
+                    }
                 }
                 mLastClickTime = SystemClock.elapsedRealtime()
             }

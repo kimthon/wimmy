@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         SetHeader()
         init()
         val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-        vm.Drop()
+        //vm.Drop()
         vm.checkChangedData(this)
 
         observer = ChangeObserver( Handler(), vm, this )
@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         go_camera.setOnClickListener {
             captureCamera()
         }
-        checkPermission()
+
     }
 
 
@@ -104,6 +104,8 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }*/
 
     override fun onNavigationItemSelected(p0: MenuItem): Boolean {
+        val toolbar: Toolbar = findViewById(R.id.main_toolbar)
+
         val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
 
         when(p0.itemId){
@@ -133,17 +135,17 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     override fun onBackPressed() {
         if(supportFragmentManager.backStackEntryCount == 0) {
-            val tempTime = System.currentTimeMillis()
-            val intervalTime = tempTime - backPressedTime
+            var tempTime = System.currentTimeMillis();
+            var intervalTime = tempTime - backPressedTime;
             if (0 <= intervalTime && FINISH_INTERVAL_TIME >= intervalTime) {
-                super.onBackPressed()
+                super.onBackPressed();
             } else {
-                backPressedTime = tempTime
-                Toast.makeText(this, "'뒤로' 버튼을 한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+                backPressedTime = tempTime;
+                Toast.makeText(this, "'뒤로' 버튼을 한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show();
                 return
             }
         }
-        super.onBackPressed()
+        super.onBackPressed();
         val bnv = findViewById<View>(R.id.bottomNavigationView) as BottomNavigationView
         updateBottomMenu(bnv)
     }
@@ -182,16 +184,18 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (takePictureIntent.resolveActivity(packageManager) != null) {
 
+            var photoFile: File? = null
             try {
-                val photoFile = createImageFile()
-                if (photoFile != null) { // getUriForFile의 두 번째 인자는 Manifest provier의 authorites와 일치해야 함
-                    val providerURI = FileProvider.getUriForFile(this, packageName, photoFile)
-                    // 인텐트에 전달할 때는 FileProvier의 Return값인 content://로만!!, providerURI의 값에 카메라 데이터를 넣어 보냄
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, providerURI)
-                    startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
-                }
+                photoFile = createImageFile()
             } catch (ex: IOException) {
                 Log.e("captureCamera Error", ex.toString())
+                return
+            }
+            if (photoFile != null) { // getUriForFile의 두 번째 인자는 Manifest provier의 authorites와 일치해야 함
+                val providerURI = FileProvider.getUriForFile(this, packageName, photoFile)
+                // 인텐트에 전달할 때는 FileProvier의 Return값인 content://로만!!, providerURI의 값에 카메라 데이터를 넣어 보냄
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, providerURI)
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
             }
         }
     }
@@ -204,7 +208,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 Log.i("REQUEST_TAKE_PHOTO", "${Activity.RESULT_OK}" + " " + "${resultCode}")
                 if (resultCode == RESULT_OK) {
                     try {
-                        galleryAddPic()
+                        galleryAddPic();
 
                     } catch (e: Exception) {
                         Log.e("REQUEST_TAKE_PHOTO", e.toString())
@@ -250,56 +254,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     // 안드로이드 앱 개발시 TargetSDK가 마시멜로 버전(APK 23)이상인 경우, 디바이스의 특정 기능을 사용할 때 권한을 요구하는데
     // 그 권한 중에 위험 권한으로 분류된 권한은 개발자가 직접 사용자에게 권한 허용을 물을 수 있도록 작성해야한다.
     // 즉, 코드로 작성해야함.
-    private fun checkPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-        {
-            // 다시 보지 않기 버튼을 만드려면 이 부분에 바로 요청을 하도록 하면 됨 (아래 else{..} 부분 제거)
-            // ActivityCompat.requestPermissions((Activity)mContext, new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSION_CAMERA);
-            // 처음 호출시엔 if()안의 부분은 false로 리턴 됨 -> else{..}의 요청으로 넘어감
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))
-            {
-                AlertDialog.Builder(this)
-                    .setTitle("알림")
-                    .setMessage("저장소 권한이 거부되었습니다. 사용을 원하시면 설정에서 해당 권한을 직접 허용하셔야 합니다.")
-                    .setNeutralButton("설정", object: DialogInterface.OnClickListener {
-                        override fun onClick(dialogInterface:DialogInterface, i:Int) {
-                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                            intent.data = Uri.parse("package:" + packageName)
-                            startActivity(intent)
-                        }
-                    })
-                    .setPositiveButton("확인", object:DialogInterface.OnClickListener {
-                        override fun onClick(dialogInterface:DialogInterface, i:Int) {
-                            finish()
-                        }
-                    })
-                    .setCancelable(false)
-                    .create()
-                    .show()
-            }
-            else
-            {
-                ActivityCompat.requestPermissions(this, arrayOf<String>(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), MY_PERMISSION_STORAGE)
-            }
-        }
-    }
 
-    override fun onRequestPermissionsResult(requestCode:Int, @NonNull permissions:Array<String>, @NonNull grantResults:IntArray) {
-        when (requestCode) {
-            MY_PERMISSION_STORAGE -> for (i in grantResults.indices)
-            {
-                // grantResults[] : 허용된 권한은 0, 거부한 권한은 -1
-                if (grantResults[i] < 0)
-                {
-                    Toast.makeText(this@MainActivity, "해당 권한을 활성화 하셔야 합니다.", Toast.LENGTH_SHORT).show()
-                    return
-                }
-            }
-        }// 허용했다면 이 부분에서..
-    }
-    companion object {
-        private val MY_PERMISSION_STORAGE = 1111
-    }
 
 }
 

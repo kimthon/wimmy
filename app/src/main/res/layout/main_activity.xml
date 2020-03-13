@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    app:layout_constraintBottom_toBottomOf="parent">
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginBottom="51dp"
+        app:layout_constraintBottom_toBottomOf="parent">
         <!-- 회색 바 포함 -->
 
         <!-- 프레임 -->
@@ -63,18 +68,29 @@
         </com.google.android.material.appbar.AppBarLayout>
 
 
-        <!-- 하단바 -->
 
-        <LinearLayout
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <!-- 하단바 -->
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        tools:ignore="MissingConstraints">
+
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/common_google_signin_btn_text_dark_disabled" />
+            android:layout_height="1dp"
+            android:background="@color/common_google_signin_btn_text_dark_disabled" />
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -89,10 +105,8 @@
             app:itemTextColor="@drawable/bottombar_check"
             app:labelVisibilityMode="labeled"
             app:menu="@menu/menu_bottom" />
-            <!-- app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior" -->
+        <!-- app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior" -->
 
-        </LinearLayout>
-
+    </LinearLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-
+</androidx.constraintlayout.widget.ConstraintLayout>

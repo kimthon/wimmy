@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -29,36 +30,23 @@ class Main_PhotoView: AppCompatActivity() {
     private var mLastClickTime: Long = 0
     private var delete_check: Int = 0
 
+    companion object {
+        var tagList = ArrayList<TagData>()
+        var photoList = arrayListOf<PhotoData>()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_photoview)
         val view: View = findViewById(R.id.photo_recyclerView)
 
+        photoList.clear()
         SetHeader()
         setView(view)
         getExtra(view)
 
         updown_Listener(recyclerView)
-
-
-        val onScrollListener = object:RecyclerView.OnScrollListener() {
-            var temp: Int = 0
-            override fun onScrolled(@NonNull recyclerView:RecyclerView, dx:Int, dy:Int) {
-                if(temp == 1) {
-                    super.onScrolled(recyclerView, dx, dy)
-                    up_button.visibility = View.GONE
-                    down_button.visibility = View.GONE
-                }
-            }
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-                up_button.visibility = View.VISIBLE
-                down_button.visibility = View.VISIBLE
-                temp = 1
-            }
-
-        }
-        recyclerView?.setOnScrollListener(onScrollListener)
+        updownEvent()
 
     }
 
@@ -77,9 +65,8 @@ class Main_PhotoView: AppCompatActivity() {
 
                 val intent = Intent(this, PhotoViewPager::class.java)
                 intent.putExtra("photo_num", num)
-                intent.putExtra("thumbnail", PhotoData.photo_id)
 
-                intent.putParcelableArrayListExtra("photo_list", recyclerAdapter!!.getThumbnailList())
+
                 startActivityForResult(intent, 100)
 
             }
@@ -113,14 +100,13 @@ class Main_PhotoView: AppCompatActivity() {
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 100 -> {
-                    if(data!!.hasExtra("delete_list")) {
-                        val PhotoList = data!!.getSerializableExtra("delete_list") as ArrayList<PhotoData>
-                        setView(photo_recyclerView)
+                    if(data!!.hasExtra("delete_check")) {
+                        /*setView(photo_recyclerView)
                         setPhotoSize(3, 3)
-                        delete_check = 1
+                        delete_check = 1*/
                     }
                     val doc = data!!.getIntExtra("index", 0)
-                    recyclerView?.smoothScrollToPosition(doc)
+                    recyclerView?.scrollToPosition(doc)
                 }
             }
         }
@@ -190,5 +176,28 @@ class Main_PhotoView: AppCompatActivity() {
         setResult(Activity.RESULT_OK, intent)
         finish()
     }
+
+    fun updownEvent() {
+        updown_Listener(recyclerView)
+        val onScrollListener = object : RecyclerView.OnScrollListener() {
+            var temp: Int = 0
+            override fun onScrolled(@NonNull recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (temp == 1) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    up_button.visibility = View.GONE
+                    down_button.visibility = View.GONE
+                }
+            }
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                up_button.visibility = View.VISIBLE
+                down_button.visibility = View.VISIBLE
+                temp = 1
+            }
+        }
+
+        recyclerView?.setOnScrollListener(onScrollListener)
+    }
+
 }
 
