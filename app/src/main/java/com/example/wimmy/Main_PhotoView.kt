@@ -24,7 +24,6 @@ import kotlin.collections.ArrayList
 import java.io.File
 
 class Main_PhotoView: AppCompatActivity() {
-    private var tagList = ArrayList<TagData>()
     private var recyclerAdapter : RecyclerAdapterPhoto?= null
     private var recyclerView: RecyclerView? = null
     private var mLastClickTime: Long = 0
@@ -81,8 +80,6 @@ class Main_PhotoView: AppCompatActivity() {
                 intent.putExtra("thumbnail", PhotoData.photo_id)
 
                 intent.putParcelableArrayListExtra("photo_list", recyclerAdapter!!.getThumbnailList())
-                intent.putParcelableArrayListExtra("tag_list", tagList)
-
                 startActivityForResult(intent, 100)
 
             }

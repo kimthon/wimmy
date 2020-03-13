@@ -3,195 +3,26 @@ package com.example.wimmy.db
 import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
-import android.os.AsyncTask
+import android.net.NetworkCapabilities
+import android.os.Build
+import android.os.Handler
+import android.os.Looper
+import android.provider.MediaStore
+import android.widget.ImageView
 import android.widget.TextView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
+import com.example.wimmy.PhotoViewPager
+import com.example.wimmy.R
 import java.util.*
-import kotlin.collections.ArrayList
+import java.util.concurrent.*
 
 class PhotoRepository(application: Application) {
    private val photoDao : PhotoData_Dao
-
-   companion object {
-      private class insertTagAsyncTask constructor(private val asyncTask: PhotoData_Dao) : AsyncTask<TagData, Void, Void>() {
-         override fun doInBackground(vararg params: TagData?): Void? {
-            asyncTask.insert(params[0]!!)
-            return null
-         }
-      }
-
-      private class insertExtraAsyncTask constructor(private val asyncTask: PhotoData_Dao) : AsyncTask<ExtraPhotoData, Void, Void>() {
-         override fun doInBackground(vararg params: ExtraPhotoData?): Void? {
-            asyncTask.insert(params[0]!!)
-            return null
-         }
-      }
-
-      private class deleteTagByIdAsyncTask constructor(private val asyncTask: PhotoData_Dao) : AsyncTask<Long, Void, Void>() {
-         override fun doInBackground(vararg params: Long?): Void? {
-            asyncTask.deleteTagById(params[0]!!)
-            asyncTask.deleteExtraById(params[0]!!)
-            return null
-         }
-      }
-
-      // 폴더 생성
-      private class setCalendarTagAsyncTask(asyncTask: PhotoData_Dao, textView: TextView, inputCalendar: Calendar) : AsyncTask<Context, Void, String>() {
-         private val asyncTask = asyncTask
-         private val textView = textView
-         private val inputCalendar = inputCalendar
-
-         override fun doInBackground(vararg params: Context?): String? {
-            val list = MediaStore_Dao.getDateIdInfo(params[0]!!, inputCalendar)
-            return asyncTask.getDateInfo(list)
-         }
-
-         override fun onPostExecute(result: String?) {
-            textView.text = result
-         }
-      }
-
-      private class setLocationDirAsyncTask(asyncTask: PhotoData_Dao, adapter : RecyclerAdapterForder) : AsyncTask<Void, Void, List<thumbnailData>>() {
-         private val asyncTask = asyncTask
-         private val  adapter = adapter
-
-         override fun doInBackground(vararg params: Void?): List<thumbnailData>? {
-            return asyncTask.getLocationDir()
-         }
-
-         override fun onPostExecute(result: List<thumbnailData>?) {
-            adapter.setThumbnailList(result)
-         }
-      }
-
-      private class setNameDirAsyncTask(asyncTask: MediaStore_Dao, adapter: RecyclerAdapterForder) : AsyncTask<Void, Void, List<thumbnailData>>() {
-         private val asyncTask = asyncTask
-         private val  adapter = adapter
-
-         override fun doInBackground(vararg params: Void?): List<thumbnailData> {
-            return asyncTask.getNameDir(adapter.context!!.applicationContext)
-         }
-
-         override fun onPostExecute(result: List<thumbnailData>?) {
-            adapter.setThumbnailList(result)
-         }
-      }
-
-      private class setTagDirAsyncTask(asyncTask: PhotoData_Dao, adapter: RecyclerAdapterForder) : AsyncTask<Void, Void, List<thumbnailData>>() {
-         private val asyncTask = asyncTask
-         private val  adapter = adapter
-         override fun doInBackground(vararg params: Void?): List<thumbnailData> {
-            return asyncTask.getTagDir()
-         }
-
-         override fun onPostExecute(result: List<thumbnailData>) {
-            adapter.setThumbnailList(result)
-         }
-      }
-
-      // 폴더 내용 생성
-      private class setOpenLocationDirAsyncTask(asyncTask: PhotoData_Dao, adapter: RecyclerAdapterPhoto) : AsyncTask<String, Void, List<Long>>() {
-         private val asyncTask = asyncTask
-         private val  adapter = adapter
-
-         override fun doInBackground(vararg params: String?): List<Long>? {
-            val idList = asyncTask.getLocationDir(params[0]!!)
-            return idList
-         }
-
-         override fun onPostExecute(result: List<Long>?) {
-            val list = MediaStore_Dao.getLocationDir(adapter, result)
-            if(!result.isNullOrEmpty()) {
-               for (id in list) {
-                  setExtraData(asyncTask, adapter, id).execute()
-               }
-            }
-         }
-      }
-
-      private class setOpenTagDirAsyncTask(asyncTask: PhotoData_Dao, adapter: RecyclerAdapterPhoto) : AsyncTask<String, Void, List<Long>>() {
-         private val asyncTask = asyncTask
-         private val  adapter = adapter
-
-         override fun doInBackground(vararg params: String?): List<Long>? {
-            var idList = asyncTask.getTagDir(params[0]!!)
-            return idList
-         }
-
-         override fun onPostExecute(result: List<Long>?) {
-            //adapter.setThumbnailList(result)
-            val list =  MediaStore_Dao.getTagDir(adapter, result)
-            if(!result.isNullOrEmpty()) {
-               for (id in list) {
-                  setExtraData(asyncTask, adapter, id).execute()
-               }
-            }
-         }
-      }
-
-      private class setOpenFavoriteDirAsyncTask(asyncTask: PhotoData_Dao, adapter: RecyclerAdapterPhoto) : AsyncTask<Void, Void, List<Long>>() {
-         private val asyncTask = asyncTask
-         private val  adapter = adapter
-
-         override fun doInBackground(vararg params: Void?): List<Long>? {
-            val idList = asyncTask.getFavoriteDir()
-            return idList
-         }
-
-         override fun onPostExecute(result: List<Long>?) {
-            //임시
-            val list = MediaStore_Dao.getLocationDir(adapter, result)
-            if(!result.isNullOrEmpty()) {
-               for (id in list) {
-                  setExtraData(asyncTask, adapter, id).execute()
-               }
-            }
-         }
-      }
-
-      private class setTagsAsyncTask(asyncTask: PhotoData_Dao, textView: TextView) : AsyncTask<Long, Void, List<String>>() {
-         private val asyncTask  = asyncTask
-         private val textView = textView
-
-         override fun doInBackground(vararg params: Long?): List<String>? {
-            return asyncTask.getTags(params[0]!!)
-         }
-
-         override fun onPostExecute(result: List<String>?) {
-            if(result.isNullOrEmpty()) textView.text = ""
-            else textView.text = result.joinToString ( ", " )
-         }
-      }
-
-      private class setExtraData(asyncTask: PhotoData_Dao, adapter: RecyclerAdapterPhoto, data: PhotoData) : AsyncTask<Void, Void, Void>() {
-         private val asyncTask  = asyncTask
-         private val adapter = adapter
-         private val data = data
-
-         override fun doInBackground(vararg params: Void?): Void? {
-            var extra = asyncTask.getExtraPhotoData(data.photo_id)
-            if(extra == null) {
-               //인터넷 연결안될 시 패스
-               if(!NetworkIsValid(adapter.context!!)) return null
-
-               val loc = MediaStore_Dao.getLocation(adapter.context!!.applicationContext, data.photo_id)
-               extra = ExtraPhotoData(data.photo_id, loc, false)
-               asyncTask.insert(extra)
-            }
-
-            data.location_info = extra.location
-            data.favorite  = extra.favorite
-
-            return null
-         }
-      }
-
-      private fun NetworkIsValid(context: Context) : Boolean {
-         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-         return cm.activeNetworkInfo != null
-      }
-   }
+   private val DBThread = ThreadPoolExecutor(0, Integer.MAX_VALUE, 0L, TimeUnit.MILLISECONDS, SynchronousQueue<Runnable>())
+   private val DirectoryThread = ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, LinkedBlockingQueue())
+   private val changeCheckThread = ThreadPoolExecutor(1, 2, 0L, TimeUnit.MILLISECONDS, LinkedBlockingQueue())
+   private val handler = Handler(Looper.getMainLooper())
 
    init {
       val db = PhotoDB.getInstance(application)!!
@@ -199,66 +30,260 @@ class PhotoRepository(application: Application) {
    }
 
    fun insert(tag : TagData) {
-      insertTagAsyncTask(photoDao).execute(tag)
+       DBThread.execute {
+          photoDao.insert(tag)
+       }
    }
 
    fun insert(extraPhotoData: ExtraPhotoData) {
-      insertExtraAsyncTask(photoDao).execute(extraPhotoData)
+       DBThread.execute {
+          photoDao.insert(extraPhotoData)
+       }
    }
 
    fun deleteById(id: Long) {
-      deleteTagByIdAsyncTask(photoDao).execute(id)
+      DBThread.execute {
+         photoDao.deleteTagById(id)
+         photoDao.deleteExtraById(id)
+      }
    }
 
    // 폴더 생성
+   fun setCalendarTag(textView: TextView, inputCalendar: Calendar) {
+      if(DirectoryThread.isTerminating) DirectoryThread.shutdownNow()
+      DirectoryThread.execute {
+         val list = MediaStore_Dao.getDateIdInfo(textView.context, inputCalendar)
+         val text = photoDao.getDateInfo(list)
+         handler.post { textView.text = text }
+      }
+   }
+
    fun setLocationDir(adapter: RecyclerAdapterForder) {
-      setLocationDirAsyncTask(photoDao, adapter).execute()
+      if(DirectoryThread.isTerminating) DirectoryThread.shutdownNow()
+      DirectoryThread.execute {
+         val thumbnailList = photoDao.getLocationDir()
+         handler.post { adapter.setThumbnailList(thumbnailList) }
+      }
    }
 
    fun setNameDir(adapter: RecyclerAdapterForder) {
-      setNameDirAsyncTask(MediaStore_Dao, adapter).execute()
+      if(DirectoryThread.isTerminating) DirectoryThread.shutdownNow()
+       DirectoryThread.execute {
+          val thumbnailList = MediaStore_Dao.getNameDir(adapter.context!!.baseContext)
+          handler.post { adapter.setThumbnailList(thumbnailList) }
+       }
    }
 
    fun setTagDir(adapter: RecyclerAdapterForder) {
-      setTagDirAsyncTask(photoDao, adapter).execute()
-   }
-
-   fun setCalendarTag(textView: TextView, inputCalendar: Calendar) {
-      setCalendarTagAsyncTask(photoDao, textView, inputCalendar).execute(textView.context)
+      if(DirectoryThread.isTerminating) DirectoryThread.shutdownNow()
+      DirectoryThread.execute {
+         val thumbnailList = photoDao.getTagDir()
+         handler.post { adapter.setThumbnailList(thumbnailList) }
+      }
    }
 
    //폴더 내용 생성
    fun setOpenDateDir(adapter: RecyclerAdapterPhoto, cal : Calendar) {
-      val list = MediaStore_Dao.getDateDir(adapter, cal)
-      if(!list.isNullOrEmpty()) {
-         for (id in list) {
-            setExtraData(photoDao, adapter, id).execute()
-         }
-      }
+       DirectoryThread.execute {
+          val cursor = MediaStore_Dao.getDateDir(adapter, cal)
+          if(MediaStore_Dao.cursorIsValid(cursor)) {
+             do {
+                val photoData = MediaStore_Dao.getPhotoData(cursor!!)
+                adapter.addThumbnailList(photoData)
+                handler.post { adapter.notifyItemInserted(adapter.getSize()) }
+             } while (cursor!!.moveToNext())
+             cursor.close()
+          }
+       }
    }
 
    fun setOpenLocationDir(adapter: RecyclerAdapterPhoto, loc : String) {
-       setOpenLocationDirAsyncTask(photoDao, adapter).execute(loc)
+      DirectoryThread.execute {
+            val idCursor = photoDao.getLocationDir(loc)
+            if(MediaStore_Dao.cursorIsValid(idCursor)) {
+               do {
+                  val id = idCursor.getLong(idCursor.getColumnIndex("photo_id"))
+                  val photoData = MediaStore_Dao.getDataById(adapter, id)
+                  if(photoData != null) {
+                     adapter.addThumbnailList(photoData)
+                     handler.post { adapter.notifyItemInserted(adapter.getSize()) }
+                  }
+                  else {
+                     photoDao.deleteTagById(id)
+                     photoDao.deleteExtraById(id)
+                  }
+               } while (idCursor.moveToNext())
+               idCursor.close()
+            }
+      }
    }
 
    fun setOpenNameDir(adapter: RecyclerAdapterPhoto, path : String) {
-      val list = MediaStore_Dao.getNameDir(adapter, path)
-      if(!list.isNullOrEmpty()) {
-         for (id in list) {
-            setExtraData(photoDao, adapter, id).execute()
+      DirectoryThread.execute {
+         val cursor = MediaStore_Dao.getNameDir(adapter, path)
+         if (MediaStore_Dao.cursorIsValid(cursor)) {
+            do {
+               val photoData = MediaStore_Dao.getPhotoData(cursor!!)
+               adapter.addThumbnailList(photoData)
+               handler.post { adapter.notifyItemInserted(adapter.getSize()) }
+            } while (cursor!!.moveToNext())
+            cursor.close()
          }
       }
    }
 
    fun setOpenTagDir(adapter: RecyclerAdapterPhoto, tag : String) {
-      setOpenTagDirAsyncTask(photoDao, adapter).execute(tag)
+      DirectoryThread.execute {
+         val idCursor = photoDao.getTagDir(tag)
+         if (MediaStore_Dao.cursorIsValid(idCursor)) {
+            do {
+               val id = idCursor.getLong(idCursor.getColumnIndex("photo_id"))
+               val photoData = MediaStore_Dao.getDataById(adapter, id)
+               if (photoData != null) {
+                  adapter.addThumbnailList(photoData)
+                  handler.post { adapter.notifyItemInserted(adapter.getSize()) }
+               } else {
+                  photoDao.deleteTagById(id)
+                  photoDao.deleteExtraById(id)
+               }
+            } while (idCursor.moveToNext())
+            idCursor.close()
+         }
+      }
    }
 
    fun setOpenFavoriteDir(adapter: RecyclerAdapterPhoto) {
-      setOpenFavoriteDirAsyncTask(photoDao, adapter).execute()
+      DirectoryThread.execute {
+         val idCursor = photoDao.getFavoriteDir()
+         do {
+            val id = idCursor.getLong(idCursor.getColumnIndex("photo_id"))
+            val photoData = MediaStore_Dao.getDataById(adapter, id)
+            if (photoData != null) {
+               adapter.addThumbnailList(photoData)
+               handler.post { adapter.notifyItemInserted(adapter.getSize()) }
+            } else {
+               photoDao.deleteTagById(id)
+               photoDao.deleteExtraById(id)
+            }
+         } while (idCursor.moveToNext())
+         idCursor.close()
+      }
+   }
+
+   // 기타 기능
+   fun setLocation(textView: TextView, id : Long) {
+      DBThread.execute {
+         val text = photoDao.getLocation(id)
+         handler.post {
+            textView.text = text
+         }
+      }
    }
 
    fun setTags(textView: TextView, id : Long) {
-      setTagsAsyncTask(photoDao, textView).execute(id)
+      DBThread.execute {
+         val tags = photoDao.getTags(id)
+         handler.post {
+            textView.text = tags.joinToString(", ")
+         }
+      }
+   }
+
+   fun checkFavorite(imageView: ImageView, id: Long) {
+      DBThread.execute {
+         var favorite = photoDao.getFavorite(id)
+         if(favorite == null) {
+            insert(ExtraPhotoData(id, null, false))
+            favorite = false
+         }
+         handler.post {
+            if (favorite) imageView.setImageResource(R.drawable.ic_favorite_checked)
+            else imageView.setImageResource(R.drawable.ic_favorite)
+         }
+      }
+   }
+
+   fun changeFavorite(imageView: ImageView, id : Long) {
+      DBThread.execute {
+         var favorite = photoDao.getFavorite(id)
+         if(favorite == null) {
+            insert(ExtraPhotoData(id, null, true))
+            favorite = true
+         }
+         photoDao.update(id, !favorite)
+         handler.post {
+            //변경 되었으므로 반대로
+            if (!favorite) imageView.setImageResource(R.drawable.ic_favorite_checked)
+            else imageView.setImageResource(R.drawable.ic_favorite)
+         }
+      }
+   }
+
+   fun checkChangedData(context: Context) {
+      //이미 변환 감지 실행중이면 다시 실행
+      if (changeCheckThread.isTerminating) changeCheckThread.shutdownNow()
+      //추가 작업
+      changeCheckThread.execute {
+         val cursor = MediaStore_Dao.getNewlySortedCursor(context)
+         if (MediaStore_Dao.cursorIsValid(cursor)) {
+            do {
+               val id = cursor!!.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
+               //이미 있는 것이나 인터넷이 끊길 시 패스
+               if (!NetworkIsValid(context)) continue
+               changeCheckThread.execute {
+                  val loc = photoDao.getLocation(id) ?: MediaStore_Dao.getLocation(context.applicationContext, id) ?: return@execute
+                  val favorite = photoDao.getFavorite(id) ?: false
+                  val extra = ExtraPhotoData(id, loc, favorite)
+                  photoDao.insert(extra)
+               }
+            } while (cursor!!.moveToNext())
+            cursor.close()
+         }
+         //삭제 작업
+         changeCheckThread.execute {
+            val cursor = photoDao.getIdCursor()
+            if (MediaStore_Dao.cursorIsValid(cursor)) {
+               do {
+                  val id = cursor.getLong(cursor.getColumnIndex("photo_id"))
+                  if (!MediaStore_Dao.IsItValidId(context, id)) {
+                     photoDao.deleteExtraById(id)
+                     photoDao.deleteTagById(id)
+                  }
+               } while (cursor.moveToNext())
+            }
+         }
+      }
+   }
+
+   fun Drop() {
+      DBThread.execute { photoDao.dropTable() }
+   }
+
+   @Suppress("DEPRECATION")
+   private fun NetworkIsValid(context: Context) : Boolean {
+      var result = false
+      val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+       if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+          val networkCapabilities = cm.activeNetwork ?: return false
+          val actNw = cm.getNetworkCapabilities(networkCapabilities) ?: return false
+          result = when {
+             actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+             actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+             actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+             else -> false
+          }
+       } else {
+          cm.run {
+             cm.activeNetworkInfo?.run {
+                result = when(type) {
+                   ConnectivityManager.TYPE_WIFI -> true
+                   ConnectivityManager.TYPE_MOBILE -> true
+                   ConnectivityManager.TYPE_ETHERNET -> true
+                   else -> false
+                }
+             }
+          }
+       }
+      return result
    }
 }

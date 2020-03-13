@@ -9,7 +9,6 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.DialogFragment
 import com.example.wimmy.DateFragment
-import com.example.wimmy.fragment.*
 import com.example.wimmy.R
 import kotlinx.android.synthetic.main.search_view.view.*
 import java.util.*
