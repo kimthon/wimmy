@@ -8,18 +8,14 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
-import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import com.example.wimmy.Main_Map
-import com.example.wimmy.Main_PhotoView.Companion.photoList
-import com.google.maps.android.clustering.ClusterManager
-import java.io.File
-import com.example.wimmy.PhotoViewPager
+import com.example.wimmy.Main_PhotoView.Companion.list
 import com.example.wimmy.R
-import kotlinx.android.synthetic.main.main_map.*
+import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.*
 
@@ -90,53 +86,29 @@ class PhotoRepository(application: Application) {
 
    //폴더 내용 생성
    fun setOpenDateDir(adapter: RecyclerAdapterPhoto, cal : Calendar) {
-       DirectoryThread.execute {
-          val cursor = MediaStore_Dao.getDateDir(adapter, cal)
-          if(MediaStore_Dao.cursorIsValid(cursor)) {
-             do {
-                val photoData = MediaStore_Dao.getPhotoData(cursor!!)
-                adapter.addThumbnailList(photoData)
-                 photoList.add(photoData)
-                handler.post { adapter.notifyItemInserted(adapter.getSize()) }
-             } while (cursor!!.moveToNext())
-             cursor.close()
-          }
-       }
-   }
-
-   fun setOpenLocationDir(adapter: RecyclerAdapterPhoto, loc : String) {
       DirectoryThread.execute {
-            val idCursor = photoDao.getLocationDir(loc)
-            if(MediaStore_Dao.cursorIsValid(idCursor)) {
-               do {
-                  val id = idCursor.getLong(idCursor.getColumnIndex("photo_id"))
-                  val photoData = MediaStore_Dao.getDataById(adapter, id)
-                  if(photoData != null) {
-                     adapter.addThumbnailList(photoData)
-                      photoList.add(photoData)
-                     handler.post { adapter.notifyItemInserted(adapter.getSize()) }
-
-                  }
-                  else {
-                     photoDao.deleteTagById(id)
-                     photoDao.deleteExtraById(id)
-                  }
-               } while (idCursor.moveToNext())
-               idCursor.close()
-            }
+         val cursor = MediaStore_Dao.getDateDir(adapter, cal)
+         if(MediaStore_Dao.cursorIsValid(cursor)) {
+            do {
+               val data = MediaStore_Dao.getData(cursor!!)
+               adapter.addThumbnailList(data)
+               handler.post { adapter.notifyItemInserted(adapter.getSize()) }
+            } while (cursor!!.moveToNext())
+            cursor.close()
+         }
       }
    }
 
-   // test
-   fun setOpenLocationDir(context: Context, loc : String, map: Main_Map, clusterManager: ClusterManager<LatLngData>) {
+   fun setOpenLocationDir(adapter: RecyclerAdapterPhoto, loc : String) {
       DirectoryThread.execute {
          val idCursor = photoDao.getLocationDir(loc)
          if(MediaStore_Dao.cursorIsValid(idCursor)) {
             do {
                val id = idCursor.getLong(idCursor.getColumnIndex("photo_id"))
-               val photoData = MediaStore_Dao.getDataById(context, id, map, clusterManager)
+               val photoData = MediaStore_Dao.getDataById(adapter, id)
                if(photoData != null) {
-                  photoList.add(photoData)
+                  adapter.addThumbnailList(photoData)
+                  handler.post { adapter.notifyItemInserted(adapter.getSize()) }
                }
                else {
                   photoDao.deleteTagById(id)
@@ -148,14 +120,28 @@ class PhotoRepository(application: Application) {
       }
    }
 
+   fun setOpenLocationDir(context: Context, loc : String, map: Main_Map) {
+      DirectoryThread.execute {
+         val idCursor = photoDao.getLocationDir(loc)
+         if(MediaStore_Dao.cursorIsValid(idCursor)) {
+            list.clear()
+            do {
+               val id = idCursor.getLong(idCursor.getColumnIndex("photo_id"))
+               list.add(thumbnailData(id, loc))
+               MediaStore_Dao.setLatLngDataById(context, id, map)
+            } while (idCursor.moveToNext())
+            idCursor.close()
+         }
+      }
+   }
+
    fun setOpenNameDir(adapter: RecyclerAdapterPhoto, path : String) {
       DirectoryThread.execute {
          val cursor = MediaStore_Dao.getNameDir(adapter, path)
          if (MediaStore_Dao.cursorIsValid(cursor)) {
             do {
-               val photoData = MediaStore_Dao.getPhotoData(cursor!!)
-                photoList.add(photoData)
-               adapter.addThumbnailList(photoData)
+               val data = MediaStore_Dao.getData(cursor!!)
+               adapter.addThumbnailList(data)
                handler.post { adapter.notifyItemInserted(adapter.getSize()) }
             } while (cursor!!.moveToNext())
             cursor.close()
@@ -172,7 +158,6 @@ class PhotoRepository(application: Application) {
                val photoData = MediaStore_Dao.getDataById(adapter, id)
                if (photoData != null) {
                   adapter.addThumbnailList(photoData)
-                   photoList.add(photoData)
                   handler.post { adapter.notifyItemInserted(adapter.getSize()) }
                } else {
                   photoDao.deleteTagById(id)
@@ -203,9 +188,32 @@ class PhotoRepository(application: Application) {
    }
 
    // 기타 기능
+   fun setName(textView: TextView, id: Long) {
+      DBThread.execute {
+         val text = MediaStore_Dao.getNameById(textView.context, id)
+         handler.post {
+            if(text == null) textView.text = "정보 없음"
+            else textView.text = text
+         }
+      }
+   }
+
+   fun setDate(textView: TextView, id: Long) {
+      DBThread.execute {
+         val time = MediaStore_Dao.getDateById(textView.context, id)
+         if(time != null) {
+            handler.post {
+               val formatter = SimpleDateFormat("yyyy년 MM월 dd일 (E) / HH:mm:ss")
+               val date_string = (formatter).format(time)
+               textView.text = date_string
+            }
+         }
+      }
+   }
+
    fun setLocation(textView: TextView, id : Long) {
       DBThread.execute {
-         val text = photoDao.getLocation(id)
+         val text = photoDao.getLocationById(id)
          handler.post {
             textView.text = text
          }
@@ -214,7 +222,7 @@ class PhotoRepository(application: Application) {
 
    fun setTags(textView: TextView, id : Long) {
       DBThread.execute {
-         val tags = photoDao.getTags(id)
+         val tags = photoDao.getTagsById(id)
          handler.post {
             textView.text = tags.joinToString(", ")
          }
@@ -223,7 +231,7 @@ class PhotoRepository(application: Application) {
 
    fun checkFavorite(imageView: ImageView, id: Long) {
       DBThread.execute {
-         var favorite = photoDao.getFavorite(id)
+         var favorite = photoDao.getFavoriteById(id)
          if(favorite == null) {
             insert(ExtraPhotoData(id, null, false))
             favorite = false
@@ -237,7 +245,7 @@ class PhotoRepository(application: Application) {
 
    fun changeFavorite(imageView: ImageView, id : Long) {
       DBThread.execute {
-         var favorite = photoDao.getFavorite(id)
+         var favorite = photoDao.getFavoriteById(id)
          if(favorite == null) {
             insert(ExtraPhotoData(id, null, true))
             favorite = true
@@ -251,6 +259,7 @@ class PhotoRepository(application: Application) {
       }
    }
 
+
    fun checkChangedData(context: Context) {
       //이미 변환 감지 실행중이면 다시 실행
       if (changeCheckThread.isTerminating) changeCheckThread.shutdownNow()
@@ -263,8 +272,8 @@ class PhotoRepository(application: Application) {
                //이미 있는 것이나 인터넷이 끊길 시 패스
                if (!NetworkIsValid(context)) continue
                changeCheckThread.execute {
-                  val loc = photoDao.getLocation(id) ?: MediaStore_Dao.getLocation(context.applicationContext, id) ?: return@execute
-                  val favorite = photoDao.getFavorite(id) ?: false
+                  val loc = photoDao.getLocationById(id) ?: MediaStore_Dao.getLocation(context.applicationContext, id) ?: return@execute
+                  val favorite = photoDao.getFavoriteById(id) ?: false
                   val extra = ExtraPhotoData(id, loc, favorite)
                   photoDao.insert(extra)
                }
@@ -286,6 +295,8 @@ class PhotoRepository(application: Application) {
          }
       }
    }
+
+
 
    fun Drop() {
       DBThread.execute { photoDao.dropTable() }

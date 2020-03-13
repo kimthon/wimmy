@@ -10,27 +10,24 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.example.wimmy.Adapter.PagerRecyclerAdapter
-import com.example.wimmy.Main_PhotoView.Companion.photoList
+import com.example.wimmy.Main_PhotoView.Companion.list
 import com.example.wimmy.db.MediaStore_Dao
-import com.example.wimmy.db.PhotoData
 import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.db.TagData
+import com.example.wimmy.db.thumbnailData
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.ml.naturallanguage.FirebaseNaturalLanguage
 import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslateLanguage
@@ -39,17 +36,13 @@ import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import kotlinx.android.synthetic.main.photoview_frame.*
 import java.io.ByteArrayOutputStream
-import java.text.SimpleDateFormat
 
-class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener  {
+class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener  {
     private var recyclerAdapter : PagerRecyclerAdapter?= null
-    //private var subimg: ImageView? = null
-    internal lateinit var viewPager: ViewPager
+    private lateinit var viewPager: ViewPager
     private lateinit var vm : PhotoViewModel
-    private var index: Int = 0
     private lateinit var tag_name : AppCompatTextView
-    private var thumbnail: Long? = null
-    private var check: Int = 0
+    private var index  = 0
     private var delete_check: Int = 0
 
 
@@ -61,6 +54,8 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
         setContentView(R.layout.photoview_frame)
         val view: View = findViewById(R.id.imgViewPager)
         vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+        index = intent.getIntExtra("index", 0)
+
         getExtra()
         val text_name = findViewById<AppCompatTextView>(R.id.imgView_text)
         val date_name = findViewById<AppCompatTextView>(R.id.imgView_date)
@@ -78,6 +73,7 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
             override fun onPageScrollStateChanged(state: Int) {
 
             }
+
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
                 mainphoto_toolbar!!.visibility = View.VISIBLE
                 bottom_photo_menu.visibility = View.VISIBLE
@@ -85,21 +81,15 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
             }
 
             override fun onPageSelected(position: Int) {
-                index = position
                 toolbar_text(position, text_name, date_name, location_name, tag_name, favorite)
             }
         })
     }
+
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setView(view: View, toolbar: androidx.appcompat.widget.Toolbar, bottombar: View) {
-
         viewPager = view.findViewById<RecyclerView>(R.id.imgViewPager) as ViewPager
-
-        recyclerAdapter =
-            PagerRecyclerAdapter(
-                this,
-                photoList, toolbar, bottombar
-            )
+        recyclerAdapter = PagerRecyclerAdapter( this, list, toolbar, bottombar )
 
         viewPager.adapter = recyclerAdapter
         viewPager.setCurrentItem(index, false)
@@ -113,18 +103,10 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
 
     @SuppressLint("SimpleDateFormat")
     fun toolbar_text(position: Int, name: AppCompatTextView, date: AppCompatTextView, location: AppCompatTextView, tag: AppCompatTextView, favorite: ImageView){
-        name.setText(photoList[position].name)
+        val id = list[position].photo_id
 
-
-        val formatter = SimpleDateFormat("yyyy년 MM월 dd일 (E) / HH:mm:ss")
-        val id = photoList[position].photo_id
-        val date_info = photoList[position].date_info
-        date.text = if(date_info == null) {
-            ""
-        } else {
-            (formatter).format(photoList[position].date_info)
-        }
-
+        vm.setName(name, id)
+        vm.setDate(date, id)
         vm.setLocation(location, id)
         vm.setTags(tag, id)
         vm.checkFavorite(favorite, id)
@@ -148,9 +130,10 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
                 .build()
             val translator = FirebaseNaturalLanguage.getInstance().getTranslator(options)
 
-            var bitmap = BitmapFactory.decodeFile(photoList[index].file_path +'/'+ photoList[index].name)
+            val path = MediaStore_Dao.getPathById(this, list[index].photo_id)
+            var bitmap = BitmapFactory.decodeFile(path)
+            bitmap =  MediaStore_Dao.modifyOrientaionById(this, list[index].photo_id, bitmap)
 
-            bitmap =  MediaStore_Dao.modifyOrientaionById(this, photoList[index].photo_id, bitmap)
             val image = FirebaseVisionImage.fromBitmap(bitmap)
             val labeler = FirebaseVision.getInstance().getOnDeviceImageLabeler()
             labeler.processImage(image)
@@ -168,7 +151,6 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
                                     .addOnFailureListener { exception ->
 
                                     }
-
                             }
                         }
                         .addOnFailureListener { exception ->
@@ -199,16 +181,17 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
                 dlg.setIcon(R.drawable.ic_tag)
                 dlg.setPositiveButton("확인") { _, _ ->
                     Toast.makeText(this, "입력 완료 되었습니다.", Toast.LENGTH_SHORT).show()
-                    vm.Insert(TagData(photoList[index].photo_id, et.text.toString(), "manual"))
-                    vm.setTags(tag_name, photoList[index].photo_id)
+                    vm.Insert(TagData(list[index].photo_id, et.text.toString(), "manual"))
+                    vm.setTags(tag_name, list[index].photo_id)
                 }
                 dlg.setNegativeButton("취소") { _, _ -> }
                 dlg.show()
             }
             R.id.menu_share -> {
                 val intent = Intent(Intent.ACTION_SEND)
-                var bitmap = BitmapFactory.decodeFile(photoList[index].file_path +'/'+ photoList[index].name)
-                bitmap =  MediaStore_Dao.modifyOrientaionById(this, photoList[index].photo_id, bitmap)
+                val path = MediaStore_Dao.getPathById(this, list[index].photo_id)
+                var bitmap = BitmapFactory.decodeFile(path)
+                bitmap =  MediaStore_Dao.modifyOrientaionById(this, list[index].photo_id, bitmap)
                 val uri: Uri? = getImageUri(this, bitmap)
                 intent.setType("image/*")
                 intent.putExtra(Intent.EXTRA_STREAM, uri)
@@ -243,13 +226,13 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
         dlg.setMessage("정말 삭제하시겠습니까? ")
         dlg.setIcon(R.drawable.ic_delete)
         dlg.setPositiveButton("확인") { _, _ ->
-            vm.Delete(photoList[index].photo_id)
-            photoList.removeAt(index)
+            vm.Delete(list[index].photo_id)
+            list.removeAt(index)
             Toast.makeText(this, "삭제 완료 되었습니다.", Toast.LENGTH_SHORT).show()
-            if(index == 0 && photoList.size == 0) {
+            if(index == 0 && list.size == 0) {
                 finishActivity()
             } else {
-                if (index >= photoList.size) {
+                if (index >= list.size) {
                     index -= 1
                 }
                 setView(view, toolbar, bottombar)

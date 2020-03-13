@@ -32,14 +32,17 @@ class ThumbnailLoad(holder: RecyclerView.ViewHolder, imageView: ImageView, id : 
     }
 }
 
-class ImageLoad(imageView: ImageView, data : PhotoData) : Runnable {
+class ImageLoad(imageView: ImageView, id : Long) : Runnable {
     val imageView = imageView
-    val data = data
+    val id = id
 
     override fun run() {
-        val image = BitmapFactory.decodeFile(data.file_path +'/'+ data.name)
-        handler.post {
-            imageView.setImageBitmap(image)
+        val path = MediaStore_Dao.getPathById(imageView.context, id)
+        if(path != null) {
+            val image = BitmapFactory.decodeFile(path)
+            handler.post {
+                imageView.setImageBitmap(image)
+            }
         }
     }
 }
