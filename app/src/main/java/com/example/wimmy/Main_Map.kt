@@ -19,7 +19,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
-import com.example.wimmy.Main_PhotoView.Companion.photoList
 import com.example.wimmy.db.LatLngData
 import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoData
@@ -41,7 +40,7 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
     private val builder: LatLngBounds.Builder = LatLngBounds.builder()
     private val ZoomLevel: Int = 12
     private var bounds: LatLngBounds? = null
-    private var inserted = false
+    private var size_check: Int = 0
     private var mLastClickTime: Long = 0
 
     companion object {
@@ -77,9 +76,16 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
         clusterItemClick(mMap)
         clusterClick(mMap)
 
-        appbar2.setOnClickListener() {
-            Log.d("dsfsd","d")
+        refresh_loaction.setOnClickListener() {
+            boundmap()
         }
+    }
+
+    fun cameraInit() {
+        if(size_check < 200) {
+            boundmap()
+        }
+        loading_location_name.visibility = View.GONE
     }
 
     private fun clusterClick(mMap: GoogleMap) {
@@ -154,6 +160,12 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    fun boundmap() {
+        val bounds: LatLngBounds = builder.build()
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, ZoomLevel))
+        val zoom: Float = mMap.getCameraPosition().zoom - 0.5f
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(zoom))
+    }
     private fun createDrawableFromView(context: Context?, view: View): Bitmap {
         val displayMetrics = DisplayMetrics()
         (context as Activity).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics)
@@ -177,7 +189,7 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
     }
 
     fun getExtra(){
-        inserted = false
+        size_check = 0
         if (intent.hasExtra("location_name")) {
             val getname = intent.getStringExtra("location_name")
             val title: TextView = findViewById(R.id.title_location_name)
@@ -188,12 +200,12 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
 
     fun addLatLNgData(id : Long, latlng : LatLng) {
         val data = LatLngData(index++, id, latlng)
-        if(!inserted) {
+        if(size_check == 0) {
             Handler(Looper.getMainLooper()).post { mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(data.latlng, 12F)) }
-            inserted = true
         }
         mClusterManager.addItem(data)
         builder.include(data.latlng)
+        size_check++
     }
 
     override fun onBackPressed() {
