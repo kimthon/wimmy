@@ -17,11 +17,13 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
 import com.example.wimmy.Main_PhotoView.Companion.photoList
 import com.example.wimmy.db.LatLngData
 import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoData
+import com.example.wimmy.db.PhotoViewModel
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
 import com.google.maps.android.clustering.Cluster
@@ -49,33 +51,32 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_map)
+
         val mapFragment = supportFragmentManager.findFragmentById(R.id.mapview) as SupportMapFragment
         mapFragment.getMapAsync(this)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-
+        Log.d("몇번","ㅇ")
         mMap = googleMap
-        if(latlngdata.size != 0) {
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlngdata[0].latlng, 12F))
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(12F))
-        }
 
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
 
         mClusterManager = ClusterManager<LatLngData>(this, mMap)
+        getExtra()
         mClusterManager.setRenderer( MarkerClusterRenderer(this, mMap, mClusterManager))
+
         mMap.setOnCameraChangeListener (mClusterManager)
         mMap.setOnMarkerClickListener(mClusterManager)
 
         if(latlngdata.size != 0) {
             val builder: LatLngBounds.Builder =
                 LatLngBounds.builder() // Bounds 모든 데이터를 맵 안으로 보여주게 하기 위함
-            val bounds: LatLngBounds = addItems(builder) // 클러스터 Marker 추가
-            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, ZoomLevel))
-            val zoom: Float = mMap.getCameraPosition().zoom - 0.5f
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(zoom))
+            //val bounds: LatLngBounds = addItems(builder) // 클러스터 Marker 추가
+            //mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, ZoomLevel))
+            //val zoom: Float = mMap.getCameraPosition().zoom - 0.5f
+           //mMap.animateCamera(CameraUpdateFactory.zoomTo(zoom))
         }
         mMap.setOnInfoWindowClickListener(object : GoogleMap.OnInfoWindowClickListener {
             override fun onInfoWindowClick(marker: Marker?) {}
@@ -84,8 +85,35 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
             override fun onMapClick(p0: LatLng?) {
                 card_view.visibility = View.GONE
             }
-
         })
+
+        clusterItemClick(mMap)
+        clusterClick(mMap)
+
+
+
+    }
+
+    private fun clusterClick(mMap: GoogleMap) {
+        mClusterManager.setOnClusterClickListener(object :             // 클러스터 클릭 리스너
+            ClusterManager.OnClusterClickListener<LatLngData?> {
+            override fun onClusterClick(cluster: Cluster<LatLngData?>): Boolean {
+                val builder_c: LatLngBounds.Builder = LatLngBounds.builder()
+                for (item in cluster.getItems()) {
+                    if (item != null) {
+                        builder_c.include(item.getPosition())
+                    }
+                }
+                val bounds_c: LatLngBounds = builder_c.build()
+                mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds_c, ZoomLevel))
+                val zoom: Float = mMap.getCameraPosition().zoom - 0.5f
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(zoom))
+                return true
+            }
+        })
+    }
+
+    private fun clusterItemClick(mMap: GoogleMap) {
         mClusterManager.setOnClusterItemClickListener ( object :                // // 클러스터 아이템 클릭 리스너
             ClusterManager.OnClusterItemClickListener<LatLngData> {
             @SuppressLint("SimpleDateFormat")
@@ -128,61 +156,48 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
                 //map_name.setText(photoList[p0!!.index].name)
 
 
-                    /*if(selectedMarker != p0) {
-                        if (selectedMarker != null) {
-                            tag_marker.setTextColor(Color.BLACK)
-                            tag_marker.setBackgroundResource(R.drawable.ic_marker_phone)
-                            selectedMarker!!.setIcon(
-                                BitmapDescriptorFactory.fromBitmap(
-                                    createDrawableFromView(context, marker_view)
-                                )
+                /*if(selectedMarker != p0) {
+                    if (selectedMarker != null) {
+                        tag_marker.setTextColor(Color.BLACK)
+                        tag_marker.setBackgroundResource(R.drawable.ic_marker_phone)
+                        selectedMarker!!.setIcon(
+                            BitmapDescriptorFactory.fromBitmap(
+                                createDrawableFromView(context, marker_view)
                             )
-                        }
-
-                        if (marker != null) {
-                            tag_marker.setTextColor(Color.WHITE)
-                            tag_marker.setBackgroundResource(R.drawable.ic_marker_phone_blue)
-                            p0.setIcon(
-                                BitmapDescriptorFactory.fromBitmap(
-                                    createDrawableFromView(
-                                        context,
-                                        marker_view
-                                    )
-                                )
-                            )
-                            selectedMarker = marker
-                        }
-                    }*/
-
-            }
-        })
-
-         mClusterManager.setOnClusterClickListener(object :             // 클러스터 클릭 리스너
-            ClusterManager.OnClusterClickListener<LatLngData?> {
-            override fun onClusterClick(cluster: Cluster<LatLngData?>): Boolean {
-                val builder_c: LatLngBounds.Builder = LatLngBounds.builder()
-                for (item in cluster.getItems()) {
-                    if (item != null) {
-                        builder_c.include(item.getPosition())
+                        )
                     }
-                }
-                val bounds_c: LatLngBounds = builder_c.build()
-                mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds_c, ZoomLevel))
-                val zoom: Float = mMap.getCameraPosition().zoom - 0.5f
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(zoom))
-                return true
+
+                    if (marker != null) {
+                        tag_marker.setTextColor(Color.WHITE)
+                        tag_marker.setBackgroundResource(R.drawable.ic_marker_phone_blue)
+                        p0.setIcon(
+                            BitmapDescriptorFactory.fromBitmap(
+                                createDrawableFromView(
+                                    context,
+                                    marker_view
+                                )
+                            )
+                        )
+                        selectedMarker = marker
+                    }
+                }*/
+
             }
         })
-
-    }
-
-    private fun addItems(builder: LatLngBounds.Builder): LatLngBounds {
+    }/*
+    fun addItems(builder: LatLngBounds.Builder): LatLngBounds {
         for (i in latlngdata.indices) {
             mClusterManager.addItem(latlngdata[i])
             builder.include(latlngdata[i].latlng)
         }
         return builder.build()
+    }*/
+
+    fun addItems(mClusterManager: ClusterManager<LatLngData>, laglngdata: LatLngData){
+        mClusterManager.addItem(laglngdata)
+
     }
+
     private fun createDrawableFromView(context: Context?, view: View): Bitmap {
         val displayMetrics = DisplayMetrics()
         (context as Activity).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics)
@@ -205,62 +220,28 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
         return bitmap
     }
 
-/*
-    private val sampleMarkerItems: Unit
-        /*private get() {
-            val sampleList: ArrayList<MarkerItem?> = ArrayList<Any?>()
-            sampleList.add(MarkerItem(37.538523, 126.96568, 2500000))
-            sampleList.add(MarkerItem(37.527523, 126.96568, 100000))
-            sampleList.add(MarkerItem(37.549523, 126.96568, 15000))
-            sampleList.add(MarkerItem(37.538523, 126.95768, 5000))
-            for (markerItem in sampleList) {
-                addMarker(markerItem, false)
-            }*/
-        }
-*/
-/*fun getExtra(view: View){
+fun getExtra(){
     val getname: String?
     val title: TextView = findViewById(R.id.title_location_name)
     val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
     if (intent.hasExtra("location_name")) {
         getname = intent.getStringExtra("location_name")
-        vm.setOpenLocationDir(getname)
+        vm.setOpenLocationDir(this, getname, this@Main_Map, mClusterManager)
 
         title.text = getname
     }
 
 
-}*/
+}
 
-    /*private fun addMarker(photodata: PhotoData, latlngdata: LatLngData, isSelectedMarker:Boolean): Marker{
-        var geocoder: Geocoder = Geocoder(this)
-        var list: List<Address>? = null
-        var lat: Double
-        var lon: Double
-        var position: LatLng
-        var markerOptions = MarkerOptions()
+    override fun onBackPressed() {
+        super.onBackPressed()
+        photoList.clear()
+        latlngdata.clear()
+        finish()
 
-
-            if (isSelectedMarker) {
-                tag_marker.setBackgroundResource(R.drawable.ic_marker_phone_blue)
-                tag_marker.setTextColor(Color.WHITE)
-            } else {
-                tag_marker.setBackgroundResource(R.drawable.ic_marker_phone)
-                tag_marker.setTextColor(Color.BLACK)
-            }
-
-            markerOptions.position(latlngdata.latlng)
-            tag_marker.setText(photodata.file_path)
-            markerOptions.icon(
-                        BitmapDescriptorFactory.fromBitmap(createDrawableFromView(this, marker_view
-                    )
-                )
-            )
-            return mMap.addMarker(markerOptions)
-
-    }*/
-
+    }
 
 
 }

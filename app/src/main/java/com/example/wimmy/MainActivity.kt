@@ -62,11 +62,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             captureCamera()
         }
 
-        // 테스트
-        main_toolbar.setOnClickListener {
-            val intent = Intent(this, Main_Map::class.java)
-            startActivity(intent)
-        }
     }
 
 

@@ -74,9 +74,16 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
             RecyclerAdapterForder(activity, thumbnailList)
             {thumbnailData ->
                 if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
-                    val intent = Intent(activity, Main_PhotoView::class.java)
-                    intent.putExtra("location_name", thumbnailData.data)
-                    startActivityForResult(intent, 201)
+                    if(thumbnailData.data == "위치 정보 없음") {
+                        val intent = Intent(activity, Main_PhotoView::class.java)
+                        intent.putExtra("location_name", thumbnailData.data)
+                        startActivityForResult(intent, 201)
+                    }
+                    else {
+                        val intent = Intent(activity, Main_Map::class.java)
+                        intent.putExtra("location_name", thumbnailData.data)
+                        startActivityForResult(intent, 900)
+                    }
                 }
                 mLastClickTime = SystemClock.elapsedRealtime()
             }

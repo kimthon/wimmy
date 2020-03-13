@@ -10,8 +10,10 @@ import android.provider.MediaStore
 import android.widget.TextView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
+import com.example.wimmy.Main_Map
 import com.example.wimmy.Main_PhotoView.Companion.photoList
 import com.example.wimmy.db.MediaStore_Dao.noLocationData
+import com.google.maps.android.clustering.ClusterManager
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
@@ -159,6 +161,40 @@ class PhotoRepository(application: Application) {
          }
       }
 
+      private class setOpenLocationDirAsyncTaskTest(asyncTask: PhotoData_Dao, context: Context, map: Main_Map, mClusterManager: ClusterManager<LatLngData>) : AsyncTask<String, PhotoData, Void>() {
+         private val asyncTask = asyncTask
+         private val handler = Handler(Looper.getMainLooper())
+         private val context = context
+         private val map = map
+         private val mClusterManager = mClusterManager
+
+         override fun doInBackground(vararg params: String?): Void? {
+            val idCursor = asyncTask.getLocationDir(params[0]!!)
+
+            if(MediaStore_Dao.cursorIsValid(idCursor)) {
+               do {
+                  val id = idCursor!!.getLong(idCursor.getColumnIndex("photo_id"))
+                  var photoData = MediaStore_Dao.getDataById(context, id, map, mClusterManager)
+                  if(photoData != null) {
+                     photoList.add(photoData)
+
+                     onProgressUpdate(photoData)
+                  }
+                  else {
+                     asyncTask.deleteTagById(id)
+                     asyncTask.deleteExtraById(id)
+                  }
+               } while (idCursor!!.moveToNext())
+               idCursor.close()
+            }
+            return null
+         }
+
+         /*override fun onProgressUpdate(vararg values: PhotoData) {
+            setExtraDataTest(asyncTask, context, values[0]!!).execute()
+         }*/
+      }
+
       private class setOpenNameDirAsyncTask(asyncTask: PhotoData_Dao, adapter: RecyclerAdapterPhoto) : AsyncTask<String, PhotoData, Void>() {
          private val asyncTask = asyncTask
          private val  adapter = adapter
@@ -287,6 +323,30 @@ class PhotoRepository(application: Application) {
          }
       }
 
+      // test
+      private class setExtraDataTest(asyncTask: PhotoData_Dao, context: Context, data: PhotoData) : AsyncTask<Void, Void, Void>() {
+         private val asyncTask  = asyncTask
+         private val context = context
+         private val data = data
+
+         override fun doInBackground(vararg params: Void?): Void? {
+            var extra = asyncTask.getExtraPhotoData(data.photo_id)
+            if(extra == null) {
+               //인터넷 연결안될 시 패스
+               if(!NetworkIsValid(context)) return null
+
+               val loc = MediaStore_Dao.getLocation(context.applicationContext, data.photo_id)
+               extra = ExtraPhotoData(data.photo_id, loc, false)
+               asyncTask.insert(extra)
+            }
+
+            data.location_info = extra.location
+            data.favorite  = extra.favorite
+
+            return null
+         }
+      }
+
       private fun NetworkIsValid(context: Context) : Boolean {
          val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
          return cm.activeNetworkInfo != null
@@ -334,6 +394,11 @@ class PhotoRepository(application: Application) {
 
    fun setOpenLocationDir(adapter: RecyclerAdapterPhoto, loc : String) {
        setOpenLocationDirAsyncTask(photoDao, adapter).execute(loc)
+   }
+
+   // test
+   fun setOpenLocationDir(context: Context, loc : String,  map: Main_Map, mClusterManager: ClusterManager<LatLngData>) {
+      setOpenLocationDirAsyncTaskTest(photoDao, context, map, mClusterManager).execute(loc)
    }
 
    fun setOpenNameDir(adapter: RecyclerAdapterPhoto, path : String) {
