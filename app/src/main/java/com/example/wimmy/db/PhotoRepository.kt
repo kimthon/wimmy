@@ -130,7 +130,9 @@ class PhotoRepository(application: Application) {
                list.add(thumbnailData(id, loc))
                MediaStore_Dao.setLatLngDataById(context, id, map)
             } while (idCursor.moveToNext())
+            Handler(Looper.getMainLooper()).post {map.cameraInit()}
             idCursor.close()
+
          }
       }
    }

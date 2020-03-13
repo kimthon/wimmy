@@ -75,14 +75,15 @@ class SplashActivity : AppCompatActivity() {
                                                 FirebaseTranslateRemoteModel::class.java
                                             )
                                             .addOnSuccessListener { models ->
-                                                startActivity(intent)
-                                                finish()
-                                                loadingEnd()
                                                 Toast.makeText(
                                                     this@SplashActivity,
                                                     "설치가 완료 되었습니다.",
                                                     Toast.LENGTH_SHORT
                                                 ).show()
+                                                startActivity(intent)
+                                                finish()
+                                                loadingEnd()
+
                                             }
                                             .addOnFailureListener {
                                             }

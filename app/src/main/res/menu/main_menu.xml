@@ -10,4 +10,8 @@
         android:id="@+id/setting"
         android:title="@string/setting"
         />
+    <item
+        android:id="@+id/location_type"
+        android:title="@string/location_type"
+        />
 </menu>
