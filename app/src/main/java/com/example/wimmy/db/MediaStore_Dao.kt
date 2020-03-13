@@ -18,7 +18,7 @@ import kotlin.collections.ArrayList
 
 object MediaStore_Dao {
     private val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-    val noLocationData = "위치 정보 없음"
+    private const val noLocationData = "위치 정보 없음"
 
     fun getNameDir(context: Context) : ArrayList<thumbnailData>{
         val thumbList = arrayListOf<thumbnailData>()
@@ -54,8 +54,16 @@ object MediaStore_Dao {
 
     fun getLocation(context: Context, id : Long) : String?{
         val loc = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val pathUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
-            val path = pathUri.path ?: return noLocationData
+            //TODO 파일 위치를 얻어 올 방법이 필요
+            val projection = arrayOf(
+                MediaStore.Images.ImageColumns.DATA
+            )
+            val selection = MediaStore.Images.ImageColumns._ID + " = " + id
+
+            val cursor = context.contentResolver.query(uri, projection, selection, null, null)
+            if (!cursorIsValid(cursor)) return noLocationData
+            val path = cursor!!.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA))
+
             val exif = ExifInterface(path)
 
             val attrLat = exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE)
