@@ -12,7 +12,6 @@ import android.util.Log
 import android.util.Size
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import java.io.File
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -206,6 +205,15 @@ object MediaStore_Dao {
         }
 
         return true
+    }
+
+    fun IsItValidId(context: Context, id : Long) : Boolean {
+        val projection = arrayOf(
+            MediaStore.Images.ImageColumns._ID
+        )
+        val selection = MediaStore.Images.ImageColumns._ID + " = " + id
+        val cursor = context.contentResolver.query(uri, projection, selection, null, null)
+        return (cursorIsValid(cursor))
     }
 
     private fun getDateStart(cal : Calendar) : Long{

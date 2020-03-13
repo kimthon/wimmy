@@ -52,6 +52,9 @@ interface PhotoData_Dao {
     @Query("SELECT photo_id FROM extra_photo_data WHERE photo_id = :id")
     fun IsItInserted(id : Long) : Long?
 
+    @Query("SELECT photo_id FROM extra_photo_data ")
+    fun getIdCursor() : Cursor
+
     @Query("DELETE FROM extra_photo_data")
     fun dropTable()
 }

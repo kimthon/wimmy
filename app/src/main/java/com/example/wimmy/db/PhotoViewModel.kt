@@ -73,8 +73,8 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         repo.checkFavorite(imageView, id, photoView)
     }
 
-    fun CheckAddedData(context: Context) {
-        repo.checkAddedData(context)
+    fun checkChangedData(context: Context) {
+        repo.checkChangedData(context)
     }
 
     fun Drop() {

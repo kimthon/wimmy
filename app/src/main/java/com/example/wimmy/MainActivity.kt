@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
@@ -42,6 +43,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     var mCurrentPhotoPath: String? = null
     private final var FINISH_INTERVAL_TIME: Long = 2000
     private var backPressedTime: Long = 0
+    private lateinit var observer: ChangeObserver
     var init_check: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,7 +56,10 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         init()
         val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
         vm.Drop()
-        vm.CheckAddedData(this)
+        vm.checkChangedData(this)
+
+        observer = ChangeObserver( Handler(), vm, this )
+        this.contentResolver.registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, false, observer)
 
         val go_search = findViewById<ImageView>(R.id.main_search_button)
         go_search.setOnClickListener {
