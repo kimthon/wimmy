@@ -24,6 +24,8 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.view.children
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProviders
@@ -31,10 +33,13 @@ import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.fragment.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.main_activity.*
+import kotlinx.android.synthetic.main.main_map.*
+import kotlinx.coroutines.selects.select
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
@@ -46,6 +51,9 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     private lateinit var observer: ChangeObserver
     var init_check: Int = 0
 
+    companion object {
+        var location_type: Int = 0
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
@@ -72,6 +80,8 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             captureCamera()
         }
 
+
+
     }
 
 
@@ -81,9 +91,34 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         supportActionBar?.title = null
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
         return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.location_type -> {
+                var selectitem = arrayOf<String>("맵으로 보기", "목록으로 보기")
+
+                val dlg: AlertDialog.Builder = AlertDialog.Builder(this,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+                dlg.setTitle("원하는 형태를 선택하세요.")
+                dlg.setSingleChoiceItems(selectitem, location_type) { dialog, i ->
+                    when(i) {
+                        0 -> location_type = 0
+                        1 -> location_type = 1
+                    }
+                }
+                dlg.setIcon(R.drawable.ic_tag)
+                dlg.setPositiveButton("확인") { _, _ ->
+                    Toast.makeText(this, "완료 되었습니다.", Toast.LENGTH_SHORT).show()
+                }
+                dlg.setNegativeButton("취소") { _, _ -> }
+                dlg.show()
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 
     /*

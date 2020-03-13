@@ -89,12 +89,6 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
         clusterItemClick(mMap)
         clusterClick(mMap)
 
-        appbar2.setOnClickListener() {
-            Log.d("dsfsd","d")
-        }
-
-
-
     }
 
     private fun clusterClick(mMap: GoogleMap) {

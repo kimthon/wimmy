@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.*
 import com.example.wimmy.Adapter.RecyclerAdapterForder
+import com.example.wimmy.MainActivity.Companion.location_type
 import com.example.wimmy.db.*
 import com.google.android.material.appbar.AppBarLayout
 import kotlinx.android.synthetic.main.main_activity.view.*
@@ -74,7 +75,7 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
             RecyclerAdapterForder(activity, thumbnailList)
             {thumbnailData ->
                 if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
-                    if(thumbnailData.data == "위치 정보 없음") {
+                    if(thumbnailData.data == "위치 정보 없음" || location_type == 1) {
                         val intent = Intent(activity, Main_PhotoView::class.java)
                         intent.putExtra("location_name", thumbnailData.data)
                         startActivityForResult(intent, 201)
