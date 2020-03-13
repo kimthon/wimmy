@@ -16,7 +16,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import com.example.wimmy.Main_Map
-import com.example.wimmy.Main_Map.Companion.latlngdata
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterManager
 import kotlinx.android.synthetic.main.main_map.*
@@ -26,7 +25,6 @@ import kotlin.collections.ArrayList
 
 object MediaStore_Dao {
     private val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-    private var index:Int = 0
     private const val noLocationData = "위치 정보 없음"
 
     fun getNameDir(context: Context) : ArrayList<thumbnailData>{
@@ -156,23 +154,17 @@ object MediaStore_Dao {
     fun getDir(adapter: RecyclerAdapterPhoto, selection : String) : Cursor? {
         val projection = arrayOf(
             MediaStore.Images.ImageColumns._ID, //photo_id
-            MediaStore.Images.ImageColumns.DATA, // folder + name
-            MediaStore.Images.ImageColumns.DISPLAY_NAME,
-            MediaStore.Images.ImageColumns.DATE_TAKEN //date
+            MediaStore.Images.ImageColumns.DISPLAY_NAME
         )
-
         val cursor = adapter.context!!.contentResolver.query(uri, projection, selection, null, null)
         return cursor
     }
 
-    // test
-    fun getDir(context: Context, selection : String) : Cursor? {
+    fun getPhotoDataCursor(context: Context, selection : String) : Cursor? {
         val projection = arrayOf(
             MediaStore.Images.ImageColumns._ID, //photo_id
             MediaStore.Images.ImageColumns.DATA, // folder + name
             MediaStore.Images.ImageColumns.DISPLAY_NAME,
-            MediaStore.Images.ImageColumns.LONGITUDE,
-            MediaStore.Images.ImageColumns.LATITUDE,
             MediaStore.Images.ImageColumns.DATE_TAKEN //date
         )
 
@@ -180,23 +172,100 @@ object MediaStore_Dao {
         return cursor
     }
 
-    fun getDataById(adapter: RecyclerAdapterPhoto, id : Long) : PhotoData? {
+    fun getLatLngCursor(context: Context,selection: String) : Cursor? {
+        val projection = arrayOf(
+            MediaStore.Images.ImageColumns.LATITUDE,
+            MediaStore.Images.ImageColumns.LONGITUDE
+        )
+        val cursor = context.contentResolver.query(uri, projection, selection, null, null)
+        return cursor
+    }
+
+    fun getPathById(context: Context, id: Long) : String?{
+        val selection = MediaStore.Images.ImageColumns._ID + " = " + id
+        val projection = arrayOf(
+            MediaStore.Images.ImageColumns.DATA
+        )
+        val cursor = context.contentResolver.query(uri, projection, selection, null, null)
+        return if(cursorIsValid(cursor)) {
+            cursor!!.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA))
+        } else null
+    }
+    fun getDataById(adapter: RecyclerAdapterPhoto, id : Long) : thumbnailData? {
         val selection = MediaStore.Images.ImageColumns._ID + " = " + id
         val cursor = getDir(adapter, selection)
         if(cursorIsValid(cursor)) {
-            return getPhotoData(cursor!!)
+            return getData(cursor!!)
         }
         else return null
     }
 
-    // test
-    fun getDataById(context: Context, id : Long, map: Main_Map, clusterManager: ClusterManager<LatLngData>) : PhotoData? {
+    fun getNameById(context: Context, id: Long) : String? {
         val selection = MediaStore.Images.ImageColumns._ID + " = " + id
-        val cursor = getDir(context, selection)
+        val projection = arrayOf(
+            MediaStore.Images.ImageColumns.DISPLAY_NAME
+        )
+        val cursor = context.contentResolver.query(uri, projection, selection, null, null)
+        return if(cursorIsValid(cursor)) {
+            cursor!!.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME))
+        } else null
+    }
+
+    fun getDateById(context: Context, id: Long) : Long? {
+        val selection = MediaStore.Images.ImageColumns._ID + " = " + id
+        val projection = arrayOf(
+            MediaStore.Images.ImageColumns.DATE_TAKEN
+        )
+        val cursor = context.contentResolver.query(uri, projection, selection, null, null)
+        return if(cursorIsValid(cursor)) {
+            cursor!!.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN))
+        } else null
+    }
+
+    fun setLatLngDataById(context: Context, id : Long, map: Main_Map) {
+        val selection = MediaStore.Images.ImageColumns._ID + " = " + id
+        val cursor = getLatLngCursor(context, selection)
         if(cursorIsValid(cursor)) {
-            return getPhotoData(cursor!!, map, clusterManager)
+            val latLng = getLatLngById(context, id) ?: return
+            map.addLatLNgData(id, latLng)
+        }
+    }
+
+    private fun getLatLngById(context: Context, id : Long) : LatLng? {
+        val selection = MediaStore.Images.ImageColumns._ID + " = " + id
+        val cursor = getLatLngCursor(context, selection)
+        if(cursorIsValid(cursor)) {
+            val latLng = getLatLngByCursor(cursor!!)
+            return latLng
         }
         else return null
+    }
+
+    fun getData(cursor: Cursor) : thumbnailData {
+        val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
+        val name = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME))
+
+        return thumbnailData(id, name)
+    }
+
+    fun getPhotoData(cursor: Cursor) : PhotoData {
+        val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
+        val allPath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA))
+        val name = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME))
+        val path = allPath.subSequence(0, (allPath.length - name.length - 1)).toString()
+        val dateTaken = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN))
+        val date = Date(dateTaken)
+
+        var loc : String? = noLocationData
+        val photoData = PhotoData(id, name, path, loc, date, false)
+        return photoData
+    }
+
+    private fun getLatLngByCursor(cursor: Cursor) : LatLng {
+        val lat = cursor!!.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LATITUDE))
+        val lon = cursor.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LONGITUDE))
+
+        return LatLng(lat, lon)
     }
 
     fun getNewlySortedCursor(context: Context) : Cursor? {
@@ -237,46 +306,6 @@ object MediaStore_Dao {
         val matrix = Matrix()
         matrix.postRotate(degrees)
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-    }
-
-    fun getPhotoData(cursor: Cursor) : PhotoData {
-        val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
-        val allPath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA))
-        val name = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME))
-        val path = allPath.subSequence(0, (allPath.length - name.length - 1)).toString()
-
-
-        val dateTaken = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN))
-        val date = Date(dateTaken)
-
-        var loc : String? = noLocationData
-
-        val photoData = PhotoData(id, name, path, loc, date, false)
-        return photoData
-    }
-
-    // test
-    fun getPhotoData(cursor: Cursor, map: Main_Map, mClusterManager: ClusterManager<LatLngData>) : PhotoData {
-        val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
-        val allPath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA))
-        val name = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME))
-        val path = allPath.subSequence(0, (allPath.length - name.length - 1)).toString()
-
-        val lat = cursor!!.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LATITUDE))
-        val lon = cursor.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LONGITUDE))
-        Log.d("야야2,","야")
-        latlngdata.add(LatLngData(index, LatLng(lat,lon)))
-        map.addItems(mClusterManager, LatLngData(index, LatLng(lat,lon)))
-        index++
-
-
-        val dateTaken = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN))
-        val date = Date(dateTaken)
-
-        var loc : String? = noLocationData
-
-        val photoData = PhotoData(id, name, path, loc, date, false)
-        return photoData
     }
 
     fun cursorIsValid(cursor: Cursor?) : Boolean {
