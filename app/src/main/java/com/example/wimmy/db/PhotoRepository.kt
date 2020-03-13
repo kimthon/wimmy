@@ -3,6 +3,8 @@ package com.example.wimmy.db
 import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
@@ -52,7 +54,7 @@ class PhotoRepository(application: Application) {
       DirectoryThread.execute {
          val list = MediaStore_Dao.getDateIdInfo(textView.context, inputCalendar)
          val text = photoDao.getDateInfo(list)
-         handler.post { textView?.text = text }
+         handler.post { textView.text = text }
       }
    }
 
@@ -60,7 +62,7 @@ class PhotoRepository(application: Application) {
       if(DirectoryThread.isTerminating) DirectoryThread.shutdownNow()
       DirectoryThread.execute {
          val thumbnailList = photoDao.getLocationDir()
-         handler.post { adapter?.setThumbnailList(thumbnailList) }
+         handler.post { adapter.setThumbnailList(thumbnailList) }
       }
    }
 
@@ -68,7 +70,7 @@ class PhotoRepository(application: Application) {
       if(DirectoryThread.isTerminating) DirectoryThread.shutdownNow()
        DirectoryThread.execute {
           val thumbnailList = MediaStore_Dao.getNameDir(adapter.context!!.baseContext)
-          handler.post { adapter?.setThumbnailList(thumbnailList) }
+          handler.post { adapter.setThumbnailList(thumbnailList) }
        }
    }
 
@@ -76,7 +78,7 @@ class PhotoRepository(application: Application) {
       if(DirectoryThread.isTerminating) DirectoryThread.shutdownNow()
       DirectoryThread.execute {
          val thumbnailList = photoDao.getTagDir()
-         handler.post { adapter?.setThumbnailList(thumbnailList) }
+         handler.post { adapter.setThumbnailList(thumbnailList) }
       }
    }
 
@@ -88,7 +90,7 @@ class PhotoRepository(application: Application) {
              do {
                 val photoData = MediaStore_Dao.getPhotoData(cursor!!)
                 adapter.addThumbnailList(photoData)
-                handler.post { adapter?.notifyItemInserted(adapter.getSize()) }
+                handler.post { adapter.notifyItemInserted(adapter.getSize()) }
              } while (cursor!!.moveToNext())
              cursor.close()
           }
@@ -100,17 +102,17 @@ class PhotoRepository(application: Application) {
             val idCursor = photoDao.getLocationDir(loc)
             if(MediaStore_Dao.cursorIsValid(idCursor)) {
                do {
-                  val id = idCursor!!.getLong(idCursor.getColumnIndex("photo_id"))
+                  val id = idCursor.getLong(idCursor.getColumnIndex("photo_id"))
                   val photoData = MediaStore_Dao.getDataById(adapter, id)
                   if(photoData != null) {
                      adapter.addThumbnailList(photoData)
-                     handler.post { adapter?.notifyItemInserted(adapter.getSize()) }
+                     handler.post { adapter.notifyItemInserted(adapter.getSize()) }
                   }
                   else {
                      photoDao.deleteTagById(id)
                      photoDao.deleteExtraById(id)
                   }
-               } while (idCursor!!.moveToNext())
+               } while (idCursor.moveToNext())
                idCursor.close()
             }
       }
@@ -123,7 +125,7 @@ class PhotoRepository(application: Application) {
             do {
                val photoData = MediaStore_Dao.getPhotoData(cursor!!)
                adapter.addThumbnailList(photoData)
-               handler.post { adapter?.notifyItemInserted(adapter.getSize()) }
+               handler.post { adapter.notifyItemInserted(adapter.getSize()) }
             } while (cursor!!.moveToNext())
             cursor.close()
          }
@@ -135,16 +137,16 @@ class PhotoRepository(application: Application) {
          val idCursor = photoDao.getTagDir(tag)
          if (MediaStore_Dao.cursorIsValid(idCursor)) {
             do {
-               val id = idCursor!!.getLong(idCursor.getColumnIndex("photo_id"))
+               val id = idCursor.getLong(idCursor.getColumnIndex("photo_id"))
                val photoData = MediaStore_Dao.getDataById(adapter, id)
                if (photoData != null) {
                   adapter.addThumbnailList(photoData)
-                  handler.post { adapter?.notifyItemInserted(adapter.getSize()) }
+                  handler.post { adapter.notifyItemInserted(adapter.getSize()) }
                } else {
                   photoDao.deleteTagById(id)
                   photoDao.deleteExtraById(id)
                }
-            } while (idCursor!!.moveToNext())
+            } while (idCursor.moveToNext())
             idCursor.close()
          }
       }
@@ -154,16 +156,16 @@ class PhotoRepository(application: Application) {
       DirectoryThread.execute {
          val idCursor = photoDao.getFavoriteDir()
          do {
-            val id = idCursor!!.getLong(idCursor.getColumnIndex("photo_id"))
+            val id = idCursor.getLong(idCursor.getColumnIndex("photo_id"))
             val photoData = MediaStore_Dao.getDataById(adapter, id)
             if (photoData != null) {
                adapter.addThumbnailList(photoData)
-               handler.post { adapter?.notifyItemInserted(adapter.getSize()) }
+               handler.post { adapter.notifyItemInserted(adapter.getSize()) }
             } else {
                photoDao.deleteTagById(id)
                photoDao.deleteExtraById(id)
             }
-         } while (idCursor!!.moveToNext())
+         } while (idCursor.moveToNext())
          idCursor.close()
       }
    }
@@ -203,15 +205,17 @@ class PhotoRepository(application: Application) {
       if (changeCheckThread.isTerminating) changeCheckThread.shutdownNow()
       //추가 작업
       changeCheckThread.execute {
-         var cursor = MediaStore_Dao.getNewlySortedCurosr(context)
+         val cursor = MediaStore_Dao.getNewlySortedCursor(context)
          if (MediaStore_Dao.cursorIsValid(cursor)) {
             do {
                val id = cursor!!.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
                //이미 있는 것이나 인터넷이 끊길 시 패스
                if (photoDao.IsItInserted(id) != null || !NetworkIsValid(context)) continue
-               val loc = MediaStore_Dao.getLocation(context.applicationContext, id)
-               val extra = ExtraPhotoData(id, loc, false)
-               photoDao.insert(extra)
+               changeCheckThread.execute {
+                  val loc = MediaStore_Dao.getLocation(context.applicationContext, id) ?: return@execute
+                  val extra = ExtraPhotoData(id, loc, false)
+                  photoDao.insert(extra)
+               }
             } while (cursor!!.moveToNext())
             cursor.close()
          }
@@ -220,12 +224,12 @@ class PhotoRepository(application: Application) {
             val cursor = photoDao.getIdCursor()
             if (MediaStore_Dao.cursorIsValid(cursor)) {
                do {
-                  val id = cursor!!.getLong(cursor.getColumnIndex("photo_id"))
+                  val id = cursor.getLong(cursor.getColumnIndex("photo_id"))
                   if (!MediaStore_Dao.IsItValidId(context, id)) {
                      photoDao.deleteExtraById(id)
                      photoDao.deleteTagById(id)
                   }
-               } while (cursor!!.moveToNext())
+               } while (cursor.moveToNext())
             }
          }
       }
@@ -234,8 +238,32 @@ class PhotoRepository(application: Application) {
    fun Drop() {
       DBThread.execute { photoDao.dropTable() }
    }
+
+   @Suppress("DEPRECATION")
    private fun NetworkIsValid(context: Context) : Boolean {
+      var result = false
       val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-      return cm.activeNetworkInfo != null
+       if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+          val networkCapabilities = cm.activeNetwork ?: return false
+          val actNw = cm.getNetworkCapabilities(networkCapabilities) ?: return false
+          result = when {
+             actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+             actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+             actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+             else -> false
+          }
+       } else {
+          cm.run {
+             cm.activeNetworkInfo?.run {
+                result = when(type) {
+                   ConnectivityManager.TYPE_WIFI -> true
+                   ConnectivityManager.TYPE_MOBILE -> true
+                   ConnectivityManager.TYPE_ETHERNET -> true
+                   else -> false
+                }
+             }
+          }
+       }
+      return result
    }
 }

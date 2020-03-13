@@ -40,8 +40,8 @@ import java.util.*
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
 
     private val REQUEST_TAKE_PHOTO = 200
-    var mCurrentPhotoPath: String? = null
-    private final var FINISH_INTERVAL_TIME: Long = 2000
+    lateinit var mCurrentPhotoPath: String
+    private var FINISH_INTERVAL_TIME: Long = 2000
     private var backPressedTime: Long = 0
     private lateinit var observer: ChangeObserver
     var init_check: Int = 0
@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         SetHeader()
         init()
         val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-        vm.Drop()
+        //vm.Drop()
         vm.checkChangedData(this)
 
         observer = ChangeObserver( Handler(), vm, this )
@@ -104,8 +104,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }*/
 
     override fun onNavigationItemSelected(p0: MenuItem): Boolean {
-        val toolbar: Toolbar = findViewById(R.id.main_toolbar)
-
         val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
 
         when(p0.itemId){
@@ -135,17 +133,17 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     override fun onBackPressed() {
         if(supportFragmentManager.backStackEntryCount == 0) {
-            var tempTime = System.currentTimeMillis();
-            var intervalTime = tempTime - backPressedTime;
+            val tempTime = System.currentTimeMillis()
+            val intervalTime = tempTime - backPressedTime
             if (0 <= intervalTime && FINISH_INTERVAL_TIME >= intervalTime) {
-                super.onBackPressed();
+                super.onBackPressed()
             } else {
-                backPressedTime = tempTime;
-                Toast.makeText(this, "'뒤로' 버튼을 한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show();
+                backPressedTime = tempTime
+                Toast.makeText(this, "'뒤로' 버튼을 한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
                 return
             }
         }
-        super.onBackPressed();
+        super.onBackPressed()
         val bnv = findViewById<View>(R.id.bottomNavigationView) as BottomNavigationView
         updateBottomMenu(bnv)
     }
@@ -184,18 +182,16 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (takePictureIntent.resolveActivity(packageManager) != null) {
 
-            var photoFile: File? = null
             try {
-                photoFile = createImageFile()
+                val photoFile = createImageFile()
+                if (photoFile != null) { // getUriForFile의 두 번째 인자는 Manifest provier의 authorites와 일치해야 함
+                    val providerURI = FileProvider.getUriForFile(this, packageName, photoFile)
+                    // 인텐트에 전달할 때는 FileProvier의 Return값인 content://로만!!, providerURI의 값에 카메라 데이터를 넣어 보냄
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, providerURI)
+                    startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
+                }
             } catch (ex: IOException) {
                 Log.e("captureCamera Error", ex.toString())
-                return
-            }
-            if (photoFile != null) { // getUriForFile의 두 번째 인자는 Manifest provier의 authorites와 일치해야 함
-                val providerURI = FileProvider.getUriForFile(this, packageName, photoFile)
-                // 인텐트에 전달할 때는 FileProvier의 Return값인 content://로만!!, providerURI의 값에 카메라 데이터를 넣어 보냄
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, providerURI)
-                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
             }
         }
     }
@@ -208,7 +204,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 Log.i("REQUEST_TAKE_PHOTO", "${Activity.RESULT_OK}" + " " + "${resultCode}")
                 if (resultCode == RESULT_OK) {
                     try {
-                        galleryAddPic();
+                        galleryAddPic()
 
                     } catch (e: Exception) {
                         Log.e("REQUEST_TAKE_PHOTO", e.toString())
@@ -223,9 +219,8 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     @Throws(IOException::class)
     fun createImageFile(): File? { // Create an image file name
-        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val imageFileName = "JPEG_$timeStamp.jpg"
-        var imageFile: File? = null
         val storageDir = File(
             Environment.getExternalStorageDirectory().toString() + "/Pictures",
             "Wimmy"
@@ -234,16 +229,16 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             Log.i("mCurrentPhotoPath1", storageDir.toString())
             storageDir.mkdirs()
         }
-        imageFile = File(storageDir, imageFileName)
+        val imageFile = File(storageDir, imageFileName)
         mCurrentPhotoPath = imageFile.absolutePath
         return imageFile
     }
 
     private fun galleryAddPic() {
         Log.i("galleryAddPic", "Call")
-        val mediaScanIntent: Intent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
+        val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
         // 해당 경로에 있는 파일을 객체화(새로 파일을 만든다는 것으로 이해하면 안 됨)
-        val f: File = File(mCurrentPhotoPath)
+        val f = File(mCurrentPhotoPath)
         val contentUri: Uri = Uri.fromFile(f)
         mediaScanIntent.data = contentUri
         sendBroadcast(mediaScanIntent)
@@ -256,7 +251,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     // 그 권한 중에 위험 권한으로 분류된 권한은 개발자가 직접 사용자에게 권한 허용을 물을 수 있도록 작성해야한다.
     // 즉, 코드로 작성해야함.
     private fun checkPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !== PackageManager.PERMISSION_GRANTED)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
         {
             // 다시 보지 않기 버튼을 만드려면 이 부분에 바로 요청을 하도록 하면 됨 (아래 else{..} 부분 제거)
             // ActivityCompat.requestPermissions((Activity)mContext, new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSION_CAMERA);
