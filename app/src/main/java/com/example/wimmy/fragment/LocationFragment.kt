@@ -83,7 +83,7 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
                     else {
                         val intent = Intent(activity, Main_Map::class.java)
                         intent.putExtra("location_name", thumbnailData.data)
-                        startActivityForResult(intent, 900)
+                        startActivityForResult(intent, 800)
                     }
                 }
                 mLastClickTime = SystemClock.elapsedRealtime()
