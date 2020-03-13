@@ -189,13 +189,32 @@ class PhotoRepository(application: Application) {
       }
    }
 
-   fun checkFavorite(imageView: ImageView, id: Long, photoView: PhotoViewPager) {
+   fun checkFavorite(imageView: ImageView, id: Long) {
       DBThread.execute {
-         val favorite = photoDao.getFavorite(id)
+         var favorite = photoDao.getFavorite(id)
+         if(favorite == null) {
+            insert(ExtraPhotoData(id, null, false))
+            favorite = false
+         }
          handler.post {
             if (favorite) imageView.setImageResource(R.drawable.ic_favorite_checked)
             else imageView.setImageResource(R.drawable.ic_favorite)
-            photoView.setCheck(favorite)
+         }
+      }
+   }
+
+   fun changeFavorite(imageView: ImageView, id : Long) {
+      DBThread.execute {
+         var favorite = photoDao.getFavorite(id)
+         if(favorite == null) {
+            insert(ExtraPhotoData(id, null, true))
+            favorite = true
+         }
+         photoDao.update(id, !favorite)
+         handler.post {
+            //변경 되었으므로 반대로
+            if (!favorite) imageView.setImageResource(R.drawable.ic_favorite_checked)
+            else imageView.setImageResource(R.drawable.ic_favorite)
          }
       }
    }
@@ -210,10 +229,11 @@ class PhotoRepository(application: Application) {
             do {
                val id = cursor!!.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
                //이미 있는 것이나 인터넷이 끊길 시 패스
-               if (photoDao.IsItInserted(id) != null || !NetworkIsValid(context)) continue
+               if (!NetworkIsValid(context)) continue
                changeCheckThread.execute {
-                  val loc = MediaStore_Dao.getLocation(context.applicationContext, id) ?: return@execute
-                  val extra = ExtraPhotoData(id, loc, false)
+                  val loc = photoDao.getLocation(id) ?: MediaStore_Dao.getLocation(context.applicationContext, id) ?: return@execute
+                  val favorite = photoDao.getFavorite(id) ?: false
+                  val extra = ExtraPhotoData(id, loc, favorite)
                   photoDao.insert(extra)
                }
             } while (cursor!!.moveToNext())

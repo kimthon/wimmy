@@ -22,6 +22,9 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         repo.insert(extraPhotoData)
     }
 
+    fun Delete(id : Long) {
+        repo.deleteById((id))
+    }
     // 폴더 보기
     fun setCalendarTag(textView: TextView, inputCalendar: Calendar) {
         repo.setCalendarTag(textView, inputCalendar)
@@ -69,8 +72,12 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         repo.setTags(textView, id)
     }
 
-    fun checkFavorite(imageView: ImageView, id: Long, photoView : PhotoViewPager) {
-        repo.checkFavorite(imageView, id, photoView)
+    fun checkFavorite(imageView: ImageView, id: Long) {
+        repo.checkFavorite(imageView, id)
+    }
+
+    fun changeFavorite(imageView: ImageView, id: Long){
+        repo.changeFavorite(imageView, id)
     }
 
     fun checkChangedData(context: Context) {

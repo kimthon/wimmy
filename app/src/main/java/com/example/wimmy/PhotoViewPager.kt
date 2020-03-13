@@ -14,11 +14,13 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
@@ -36,11 +38,11 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
     private var recyclerAdapter : PagerRecyclerAdapter?= null
     //private var subimg: ImageView? = null
     internal lateinit var viewPager: ViewPager
+    private lateinit var vm : PhotoViewModel
     private var photoList = ArrayList<PhotoData>()
-    private var tagList = ArrayList<TagData>()
     private var index: Int = 0
+    private lateinit var tag_name : AppCompatTextView
     private var thumbnail: Long? = null
-    private var check: Boolean = false
     private var delete_check: Int = 0
 
 
@@ -48,17 +50,20 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        /*getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+        /*
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN);
         val uiOptions = getWindow().getDecorView().getSystemUiVisibility();
-        var newUiOptions = uiOptions;*/
+        var newUiOptions = uiOptions;
+        */
         setContentView(R.layout.photoview_frame)
         val view: View = findViewById(R.id.imgViewPager)
+        vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
         getExtra()
         val text_name = findViewById<AppCompatTextView>(R.id.imgView_text)
         val date_name = findViewById<AppCompatTextView>(R.id.imgView_date)
         val location_name = findViewById<AppCompatTextView>(R.id.imgView_location)
-        val tag_name = findViewById<AppCompatTextView>(R.id.imgView_tag)
+        tag_name = findViewById<AppCompatTextView>(R.id.imgView_tag)
         val favorite = findViewById<ImageView>(R.id.favorite)
 
         bottom_photo_menu.setOnNavigationItemSelectedListener(this)
@@ -82,14 +87,6 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
                 toolbar_text(position, text_name, date_name, location_name, tag_name, favorite)
             }
         })
-
-        //TODO("DB코드 달아야함")
-        favorite.setOnClickListener {
-            if(!check) favorite.setImageResource(R.drawable.ic_favorite_checked)
-            else favorite.setImageResource(R.drawable.ic_favorite)
-            check = !check
-        }
-
     }
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setView(view: View, toolbar: androidx.appcompat.widget.Toolbar, bottombar: View) {
@@ -116,7 +113,6 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
     fun toolbar_text(position: Int, name: AppCompatTextView, date: AppCompatTextView, location: AppCompatTextView, tag: AppCompatTextView, favorite: ImageView){
         name.setText(photoList[position].name)
 
-        val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
         val formatter = SimpleDateFormat("yyyy년 MM월 dd일 (E) / HH:mm:ss")
         val id = photoList[position].photo_id
@@ -129,7 +125,11 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
 
         vm.setLocation(location, id)
         vm.setTags(tag, id)
-        vm.checkFavorite(favorite, id, this)
+        vm.checkFavorite(favorite, id)
+
+        favorite.setOnClickListener {
+            vm.changeFavorite(favorite, id)
+        }
     }
 
     fun getExtra(){
@@ -140,7 +140,6 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
 
             index = intent.getIntExtra("photo_num", 0)
             photoList = intent.getSerializableExtra("photo_list") as ArrayList<PhotoData>
-            tagList = intent.getSerializableExtra("tag_list") as ArrayList<TagData>
         }
         else {
             Toast.makeText(this, "전달된 이름이 없습니다", Toast.LENGTH_SHORT).show()
@@ -163,6 +162,8 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
                 dlg.setIcon(R.drawable.ic_tag)
                 dlg.setPositiveButton("확인") { _, _ ->
                     Toast.makeText(this, "입력 완료 되었습니다.", Toast.LENGTH_SHORT).show()
+                    vm.Insert(TagData(photoList[index].photo_id, et.text.toString(), "manual"))
+                    vm.setTags(tag_name, photoList[index].photo_id)
                 }
                 dlg.setNegativeButton("취소") { _, _ -> }
                 dlg.show()
@@ -205,9 +206,9 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
         dlg.setMessage("정말 삭제하시겠습니까? ")
         dlg.setIcon(R.drawable.ic_delete)
         dlg.setPositiveButton("확인") { _, _ ->
+            vm.Delete(photoList[index].photo_id)
             photoList.removeAt(index)
             Toast.makeText(this, "삭제 완료 되었습니다.", Toast.LENGTH_SHORT).show()
-            //TODO 삭제 쿼리 필요
             if(index == 0 && photoList.size == 0) {
                 finishActivity()
             } else {
@@ -230,10 +231,6 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
             intent.putParcelableArrayListExtra("delete_list", photoList)
         setResult(Activity.RESULT_OK, intent)
         finish()
-    }
-
-    fun setCheck(boolean: Boolean) {
-        check = boolean
     }
 }
 
