@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
@@ -25,6 +26,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.ViewModelProviders
+import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.fragment.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.main_activity.*
@@ -37,9 +40,10 @@ import java.util.*
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
 
     private val REQUEST_TAKE_PHOTO = 200
-    var mCurrentPhotoPath: String? = null
-    private final var FINISH_INTERVAL_TIME: Long = 2000
+    lateinit var mCurrentPhotoPath: String
+    private var FINISH_INTERVAL_TIME: Long = 2000
     private var backPressedTime: Long = 0
+    private lateinit var observer: ChangeObserver
     var init_check: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,6 +54,12 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
         SetHeader()
         init()
+        val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+        vm.Drop()
+        vm.checkChangedData(this)
+
+        observer = ChangeObserver( Handler(), vm, this )
+        this.contentResolver.registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, false, observer)
 
         val go_search = findViewById<ImageView>(R.id.main_search_button)
         go_search.setOnClickListener {
@@ -213,9 +223,8 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     @Throws(IOException::class)
     fun createImageFile(): File? { // Create an image file name
-        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val imageFileName = "JPEG_$timeStamp.jpg"
-        var imageFile: File? = null
         val storageDir = File(
             Environment.getExternalStorageDirectory().toString() + "/Pictures",
             "Wimmy"
@@ -224,16 +233,16 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             Log.i("mCurrentPhotoPath1", storageDir.toString())
             storageDir.mkdirs()
         }
-        imageFile = File(storageDir, imageFileName)
+        val imageFile = File(storageDir, imageFileName)
         mCurrentPhotoPath = imageFile.absolutePath
         return imageFile
     }
 
     private fun galleryAddPic() {
         Log.i("galleryAddPic", "Call")
-        val mediaScanIntent: Intent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
+        val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
         // 해당 경로에 있는 파일을 객체화(새로 파일을 만든다는 것으로 이해하면 안 됨)
-        val f: File = File(mCurrentPhotoPath)
+        val f = File(mCurrentPhotoPath)
         val contentUri: Uri = Uri.fromFile(f)
         mediaScanIntent.data = contentUri
         sendBroadcast(mediaScanIntent)

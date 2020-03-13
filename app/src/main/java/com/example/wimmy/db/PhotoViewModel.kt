@@ -2,10 +2,13 @@ package com.example.wimmy.db
 
 import android.app.Application
 import android.content.Context
+import android.widget.ImageView
+import android.content.Context
 import android.widget.TextView
 import androidx.lifecycle.AndroidViewModel
 import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
+import com.example.wimmy.PhotoViewPager
 import com.example.wimmy.Main_Map
 import com.example.wimmy.Main_PhotoView
 import com.google.maps.android.clustering.ClusterManager
@@ -23,6 +26,9 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         repo.insert(extraPhotoData)
     }
 
+    fun Delete(id : Long) {
+        repo.deleteById((id))
+    }
     // 폴더 보기
     fun setCalendarTag(textView: TextView, inputCalendar: Calendar) {
         repo.setCalendarTag(textView, inputCalendar)
@@ -66,7 +72,29 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         repo.setOpenFavoriteDir(adapter)
     }
 
+    // 기타 기능
+    fun setLocation(textView: TextView, id : Long) {
+        repo.setLocation(textView, id)
+
+    }
+
     fun setTags(textView: TextView, id : Long) {
         repo.setTags(textView, id)
+    }
+
+    fun checkFavorite(imageView: ImageView, id: Long) {
+        repo.checkFavorite(imageView, id)
+    }
+
+    fun changeFavorite(imageView: ImageView, id: Long){
+        repo.changeFavorite(imageView, id)
+    }
+
+    fun checkChangedData(context: Context) {
+        repo.checkChangedData(context)
+    }
+
+    fun Drop() {
+        repo.Drop()
     }
 }

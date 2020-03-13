@@ -1,7 +1,5 @@
 package com.example.wimmy.Adapter
 
-import android.graphics.Bitmap
-import android.os.AsyncTask
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,8 +7,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.example.wimmy.ImageLoder
 import com.example.wimmy.R
-import com.example.wimmy.ThumbnailAsyncTask
+import com.example.wimmy.ThumbnailLoad
 import com.example.wimmy.db.thumbnailData
 import java.io.File
 
@@ -21,7 +20,6 @@ class RecyclerAdapterForder(val context: FragmentActivity?, var list: List<thumb
     private var padding_size = 200
 
     inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        //thumbnail_imgview 변수 받아오기
         var thumbnail = itemView.findViewById<ImageView>(R.id.thumbnail)
         var text = itemView.findViewById<TextView>(R.id.thumbnail_text)
 
@@ -32,7 +30,7 @@ class RecyclerAdapterForder(val context: FragmentActivity?, var list: List<thumb
             layoutParam.setMargins(padding_size, padding_size, padding_size, padding_size)
 
             thumbnail.setImageResource(0)
-            ThumbnailAsyncTask( this, thumbnail, data.photo_id).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, context!!.applicationContext)
+            ImageLoder.execute(ThumbnailLoad(this, thumbnail, data.photo_id))
 
             text.text = File(data.data).name
             itemView.setOnClickListener { itemClick(data) }

@@ -30,7 +30,7 @@ class LatLngData(
     primaryKeys = ["photo_id"])
 class ExtraPhotoData(
     var photo_id: Long,
-    var location : String,
+    var location : String?,
     var favorite: Boolean
 )
 

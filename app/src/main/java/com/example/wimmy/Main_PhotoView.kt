@@ -62,11 +62,15 @@ class Main_PhotoView: AppCompatActivity() {
                     PhotoData, num, image ->  if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
                 Toast.makeText(this, "인덱스: ${num} 이름: ${PhotoData.name}", Toast.LENGTH_SHORT)
                     .show()
+
                 val intent = Intent(this, PhotoViewPager::class.java)
                 intent.putExtra("photo_num", num)
+                intent.putExtra("thumbnail", PhotoData.photo_id)
+
+                intent.putParcelableArrayListExtra("photo_list", recyclerAdapter!!.getThumbnailList())
 
                 startActivityForResult(intent, 100)
-                Log.d("에러","ㅇ")
+
             }
                 mLastClickTime = SystemClock.elapsedRealtime()
             }

@@ -18,6 +18,9 @@ interface PhotoData_Dao {
     @Update
     fun update(tagData: ExtraPhotoData)
 
+    @Query("UPDATE extra_photo_data SET favorite =:favorite WHERE photo_id = :id")
+    fun update(id: Long, favorite : Boolean)
+
     @Query("DELETE FROM tag_data WHERE photo_id = :photo_id")
     fun deleteTagById(photo_id: Long)
     @Query("DELETE FROM extra_photo_data WHERE photo_id = :photo_id")
@@ -40,8 +43,19 @@ interface PhotoData_Dao {
     @Query("SELECT photo_id FROM extra_photo_data where favorite = 'true'")
     fun getFavoriteDir() : Cursor
 
+    @Query("SELECT location FROM extra_photo_data WHERE photo_id = :id")
+    fun getLocation(id : Long) : String?
     @Query("SELECT tag FROM tag_data WHERE photo_id = :id")
     fun getTags(id : Long) : List<String>
+    @Query("SELECT favorite FROM extra_photo_data WHERE photo_id = :id")
+    fun getFavorite(id : Long) : Boolean?
     @Query("SELECT * FROM extra_photo_data WHERE photo_id = :id")
     fun getExtraPhotoData(id : Long) : ExtraPhotoData?
+
+
+    @Query("SELECT photo_id FROM extra_photo_data ")
+    fun getIdCursor() : Cursor
+
+    @Query("DELETE FROM extra_photo_data")
+    fun dropTable()
 }
