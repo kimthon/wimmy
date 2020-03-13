@@ -143,7 +143,6 @@ class PhotoRepository(application: Application) {
                   photoDao.deleteExtraById(id)
                }
             } while (idCursor.moveToNext())
-            Log.d("이제?","ㄴ")
             idCursor.close()
          }
       }
