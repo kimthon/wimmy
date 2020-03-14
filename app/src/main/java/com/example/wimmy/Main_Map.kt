@@ -178,6 +178,7 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
             if (clusterRenderer.getMarker(item) != null) {
                 tag_marker.setTextColor(Color.WHITE)
                 tag_marker.setBackgroundResource(R.drawable.ic_marker_phone_blue)
+                tag_marker.text = MediaStore_Dao.getNameById(this, item.id)
                 clusterRenderer.getMarker(item).setIcon(
                     BitmapDescriptorFactory.fromBitmap(
                         createDrawableFromView(
