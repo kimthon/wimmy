@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
 import com.example.wimmy.Main_Map.Companion.selectedMarker
+import com.example.wimmy.MarkerClusterRenderer.Companion.createDrawableFromView
 import com.example.wimmy.db.LatLngData
 import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoData
@@ -102,7 +103,7 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
     }
 
     fun cameraInit() {
-        if(size_check < 200) {
+        if(size_check < 100) {
             boundmap()
         }
         loading_location_name.visibility = View.GONE
@@ -159,7 +160,7 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
         val bounds: LatLngBounds = builder.build()
         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, ZoomLevel))
         val zoom: Float = mMap.getCameraPosition().zoom - 0.5f
-        mMap.moveCamera(CameraUpdateFactory.zoomTo(zoom))
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(zoom))
     }
 
     private fun changeRenderer(item: LatLngData) {
@@ -209,32 +210,15 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
         mClusterManager.addItem(data)
         builder.include(data.latlng)
         size_check++
+        if(size_check == 100) {
+            Handler(Looper.getMainLooper()).post {boundmap()}
+        }
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
         finish()
     }
-    fun createDrawableFromView(context: Context?, view: View): Bitmap {
-        val displayMetrics = DisplayMetrics()
-        (context as Activity).windowManager.defaultDisplay.getMetrics(displayMetrics)
-        view.layoutParams = ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-        view.measure(displayMetrics.widthPixels, displayMetrics.heightPixels)
-        view.layout(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels)
-        view.buildDrawingCache()
-        val bitmap: Bitmap = Bitmap.createBitmap(
-            view.measuredWidth,
-            view.measuredHeight,
-            Bitmap.Config.ARGB_8888
-        )
-        val canvas = Canvas(bitmap)
-        view.draw(canvas)
-        return bitmap
-    }
-
 
 }
 
@@ -257,30 +241,33 @@ class MarkerClusterRenderer(context: Context?, map: GoogleMap?, clusterManager: 
 
     override fun onClustersChanged(clusters: MutableSet<out Cluster<LatLngData>>?) {
         super.onClustersChanged(clusters)
+
         if(selectedMarker != null) {
             selectedMarker!!.setIcon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(context, marker_view)))
             selectedMarker = null
         }
     }
 
-    fun createDrawableFromView(context: Context?, view: View): Bitmap {
-        val displayMetrics = DisplayMetrics()
-        (context as Activity).windowManager.defaultDisplay.getMetrics(displayMetrics)
-        view.layoutParams = ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-        view.measure(displayMetrics.widthPixels, displayMetrics.heightPixels)
-        view.layout(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels)
-        view.buildDrawingCache()
-        val bitmap: Bitmap = Bitmap.createBitmap(
-            view.measuredWidth,
-            view.measuredHeight,
-            Bitmap.Config.ARGB_8888
-        )
-        val canvas = Canvas(bitmap)
-        view.draw(canvas)
-        return bitmap
+    companion object {
+        fun createDrawableFromView(context: Context?, view: View): Bitmap {
+            val displayMetrics = DisplayMetrics()
+            (context as Activity).windowManager.defaultDisplay.getMetrics(displayMetrics)
+            view.layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            view.measure(displayMetrics.widthPixels, displayMetrics.heightPixels)
+            view.layout(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels)
+            view.buildDrawingCache()
+            val bitmap: Bitmap = Bitmap.createBitmap(
+                view.measuredWidth,
+                view.measuredHeight,
+                Bitmap.Config.ARGB_8888
+            )
+            val canvas = Canvas(bitmap)
+            view.draw(canvas)
+            return bitmap
+        }
     }
 
 }
