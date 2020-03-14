@@ -2,6 +2,7 @@ package com.example.wimmy.db
 
 import android.app.Application
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
@@ -15,6 +16,11 @@ import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import com.example.wimmy.Main_Map
 import com.example.wimmy.Main_PhotoView.Companion.list
 import com.example.wimmy.R
+import com.google.firebase.ml.naturallanguage.FirebaseNaturalLanguage
+import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslateLanguage
+import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslatorOptions
+import com.google.firebase.ml.vision.FirebaseVision
+import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.*
@@ -23,7 +29,7 @@ class PhotoRepository(application: Application) {
    private val photoDao : PhotoData_Dao
    private val DBThread = ThreadPoolExecutor(0, Integer.MAX_VALUE, 0L, TimeUnit.MILLISECONDS, SynchronousQueue<Runnable>())
    private val DirectoryThread = ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, LinkedBlockingQueue())
-   private val changeCheckThread = ThreadPoolExecutor(1, 2, 0L, TimeUnit.MILLISECONDS, LinkedBlockingQueue())
+   private val changeCheckThread = ThreadPoolExecutor(1, 3, 0L, TimeUnit.MILLISECONDS, LinkedBlockingQueue())
    private val handler = Handler(Looper.getMainLooper())
 
    init {
@@ -277,6 +283,7 @@ class PhotoRepository(application: Application) {
                   val loc = photoDao.getLocationById(id) ?: MediaStore_Dao.getLocation(context.applicationContext, id) ?: return@execute
                   val favorite = photoDao.getFavoriteById(id) ?: false
                   val extra = ExtraPhotoData(id, loc, favorite)
+                  AddTagsByApi(context, id)
                   photoDao.insert(extra)
                }
             } while (cursor!!.moveToNext())
@@ -298,18 +305,54 @@ class PhotoRepository(application: Application) {
       }
    }
 
-
-
    fun Drop() {
-      DBThread.execute { photoDao.dropTable() }
+      DBThread.execute {
+         photoDao.dropExtraTable()
+         photoDao.dropTagTable()
+      }
+   }
+
+   private fun AddTagsByApi(context: Context, id: Long) {
+      val options = FirebaseTranslatorOptions.Builder()
+         .setSourceLanguage(FirebaseTranslateLanguage.EN)
+         .setTargetLanguage(FirebaseTranslateLanguage.KO)
+         .build()
+      val translator = FirebaseNaturalLanguage.getInstance().getTranslator(options)
+
+      val bitmap = MediaStore_Dao.LoadThumbnailById(context, id)
+      val image = FirebaseVisionImage.fromBitmap(bitmap)
+      val labeler = FirebaseVision.getInstance().onDeviceImageLabeler
+      labeler.processImage(image)
+         .addOnSuccessListener { labels ->
+            translator.downloadModelIfNeeded()
+               .addOnSuccessListener {
+                  for (label in labels) {
+                     translator.translate(label.text)
+                        .addOnSuccessListener { translatedText ->
+                           if(label.confidence >= 0.85) {
+                              DBThread.execute { photoDao.insert(TagData(id, translatedText, "auto"))}
+                           }
+                        }
+                        .addOnFailureListener { e ->
+                           e.stackTrace
+                        }
+                  }
+               }
+               .addOnFailureListener { e ->
+                  e.stackTrace
+               }
+         }
+         .addOnFailureListener { e ->
+            e.stackTrace
+         }
    }
 
    @Suppress("DEPRECATION")
    private fun NetworkIsValid(context: Context) : Boolean {
       var result = false
       val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-       if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-          val networkCapabilities = cm.activeNetwork ?: return false
+      if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+         val networkCapabilities = cm.activeNetwork ?: return false
           val actNw = cm.getNetworkCapabilities(networkCapabilities) ?: return false
           result = when {
              actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true

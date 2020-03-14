@@ -8,19 +8,16 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.provider.Settings
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityCompat.finishAffinity
 import androidx.core.content.ContextCompat
 import com.google.firebase.ml.common.modeldownload.FirebaseModelDownloadConditions
 import com.google.firebase.ml.common.modeldownload.FirebaseModelManager
@@ -61,6 +58,7 @@ class SplashActivity : AppCompatActivity() {
                 val options =
                     if (isDownloaded) {
                         startActivity(intent)
+                        finish()
                     } else {
                         dlg.setTitle("환영합니다") //제목
                         dlg.setMessage("추가 파일 설치가 필요합니다. 와이파이를 연결해주세요. \n\n다운로드 하시겠습니까? (30mb)") // 메시지

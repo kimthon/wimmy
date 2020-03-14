@@ -58,5 +58,8 @@ interface PhotoData_Dao {
     fun getIdCursor() : Cursor
 
     @Query("DELETE FROM extra_photo_data")
-    fun dropTable()
+    fun dropExtraTable()
+
+    @Query("DELETE FROM tag_data")
+    fun dropTagTable()
 }

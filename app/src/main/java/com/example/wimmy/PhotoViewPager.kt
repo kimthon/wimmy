@@ -27,13 +27,7 @@ import com.example.wimmy.Main_PhotoView.Companion.list
 import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.db.TagData
-import com.example.wimmy.db.thumbnailData
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.firebase.ml.naturallanguage.FirebaseNaturalLanguage
-import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslateLanguage
-import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslatorOptions
-import com.google.firebase.ml.vision.FirebaseVision
-import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import kotlinx.android.synthetic.main.photoview_frame.*
 import java.io.ByteArrayOutputStream
 
@@ -44,8 +38,6 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
     private lateinit var tag_name : AppCompatTextView
     private var index  = 0
     private var delete_check: Int = 0
-
-
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,7 +58,6 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
         bottom_photo_menu.setOnNavigationItemSelectedListener(this)
         setView(view, mainphoto_toolbar, bottom_photo_menu)
         toolbar_text(index, text_name, date_name, location_name, tag_name, favorite)
-
 
         viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
 
@@ -100,7 +91,6 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
         finishActivity()
     }
 
-
     @SuppressLint("SimpleDateFormat")
     fun toolbar_text(position: Int, name: AppCompatTextView, date: AppCompatTextView, location: AppCompatTextView, tag: AppCompatTextView, favorite: ImageView){
         val id = list[position].photo_id
@@ -123,49 +113,10 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
 
             index = intent.getIntExtra("photo_num", 0)
 
-            // 번역 API, 이미지 분석 API Test
-            val options = FirebaseTranslatorOptions.Builder()
-                .setSourceLanguage(FirebaseTranslateLanguage.EN)
-                .setTargetLanguage(FirebaseTranslateLanguage.KO)
-                .build()
-            val translator = FirebaseNaturalLanguage.getInstance().getTranslator(options)
-
-            val path = MediaStore_Dao.getPathById(this, list[index].photo_id)
-            var bitmap = BitmapFactory.decodeFile(path)
-            bitmap =  MediaStore_Dao.modifyOrientaionById(this, list[index].photo_id, bitmap)
-
-            val image = FirebaseVisionImage.fromBitmap(bitmap)
-            val labeler = FirebaseVision.getInstance().getOnDeviceImageLabeler()
-            labeler.processImage(image)
-                .addOnSuccessListener { labels ->
-                    translator.downloadModelIfNeeded()
-                        .addOnSuccessListener {
-                            for (label in labels) {
-                                translator.translate(label.text)
-                                    .addOnSuccessListener { translatedText ->
-                                        if(label.confidence >= 0.7) {
-                                            println("번호[" + index + "] " + "태그: " + translatedText)
-                                            println("번호[" + index + "] " + "신뢰도: " + "${label.confidence}")
-                                        }
-                                    }
-                                    .addOnFailureListener { exception ->
-
-                                    }
-                            }
-                        }
-                        .addOnFailureListener { exception ->
-                        }
-                }
-                .addOnFailureListener { e ->
-
-                }
         }
         else {
             Toast.makeText(this, "전달된 이름이 없습니다", Toast.LENGTH_SHORT).show()
         }
-        //var vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-        //tagList.addAll(vm.getTag(photoList[index].photo_id))
-        //Log.d("태그는:", "${vm.getTag(0)}")
     }
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -193,7 +144,7 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
                 var bitmap = BitmapFactory.decodeFile(path)
                 bitmap =  MediaStore_Dao.modifyOrientaionById(this, list[index].photo_id, bitmap)
                 val uri: Uri? = getImageUri(this, bitmap)
-                intent.setType("image/*")
+                intent.type = "image/*"
                 intent.putExtra(Intent.EXTRA_STREAM, uri)
                 val chooser = Intent.createChooser(intent, "친구에게 공유하기")
                 startActivity(chooser)
@@ -202,7 +153,6 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
                 delete(imgViewPager, mainphoto_toolbar, bottom_photo_menu)
             }
         }
-
         return true
     }
 
@@ -210,7 +160,7 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
         val bytes = ByteArrayOutputStream()
         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
         val path: String = MediaStore.Images.Media.insertImage(
-            context.getContentResolver(),
+            context.contentResolver,
             inImage,
             "Title",
             null
@@ -251,10 +201,3 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
         finish()
     }
 }
-
-
-    /*fun setTagList(list : List<TagData>) {
-        tagList = list
-    }*/
-
-
