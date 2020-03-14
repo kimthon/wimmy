@@ -8,13 +8,17 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import com.example.wimmy.Main_Map
 import com.example.wimmy.Main_PhotoView.Companion.list
+import com.example.wimmy.PhotoViewPager
 import com.example.wimmy.R
+import kotlinx.android.synthetic.main.tag_diaglog.*
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.*
@@ -47,6 +51,12 @@ class PhotoRepository(application: Application) {
       DBThread.execute {
          photoDao.deleteTagById(id)
          photoDao.deleteExtraById(id)
+      }
+   }
+
+   fun deleteTag(id: Long) {
+      DBThread.execute {
+         photoDao.deleteTagById(id)
       }
    }
 
@@ -229,6 +239,15 @@ class PhotoRepository(application: Application) {
             textView.text = tags.joinToString(", ")
          }
       }
+   }
+
+   fun getTags(viewPager: PhotoViewPager, view: View, id : Long){
+      var tags = listOf<String>()
+      DBThread.execute {
+         tags = photoDao.getTagsById(id)
+         handler.post{ viewPager.tagsInit(view, tags) }
+      }
+
    }
 
    fun checkFavorite(imageView: ImageView, id: Long) {
