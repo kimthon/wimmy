@@ -2,8 +2,10 @@ package com.example.wimmy.db
 
 import android.app.Application
 import android.content.Context
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.AndroidViewModel
 import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
@@ -27,7 +29,11 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun Delete(id : Long) {
-        repo.deleteById((id))
+        repo.deleteById(id)
+    }
+
+    fun DeleteTag(id : Long) {
+        repo.deleteTag(id)
     }
     // 폴더 보기
     fun setCalendarTag(textView: TextView, inputCalendar: Calendar) {
@@ -87,6 +93,10 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setTags(textView: TextView, id : Long) {
         repo.setTags(textView, id)
+    }
+
+    fun getTags(viewPager: PhotoViewPager, view: View, id : Long) {
+        repo.getTags(viewPager, view, id)
     }
 
     fun checkFavorite(imageView: ImageView, id: Long) {
