@@ -87,6 +87,7 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
             }
 
             override fun onPageSelected(position: Int) {
+                index = position
                 toolbar_text(position, text_name, date_name, location_name, tag_name, favorite)
             }
         })
