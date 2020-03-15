@@ -1,4 +1,4 @@
-package com.example.wimmy
+package com.example.wimmy.Activity
 
 import android.app.Activity
 import android.content.Context
@@ -15,27 +15,23 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
-import androidx.viewpager.widget.ViewPager
-import com.example.wimmy.Main_Map.Companion.selectedMarker
-import com.example.wimmy.MarkerClusterRenderer.Companion.createDrawableFromView
+import com.example.wimmy.Activity.Main_Map.Companion.selectedMarker
+import com.example.wimmy.Activity.MarkerClusterRenderer.Companion.createDrawableFromView
+import com.example.wimmy.ImageLoad
+import com.example.wimmy.ImageLoder
+import com.example.wimmy.R
 import com.example.wimmy.db.LatLngData
 import com.example.wimmy.db.MediaStore_Dao
-import com.example.wimmy.db.PhotoData
 import com.example.wimmy.db.PhotoViewModel
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
 import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
-import com.google.maps.android.ui.IconGenerator
 import kotlinx.android.synthetic.main.main_map.*
-import kotlinx.android.synthetic.main.main_map.view.*
-import kotlinx.android.synthetic.main.marker_layout.*
-import java.text.SimpleDateFormat
 
 
 class Main_Map: AppCompatActivity(), OnMapReadyCallback {
@@ -75,7 +71,12 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
         mMap.uiSettings.isZoomControlsEnabled = true;
 
         mClusterManager = ClusterManager<LatLngData>(this, mMap)
-        clusterRenderer = MarkerClusterRenderer(this, mMap, mClusterManager, marker_view)
+        clusterRenderer = MarkerClusterRenderer(
+            this,
+            mMap,
+            mClusterManager,
+            marker_view
+        )
         getExtra()
         mClusterManager.setRenderer(clusterRenderer)
 
@@ -132,7 +133,12 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
             card_view.visibility = View.VISIBLE
             val center: CameraUpdate = CameraUpdateFactory.newLatLng(p0?.position)
             mMap!!.animateCamera(center)
-            ImageLoder.execute(ImageLoad(map_image, p0.id))
+            ImageLoder.execute(
+                ImageLoad(
+                    map_image,
+                    p0.id
+                )
+            )
             vm.setName(map_name, p0.id )
             vm.setDate(map_date, p0.id)
             vm.setLocation(map_location, p0.id)

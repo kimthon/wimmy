@@ -14,9 +14,11 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.*
+import com.example.wimmy.Activity.MainActivity
+import com.example.wimmy.Activity.Main_Map
 import com.example.wimmy.Adapter.RecyclerAdapterForder
-import com.example.wimmy.MainActivity.Companion.location_type
-import com.example.wimmy.db.*
+import com.example.wimmy.Activity.MainActivity.Companion.location_type
+import com.example.wimmy.Activity.Main_PhotoView
 import com.google.android.material.appbar.AppBarLayout
 import kotlinx.android.synthetic.main.main_activity.view.*
 import com.example.wimmy.db.PhotoViewModel

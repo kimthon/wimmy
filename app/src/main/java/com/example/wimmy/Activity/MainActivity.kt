@@ -1,45 +1,36 @@
-package com.example.wimmy
+package com.example.wimmy.Activity
 
-import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
 import android.provider.MediaStore
-import android.provider.Settings
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.core.view.children
-import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProviders
+import com.example.wimmy.ChangeObserver
+import com.example.wimmy.DateFragment
+import com.example.wimmy.R
 import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.fragment.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.main_activity.*
-import kotlinx.android.synthetic.main.main_map.*
-import kotlinx.coroutines.selects.select
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
@@ -66,7 +57,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         //vm.Drop()
         vm.checkChangedData(this)
 
-        observer = ChangeObserver( Handler(), vm, this )
+        observer = ChangeObserver(Handler(), vm, this)
         this.contentResolver.registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, false, observer)
 
         val go_search = findViewById<ImageView>(R.id.main_search_button)
@@ -103,7 +94,9 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
                 val dlg: AlertDialog.Builder = AlertDialog.Builder(this,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
                 dlg.setTitle("원하는 형태를 선택하세요.")
-                dlg.setSingleChoiceItems(selectitem, location_type) { dialog, i ->
+                dlg.setSingleChoiceItems(selectitem,
+                    location_type
+                ) { dialog, i ->
                     when(i) {
                         0 -> location_type = 0
                         1 -> location_type = 1
