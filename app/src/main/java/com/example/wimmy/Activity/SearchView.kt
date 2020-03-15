@@ -1,4 +1,4 @@
-package com.example.wimmy
+package com.example.wimmy.Activity
 
 import YearMonthPickerDialog
 import android.app.Activity
@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
+import com.example.wimmy.R
 import com.example.wimmy.db.*
 import kotlinx.android.synthetic.main.search_view.*
 

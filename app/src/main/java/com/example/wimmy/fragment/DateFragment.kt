@@ -14,6 +14,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import com.example.wimmy.Activity.Main_PhotoView
 import com.example.wimmy.Adapter.DateAdapter
 import com.example.wimmy.db.PhotoViewModel
 import com.google.android.material.appbar.AppBarLayout

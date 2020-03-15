@@ -11,15 +11,9 @@ import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import android.util.Size
-import androidx.core.database.getDoubleOrNull
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
-import com.example.wimmy.Main_Map
+import com.example.wimmy.Activity.Main_Map
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.clustering.ClusterManager
-import kotlinx.android.synthetic.main.main_map.*
-import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
 

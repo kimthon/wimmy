@@ -1,15 +1,13 @@
-package com.example.wimmy
+package com.example.wimmy.Activity
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -17,6 +15,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
+import com.example.wimmy.R
 import com.example.wimmy.db.*
 import kotlinx.android.synthetic.main.main_photoview.*
 import java.text.SimpleDateFormat

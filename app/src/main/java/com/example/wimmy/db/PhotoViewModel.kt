@@ -5,15 +5,11 @@ import android.content.Context
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.AndroidViewModel
 import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
-import com.example.wimmy.PhotoViewPager
-import com.example.wimmy.Main_Map
-import com.example.wimmy.Main_PhotoView
-import com.google.android.gms.maps.GoogleMap
-import com.google.maps.android.clustering.ClusterManager
+import com.example.wimmy.Activity.Main_Map
+import com.example.wimmy.dialog.tagInsertDialog
 import java.util.*
 
 class PhotoViewModel(application: Application) : AndroidViewModel(application) {
@@ -95,8 +91,8 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         repo.setTags(textView, id)
     }
 
-    fun getTags(viewPager: PhotoViewPager, view: View, id : Long) {
-        repo.getTags(viewPager, view, id)
+    fun getTags(tagInsertDialog: tagInsertDialog, view: View, id : Long) {
+        repo.getTags(tagInsertDialog, view, id)
     }
 
     fun checkFavorite(imageView: ImageView, id: Long) {

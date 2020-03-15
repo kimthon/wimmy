@@ -35,9 +35,9 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".Activity.MainActivity">
         </activity>
-        <activity android:name=".SplashActivity"
+        <activity android:name=".Activity.SplashActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
@@ -46,14 +46,14 @@
 
             </intent-filter>
         </activity>
-        <activity android:name=".Main_PhotoView">
+        <activity android:name=".Activity.Main_PhotoView">
         </activity>
         <activity
-            android:name=".PhotoViewPager"
+            android:name=".Activity.PhotoViewPager"
             android:theme="@style/PhotoTheme">
         </activity>
-        <activity android:name=".Main_Map"/>
-        <activity android:name=".SearchView">
+        <activity android:name=".Activity.Main_Map"/>
+        <activity android:name=".Activity.SearchView">
         </activity>
         <meta-data
             android:name="com.google.firebase.ml.vision.DEPENDENCIES"

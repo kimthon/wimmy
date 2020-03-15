@@ -15,8 +15,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.example.wimmy.DataBaseObserver
-import com.example.wimmy.MainActivity
-import com.example.wimmy.Main_PhotoView
+import com.example.wimmy.Activity.MainActivity
+import com.example.wimmy.Activity.Main_PhotoView
 import com.example.wimmy.R
 import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoViewModel
