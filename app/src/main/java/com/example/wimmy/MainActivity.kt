@@ -3,6 +3,7 @@ package com.example.wimmy
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -44,16 +45,18 @@ import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
 
-    private val REQUEST_TAKE_PHOTO = 200
+    private lateinit var vm : PhotoViewModel
+    private lateinit var observer: ChangeObserver
+    private var init : Boolean = false
     lateinit var mCurrentPhotoPath: String
+    private val REQUEST_TAKE_PHOTO = 200
     private var FINISH_INTERVAL_TIME: Long = 2000
     private var backPressedTime: Long = 0
-    private lateinit var observer: ChangeObserver
-    var init_check: Int = 0
 
     companion object {
         var location_type: Int = 0
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
@@ -62,8 +65,13 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
         SetHeader()
         init()
-        val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+
+        vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+        /*
         vm.Drop()
+        InitLastAddedDate()
+         */
+
         vm.checkChangedData(this)
 
         observer = ChangeObserver( Handler(), vm, this )
@@ -79,11 +87,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         go_camera.setOnClickListener {
             captureCamera()
         }
-
-
-
     }
-
 
     private fun SetHeader() {
         val toolbar = findViewById<Toolbar>(R.id.main_toolbar)
@@ -198,22 +202,15 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }
 
     fun init(): Boolean{
-        if(init_check == 0) {
+        if(!init) {
             val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
             val fragmentA = TagFragment(appbar)
             transaction.replace(R.id.frame_layout, fragmentA, "tag")
             transaction.commit()
-            init_check = 1
+            init = true
         }
         return true
     }
-
-    private fun getDate(year : Int, month : Int, day : Int) : Date {
-        val date = Calendar.getInstance()
-        date.set(year, month - 1, day)
-        return date.time
-    }
-
 
     private fun captureCamera() {
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -290,7 +287,12 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     // 그 권한 중에 위험 권한으로 분류된 권한은 개발자가 직접 사용자에게 권한 허용을 물을 수 있도록 작성해야한다.
     // 즉, 코드로 작성해야함.
 
-
+    private fun InitLastAddedDate() {
+        val pref = getSharedPreferences("pref", MODE_PRIVATE)
+        val editor = pref.edit()
+        editor.remove("lastAddedDate")
+        editor.apply()
+    }
 }
 
 

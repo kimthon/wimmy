@@ -2,6 +2,7 @@ package com.example.wimmy.db
 
 import android.app.Application
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
 import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -31,6 +32,7 @@ class PhotoRepository(application: Application) {
    private val DirectoryThread = ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, LinkedBlockingQueue())
    private val changeCheckThread = ThreadPoolExecutor(1, 3, 0L, TimeUnit.MILLISECONDS, LinkedBlockingQueue())
    private val handler = Handler(Looper.getMainLooper())
+   private var lastAddedDate : Long = 0
 
    init {
       val db = PhotoDB.getInstance(application)!!
@@ -61,8 +63,16 @@ class PhotoRepository(application: Application) {
       if(DirectoryThread.isTerminating) DirectoryThread.shutdownNow()
       DirectoryThread.execute {
          val list = MediaStore_Dao.getDateIdInfo(textView.context, inputCalendar)
-         val text = photoDao.getDateInfo(list)
-         handler.post { textView.text = text }
+         val textList = photoDao.getDateInfo(list)
+         if(!textList.isNullOrEmpty()) {
+            handler.post {
+               var text = ""
+               for (i in textList) {
+                  text += i + '\n'
+               }
+               textView.text = text
+            }
+         }
       }
    }
 
@@ -273,12 +283,15 @@ class PhotoRepository(application: Application) {
       if (changeCheckThread.isTerminating) changeCheckThread.shutdownNow()
       //추가 작업
       changeCheckThread.execute {
-         val cursor = MediaStore_Dao.getNewlySortedCursor(context)
+         val pref = context.getSharedPreferences("pre", MODE_PRIVATE)
+         val editor = pref.edit()
+         lastAddedDate = pref.getLong("lastAddedDate", 0)
+         val cursor = MediaStore_Dao.getNewlySortedCursor(context, lastAddedDate)
          if (MediaStore_Dao.cursorIsValid(cursor)) {
             do {
                val id = cursor!!.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
-               //이미 있는 것이나 인터넷이 끊길 시 패스
-               if (!NetworkIsValid(context)) continue
+               // 인터넷이 끊길 시 스톱
+               if (!NetworkIsValid(context)) break
                changeCheckThread.execute {
                   val loc = photoDao.getLocationById(id) ?: MediaStore_Dao.getLocation(context.applicationContext, id) ?: return@execute
                   val favorite = photoDao.getFavoriteById(id) ?: false
@@ -286,6 +299,9 @@ class PhotoRepository(application: Application) {
                   AddTagsByApi(context, id)
                   photoDao.insert(extra)
                }
+               lastAddedDate = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_ADDED))
+               editor.putLong("lastAddedDate", lastAddedDate)
+               editor.commit()
             } while (cursor!!.moveToNext())
             cursor.close()
          }
@@ -345,6 +361,14 @@ class PhotoRepository(application: Application) {
          .addOnFailureListener { e ->
             e.stackTrace
          }
+   }
+
+   fun setLastAddedDate(date : Long) {
+      lastAddedDate = date
+   }
+
+   fun getLastAddedDate() : Long {
+      return lastAddedDate
    }
 
    @Suppress("DEPRECATION")

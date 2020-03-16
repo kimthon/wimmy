@@ -11,15 +11,9 @@ import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import android.util.Size
-import androidx.core.database.getDoubleOrNull
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import com.example.wimmy.Main_Map
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.clustering.ClusterManager
-import kotlinx.android.synthetic.main.main_map.*
-import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -268,12 +262,14 @@ object MediaStore_Dao {
         return LatLng(lat, lon)
     }
 
-    fun getNewlySortedCursor(context: Context) : Cursor? {
+    fun getNewlySortedCursor(context: Context, date : Long) : Cursor? {
         val projection = arrayOf(
-            MediaStore.Images.ImageColumns._ID
+            MediaStore.Images.ImageColumns._ID,
+            MediaStore.Images.ImageColumns.DATE_ADDED
         )
+        val selection = MediaStore.Images.ImageColumns.DATE_ADDED + " > " + date
         val sortOrder = MediaStore.Images.ImageColumns.DATE_ADDED + " DESC"
-        val cursor = context.contentResolver.query(uri, projection, null, null, sortOrder)
+        val cursor = context.contentResolver.query(uri, projection, selection, null, sortOrder)
 
         return cursor
     }
