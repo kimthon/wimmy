@@ -16,16 +16,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.*
 import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.example.wimmy.MainActivity.Companion.location_type
-import com.example.wimmy.db.*
 import com.google.android.material.appbar.AppBarLayout
 import kotlinx.android.synthetic.main.main_activity.view.*
 import com.example.wimmy.db.PhotoViewModel
-import com.example.wimmy.db.thumbnailData
 
 class LocationFragment(v: AppBarLayout) : Fragment() {
     private var thisview: View? = null
     private var recyclerAdapter : RecyclerAdapterForder?= null
-    private var thumbnailList = listOf<thumbnailData>()
     private lateinit var observer : DataBaseObserver
     private var mLastClickTime: Long = 0
     val ab = v
@@ -72,7 +69,7 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
     private fun setView(view : View?) {
         val recyclerView = view?.findViewById<RecyclerView>(R.id.locationRecycleView)
         recyclerAdapter =
-            RecyclerAdapterForder(activity, thumbnailList)
+            RecyclerAdapterForder(activity, ArrayList())
             {thumbnailData ->
                 if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
                     if(thumbnailData.data == "위치 정보 없음" || location_type == 1) {
@@ -107,20 +104,3 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
         })
     }
 }
-/*
-    inner class Scroll : RecyclerView.OnScrollListener() {
-        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int){
-            bottomNavigationView = view!!.findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-            if (dy > 0 && bottomNavigationView!!.isShown()) {
-                bottomNavigationView!!.setVisibility(View.GONE);
-            } else if (dy < 0 ) {
-                bottomNavigationView!!.setVisibility(View.VISIBLE);
-            }
-        }
-
-        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-            super.onScrollStateChanged(recyclerView, newState)
-        }
-    }
-}
- */

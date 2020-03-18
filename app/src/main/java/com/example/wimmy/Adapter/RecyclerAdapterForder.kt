@@ -13,15 +13,15 @@ import com.example.wimmy.ThumbnailLoad
 import com.example.wimmy.db.thumbnailData
 import java.io.File
 
-class RecyclerAdapterForder(val context: FragmentActivity?, var list: List<thumbnailData>, val itemClick: (thumbnailData) -> Unit) :
+class RecyclerAdapterForder(val context: FragmentActivity?, var list: ArrayList<thumbnailData>, val itemClick: (thumbnailData) -> Unit) :
     RecyclerView.Adapter<RecyclerAdapterForder.Holder>()
 {
     private var size : Int = 200
     private var padding_size = 200
 
     inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var thumbnail = itemView.findViewById<ImageView>(R.id.thumbnail)
-        var text = itemView.findViewById<TextView>(R.id.thumbnail_text)
+        private var thumbnail = itemView.findViewById<ImageView>(R.id.thumbnail)
+        private var text = itemView.findViewById<TextView>(R.id.thumbnail_text)
 
         fun bind(data : thumbnailData) {
             val layoutParam = thumbnail.layoutParams as ViewGroup.MarginLayoutParams
@@ -56,11 +56,21 @@ class RecyclerAdapterForder(val context: FragmentActivity?, var list: List<thumb
         notifyDataSetChanged()
     }
 
-    fun setThumbnailList(list : List<thumbnailData>?) {
-        if(list.isNullOrEmpty()) this.list = listOf<thumbnailData>()
+    fun setThumbnailList(list : ArrayList<thumbnailData>?) {
+        if(list.isNullOrEmpty()) this.list = arrayListOf<thumbnailData>()
         else {
-            this.list = list
-            notifyDataSetChanged()
+            for( i in list.withIndex()) {
+                //바뀐 것 만 변경
+                if(this.list.size > i.index) {
+                    if (this.list[i.index].photo_id != i.value.photo_id) {
+                        this.list[i.index] = i.value
+                        notifyItemInserted(i.index)
+                    }
+                } else {
+                    this.list.add(i.value)
+                    notifyItemInserted(i.index)
+                }
+            }
         }
     }
 }

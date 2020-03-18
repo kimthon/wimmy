@@ -27,7 +27,6 @@ import kotlinx.android.synthetic.main.main_activity.view.*
 class TagFragment(v: AppBarLayout) : Fragment() {
     private var thisview: View? = null
     private var recyclerAdapter : RecyclerAdapterForder?= null
-    private var thumbnailList = listOf<thumbnailData>()
     private lateinit var observer : DataBaseObserver
     private var mLastClickTime: Long = 0
     val ab = v
@@ -76,7 +75,7 @@ class TagFragment(v: AppBarLayout) : Fragment() {
     private fun setView(view : View?) {
         val recyclerView = view?.findViewById<RecyclerView>(R.id.tagRecycleView)
         recyclerAdapter =
-            RecyclerAdapterForder(activity, thumbnailList)
+            RecyclerAdapterForder(activity, ArrayList())
             {thumbnailData ->
                 if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
                     val intent = Intent(activity, Main_PhotoView::class.java)

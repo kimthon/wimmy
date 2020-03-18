@@ -27,6 +27,7 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.*
+import kotlin.collections.ArrayList
 
 class PhotoRepository(application: Application) {
    private val photoDao : PhotoData_Dao
@@ -84,7 +85,8 @@ class PhotoRepository(application: Application) {
    fun setLocationDir(adapter: RecyclerAdapterForder) {
       if(DirectoryThread.isTerminating) DirectoryThread.shutdownNow()
       DirectoryThread.execute {
-         val thumbnailList = photoDao.getLocationDir()
+         val list = photoDao.getLocationDir()
+         val thumbnailList = ArrayList(list)
          handler.post { adapter.setThumbnailList(thumbnailList) }
       }
    }
@@ -100,7 +102,8 @@ class PhotoRepository(application: Application) {
    fun setTagDir(adapter: RecyclerAdapterForder) {
       if(DirectoryThread.isTerminating) DirectoryThread.shutdownNow()
       DirectoryThread.execute {
-         val thumbnailList = photoDao.getTagDir()
+         val list = photoDao.getTagDir()
+         val thumbnailList = ArrayList(list)
          handler.post { adapter.setThumbnailList(thumbnailList) }
       }
    }
