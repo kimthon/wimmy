@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     private lateinit var observer: ChangeObserver
     var init_check: Int = 0
     lateinit var vm: PhotoViewModel
+    private var check_fragment: Int = 0
 
     companion object {
         var location_type: Int = 0
@@ -148,22 +149,26 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         fm.popBackStack(fragtag, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         when(p0.itemId){
             R.id.menu_name ->{
-                if(fragtag == "name") return true
+                if(fragtag == "name") check_fragment = 1
+                else check_fragment = 0
                 val fragmentA = NameFragment(appbar)
                 transaction.replace(R.id.frame_layout,fragmentA, "name")
             }
             R.id.menu_tag -> {
-                if(fragtag == "tag") return true
+                if(fragtag == "tag") check_fragment = 1
+                else check_fragment = 0
                 val fragmentB = TagFragment(appbar)
                 transaction.replace(R.id.frame_layout,fragmentB, "tag")
             }
             R.id.menu_cal -> {
-                if(fragtag == "cal") return true
+                if(fragtag == "cal") check_fragment = 1
+                else check_fragment = 0
                 val fragmentC = DateFragment(appbar)
                 transaction.replace(R.id.frame_layout,fragmentC, "cal")
             }
             R.id.menu_location -> {
-                if(fragtag == "location") return true
+                if(fragtag == "location") check_fragment = 1
+                else check_fragment = 0
                 val fragmentD = LocationFragment(appbar)
                 transaction.replace(R.id.frame_layout,fragmentD, "location")
             }
@@ -176,6 +181,10 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }
 
     override fun onBackPressed() {
+        if(check_fragment == 1) {
+            super.onBackPressed();
+            check_fragment = 0
+        }
         if(supportFragmentManager.backStackEntryCount == 0) {
             var tempTime = System.currentTimeMillis();
             var intervalTime = tempTime - backPressedTime;
@@ -189,6 +198,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 return
             }
         }
+
         super.onBackPressed();
         val bnv = findViewById<View>(R.id.bottomNavigationView) as BottomNavigationView
         updateBottomMenu(bnv)
