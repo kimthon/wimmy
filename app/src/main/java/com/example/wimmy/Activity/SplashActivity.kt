@@ -51,48 +51,28 @@ class SplashActivity : AppCompatActivity() {
             .requireWifi()
             .build()
 
-        FirebaseModelManager.getInstance().isModelDownloaded(Model)
-            .addOnSuccessListener { isDownloaded ->
-                val options =
-                    if (isDownloaded) {
-                        startActivity(intent)
+        FirebaseModelManager.getInstance().isModelDownloaded(Model).addOnSuccessListener { isDownloaded ->
+                val options = if (isDownloaded) {
+                    startActivity(intent)
                     } else {
                         dlg.setTitle("환영합니다") //제목
                         dlg.setMessage("추가 파일 설치가 필요합니다. 와이파이를 연결해주세요. \n\n다운로드 하시겠습니까? (30mb)") // 메시지
                         dlg.setCancelable(false);
-                        dlg.setPositiveButton(
-                            "확인",
-                            DialogInterface.OnClickListener { dialog, which ->
-
+                        dlg.setPositiveButton("확인", DialogInterface.OnClickListener { dialog, which ->
                                 loading()
-                                modelManager.download(Model, conditions)
-                                    .addOnSuccessListener {
-                                        modelManager.getDownloadedModels(
-                                                FirebaseTranslateRemoteModel::class.java
-                                            )
-                                            .addOnSuccessListener { models ->
-                                                Toast.makeText(
-                                                    this@SplashActivity,
-                                                    "설치가 완료 되었습니다.",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
+                                modelManager.download(Model, conditions).addOnSuccessListener { modelManager.getDownloadedModels(
+                                            FirebaseTranslateRemoteModel::class.java).addOnSuccessListener { models ->
+                                                Toast.makeText(this@SplashActivity, "설치가 완료 되었습니다.", Toast.LENGTH_SHORT).show()
                                                 startActivity(intent)
                                                 finish()
                                                 loadingEnd()
-
-                                            }
-                                            .addOnFailureListener {
-                                            }
+                                            }.addOnFailureListener {
                                     }
-                                    .addOnFailureListener {
-                                    }
-
-                            })
-                        dlg.setNegativeButton(
-                            "취소",
-                            DialogInterface.OnClickListener { dialog, which ->
+                                }.addOnFailureListener {}
+                        })
+                        dlg.setNegativeButton("취소", DialogInterface.OnClickListener { dialog, which ->
                                 System.exit(0)
-                            })
+                        })
                         dlg.show()
                     }
             }

@@ -10,6 +10,8 @@ import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import com.example.wimmy.Activity.Main_Map
 import com.example.wimmy.dialog.tagInsertDialog
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import java.util.*
 
 class PhotoViewModel(application: Application) : AndroidViewModel(application) {
@@ -48,6 +50,23 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         repo.setTagDir(adapter)
     }
 
+    // 검색
+    fun setNameDirSearch(adapter: RecyclerAdapterForder, name: String) {
+        repo.setNameDirSearch(adapter, name)
+    }
+
+    fun setLocationDirSearch(adapter: RecyclerAdapterForder, location: String) {
+        repo.setLocationDirSearch(adapter, location)
+    }
+
+    fun setDateDirSearch(adapter: RecyclerAdapterForder, cal: Calendar) {
+        repo.setDateDirSearch(adapter, cal)
+    }
+
+    fun setTagDirSearch(adapter: RecyclerAdapterForder, tag: String) {
+        repo.setTagDirSearch(adapter, tag)
+    }
+
     // 폴더 내용 보기
     fun setOpenDateDir(adapter: RecyclerAdapterPhoto, cal : Calendar) {
         repo.setOpenDateDir(adapter, cal)
@@ -66,6 +85,9 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         repo.setOpenNameDir(adapter, path)
     }
 
+    fun setOpenFileDir(adapter: RecyclerAdapterPhoto, name : String) {
+        repo.setOpenFileDir(adapter, name)
+    }
     fun setOpenTagDir(adapter: RecyclerAdapterPhoto, tag : String) {
         repo.setOpenTagDir(adapter, tag)
     }
@@ -89,6 +111,10 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setTags(textView: TextView, id : Long) {
         repo.setTags(textView, id)
+    }
+
+    fun setTags(marker: Marker, id : Long) {
+        repo.setTags(marker, id)
     }
 
     fun getTags(tagInsertDialog: tagInsertDialog, view: View, id : Long) {

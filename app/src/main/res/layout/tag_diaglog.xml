@@ -10,8 +10,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
-    android:paddingTop="20dp"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:paddingTop="20dp">
 
     <TableRow
         android:id="@+id/tag1"
@@ -170,12 +169,13 @@
             android:id="@+id/tag5_add"
             android:layout_width="40dp"
             android:layout_height="40dp" />
+
         <TextView
-            android:gravity="center"
-            android:textSize="18dp"
-            android:layout_marginLeft="5dp"
             android:layout_height="match_parent"
-            android:text="태그 5 : " />
+            android:layout_marginLeft="5dp"
+            android:gravity="center"
+            android:text="태그 5 : "
+            android:textSize="18dp" />
 
         <EditText
             android:id="@+id/tag5_edit"

@@ -37,7 +37,7 @@ class TagFragment(v: AppBarLayout) : Fragment() {
         ab.main_toolbar.visibility = View.VISIBLE
         ab.setExpanded(true,true)
 
-        thisview = inflater.inflate(R.layout.fragment_tag, container, false)
+        thisview = inflater.inflate(R.layout.fragment_view, container, false)
         val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
         setView(thisview)
@@ -49,7 +49,7 @@ class TagFragment(v: AppBarLayout) : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        setPhotoSize(this.view!!,3, 3)
+        setPhotoSize(this.view!!,3, 10)
         this.context!!.contentResolver.registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, false, observer)
     }
 
@@ -58,7 +58,7 @@ class TagFragment(v: AppBarLayout) : Fragment() {
         this.context!!.contentResolver.unregisterContentObserver(observer)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+   /* override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
@@ -71,10 +71,10 @@ class TagFragment(v: AppBarLayout) : Fragment() {
                 }
             }
         }
-    }
+    } */
 
     private fun setView(view : View?) {
-        val recyclerView = view?.findViewById<RecyclerView>(R.id.tagRecycleView)
+        val recyclerView = view?.findViewById<RecyclerView>(R.id.fragment_RecycleView)
         recyclerAdapter =
             RecyclerAdapterForder(activity, thumbnailList)
             {thumbnailData ->
@@ -92,7 +92,7 @@ class TagFragment(v: AppBarLayout) : Fragment() {
     }
 
     private fun setPhotoSize(view : View, row : Int, padding : Int) {
-        val recyclerView = view.findViewById<RecyclerView>(R.id.tagRecycleView)
+        val recyclerView = view.findViewById<RecyclerView>(R.id.fragment_RecycleView)
         recyclerView.viewTreeObserver.addOnGlobalLayoutListener( object : ViewTreeObserver.OnGlobalLayoutListener {
             @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
             override fun onGlobalLayout() {

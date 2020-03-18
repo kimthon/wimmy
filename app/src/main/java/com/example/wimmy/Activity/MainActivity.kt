@@ -18,13 +18,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProviders
 import com.example.wimmy.ChangeObserver
 import com.example.wimmy.DateFragment
 import com.example.wimmy.R
 import com.example.wimmy.db.PhotoViewModel
-import com.example.wimmy.fragment.*
+import com.example.wimmy.fragment.LocationFragment
+import com.example.wimmy.fragment.NameFragment
+import com.example.wimmy.fragment.TagFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.main_activity.*
 import java.io.File
@@ -41,6 +44,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     private var backPressedTime: Long = 0
     private lateinit var observer: ChangeObserver
     var init_check: Int = 0
+    lateinit var vm: PhotoViewModel
 
     companion object {
         var location_type: Int = 0
@@ -53,7 +57,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
         SetHeader()
         init()
-        val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+        vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
         //vm.Drop()
         vm.checkChangedData(this)
 
@@ -109,6 +113,11 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 dlg.setNegativeButton("취소") { _, _ -> }
                 dlg.show()
             }
+            R.id.favorite -> {
+                val intent = Intent(this, Main_PhotoView::class.java)
+                intent.putExtra("favorite", "favorite")
+                startActivityForResult(intent, 300)
+            }
         }
 
         return super.onOptionsItemSelected(item)
@@ -132,29 +141,34 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }*/
 
     override fun onNavigationItemSelected(p0: MenuItem): Boolean {
-        val toolbar: Toolbar = findViewById(R.id.main_toolbar)
-
-        val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
-
+        val fm = supportFragmentManager
+        val transaction: FragmentTransaction = fm.beginTransaction()
+        val frag: Fragment? = fm.findFragmentById(R.id.frame_layout)
+        val fragtag: String? = frag?.getTag()
+        fm.popBackStack(fragtag, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         when(p0.itemId){
+            R.id.menu_name ->{
+                if(fragtag == "name") return true
+                val fragmentA = NameFragment(appbar)
+                transaction.replace(R.id.frame_layout,fragmentA, "name")
+            }
             R.id.menu_tag -> {
+                if(fragtag == "tag") return true
                 val fragmentB = TagFragment(appbar)
                 transaction.replace(R.id.frame_layout,fragmentB, "tag")
             }
             R.id.menu_cal -> {
+                if(fragtag == "cal") return true
                 val fragmentC = DateFragment(appbar)
                 transaction.replace(R.id.frame_layout,fragmentC, "cal")
             }
             R.id.menu_location -> {
+                if(fragtag == "location") return true
                 val fragmentD = LocationFragment(appbar)
                 transaction.replace(R.id.frame_layout,fragmentD, "location")
             }
-            R.id.menu_name ->{
-                val fragmentA = NameFragment(appbar)
-                transaction.replace(R.id.frame_layout,fragmentA, "name")
-            }
         }
-        transaction.addToBackStack(null)
+        transaction.addToBackStack(fragtag)
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
         transaction.commit()
         transaction.isAddToBackStackAllowed
@@ -166,7 +180,9 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             var tempTime = System.currentTimeMillis();
             var intervalTime = tempTime - backPressedTime;
             if (0 <= intervalTime && FINISH_INTERVAL_TIME >= intervalTime) {
-                super.onBackPressed();
+                finishAffinity();
+                System.runFinalization();
+                System.exit(0);
             } else {
                 backPressedTime = tempTime;
                 Toast.makeText(this, "'뒤로' 버튼을 한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show();
@@ -179,22 +195,23 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }
 
     private fun updateBottomMenu(navigation: BottomNavigationView) {
-        val tag1: Fragment? = supportFragmentManager.findFragmentByTag("tag")
-        val tag2: Fragment? = supportFragmentManager.findFragmentByTag("cal")
-        val tag3: Fragment? = supportFragmentManager.findFragmentByTag("location")
-        val tag4: Fragment? = supportFragmentManager.findFragmentByTag("name")
+        val tag1: Fragment? = supportFragmentManager.findFragmentByTag("name")
+        val tag2: Fragment? = supportFragmentManager.findFragmentByTag("tag")
+        val tag3: Fragment? = supportFragmentManager.findFragmentByTag("cal")
+        val tag4: Fragment? = supportFragmentManager.findFragmentByTag("location")
 
-        if(tag1 != null && tag1.isVisible) {navigation.menu.findItem(R.id.menu_tag).isChecked = true }
-        if(tag2 != null && tag2.isVisible) {navigation.menu.findItem(R.id.menu_cal).isChecked = true }
-        if(tag3 != null && tag3.isVisible) {navigation.menu.findItem(R.id.menu_location).isChecked = true }
-        if(tag4 != null && tag4.isVisible) {navigation.menu.findItem(R.id.menu_name).isChecked = true }
+        if(tag1 != null && tag1.isVisible) {navigation.menu.findItem(R.id.menu_name).isChecked = true }
+        if(tag2 != null && tag2.isVisible) {navigation.menu.findItem(R.id.menu_tag).isChecked = true }
+        if(tag3 != null && tag3.isVisible) {navigation.menu.findItem(R.id.menu_cal).isChecked = true }
+        if(tag4 != null && tag4.isVisible) {navigation.menu.findItem(R.id.menu_location).isChecked = true }
+
     }
 
     fun init(): Boolean{
         if(init_check == 0) {
             val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
-            val fragmentA = TagFragment(appbar)
-            transaction.replace(R.id.frame_layout, fragmentA, "tag")
+            val fragmentA = NameFragment(appbar)
+            transaction.replace(R.id.frame_layout, fragmentA, "name")
             transaction.commit()
             init_check = 1
         }

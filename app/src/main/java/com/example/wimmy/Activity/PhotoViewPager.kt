@@ -64,7 +64,12 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
         val favorite = findViewById<ImageView>(R.id.favorite)
 
         bottom_photo_menu.setOnNavigationItemSelectedListener(this)
-        setView(view, mainphoto_toolbar, bottom_photo_menu)
+        try {
+            setView(view, mainphoto_toolbar, bottom_photo_menu)
+        } catch (e: Exception){
+            android.widget.Toast.makeText(this, "위치 데이터 초기 설정중입니다. 잠시만 기다려주세요", android.widget.Toast.LENGTH_SHORT)
+                .show()
+        }
         toolbar_text(index, text_name, date_name, location_name, tag_name, favorite)
 
         Inflater = LayoutInflater.from(this)
@@ -125,42 +130,6 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
 
             index = intent.getIntExtra("photo_num", 0)
 
-            // 번역 API, 이미지 분석 API Test
-            val options = FirebaseTranslatorOptions.Builder()
-                .setSourceLanguage(FirebaseTranslateLanguage.EN)
-                .setTargetLanguage(FirebaseTranslateLanguage.KO)
-                .build()
-            val translator = FirebaseNaturalLanguage.getInstance().getTranslator(options)
-
-            val path = MediaStore_Dao.getPathById(this, list[index].photo_id)
-            var bitmap = BitmapFactory.decodeFile(path)
-            bitmap =  MediaStore_Dao.modifyOrientaionById(this, list[index].photo_id, bitmap)
-
-            val image = FirebaseVisionImage.fromBitmap(bitmap)
-            val labeler = FirebaseVision.getInstance().getOnDeviceImageLabeler()
-            labeler.processImage(image)
-                .addOnSuccessListener { labels ->
-                    translator.downloadModelIfNeeded()
-                        .addOnSuccessListener {
-                            for (label in labels) {
-                                translator.translate(label.text)
-                                    .addOnSuccessListener { translatedText ->
-                                        if(label.confidence >= 0.7) {
-                                            println("번호[" + index + "] " + "태그: " + translatedText)
-                                            println("번호[" + index + "] " + "신뢰도: " + "${label.confidence}")
-                                        }
-                                    }
-                                    .addOnFailureListener { exception ->
-
-                                    }
-                            }
-                        }
-                        .addOnFailureListener { exception ->
-                        }
-                }
-                .addOnFailureListener { e ->
-
-                }
         }
         else {
             Toast.makeText(this, "전달된 이름이 없습니다", Toast.LENGTH_SHORT).show()
