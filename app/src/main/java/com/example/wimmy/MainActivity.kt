@@ -67,6 +67,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         init()
 
         vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+
         /*
         vm.Drop()
         InitLastAddedDate()
@@ -103,7 +104,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.location_type -> {
-                var selectitem = arrayOf<String>("맵으로 보기", "목록으로 보기")
+                val selectitem = arrayOf<String>("맵으로 보기", "목록으로 보기")
 
                 val dlg: AlertDialog.Builder = AlertDialog.Builder(this,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
                 dlg.setTitle("원하는 형태를 선택하세요.")
@@ -143,8 +144,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }*/
 
     override fun onNavigationItemSelected(p0: MenuItem): Boolean {
-        val toolbar: Toolbar = findViewById(R.id.main_toolbar)
-
         val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
 
         when(p0.itemId){
@@ -174,17 +173,17 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     override fun onBackPressed() {
         if(supportFragmentManager.backStackEntryCount == 0) {
-            var tempTime = System.currentTimeMillis();
-            var intervalTime = tempTime - backPressedTime;
+            val tempTime = System.currentTimeMillis()
+            val intervalTime = tempTime - backPressedTime
             if (0 <= intervalTime && FINISH_INTERVAL_TIME >= intervalTime) {
-                super.onBackPressed();
+                super.onBackPressed()
             } else {
-                backPressedTime = tempTime;
-                Toast.makeText(this, "'뒤로' 버튼을 한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show();
+                backPressedTime = tempTime
+                Toast.makeText(this, "'뒤로' 버튼을 한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
                 return
             }
         }
-        super.onBackPressed();
+        super.onBackPressed()
         val bnv = findViewById<View>(R.id.bottomNavigationView) as BottomNavigationView
         updateBottomMenu(bnv)
     }
@@ -216,18 +215,17 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (takePictureIntent.resolveActivity(packageManager) != null) {
 
-            var photoFile: File? = null
             try {
-                photoFile = createImageFile()
+                val photoFile = createImageFile()
+                if (photoFile != null) { // getUriForFile의 두 번째 인자는 Manifest provier의 authorites와 일치해야 함
+                    val providerURI = FileProvider.getUriForFile(this, packageName, photoFile)
+                    // 인텐트에 전달할 때는 FileProvier의 Return값인 content://로만!!, providerURI의 값에 카메라 데이터를 넣어 보냄
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, providerURI)
+                    startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
+                }
             } catch (ex: IOException) {
                 Log.e("captureCamera Error", ex.toString())
                 return
-            }
-            if (photoFile != null) { // getUriForFile의 두 번째 인자는 Manifest provier의 authorites와 일치해야 함
-                val providerURI = FileProvider.getUriForFile(this, packageName, photoFile)
-                // 인텐트에 전달할 때는 FileProvier의 Return값인 content://로만!!, providerURI의 값에 카메라 데이터를 넣어 보냄
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, providerURI)
-                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
             }
         }
     }
@@ -240,8 +238,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 Log.i("REQUEST_TAKE_PHOTO", "${Activity.RESULT_OK}" + " " + "${resultCode}")
                 if (resultCode == RESULT_OK) {
                     try {
-                        galleryAddPic();
-
+                        galleryAddPic()
                     } catch (e: Exception) {
                         Log.e("REQUEST_TAKE_PHOTO", e.toString())
                     }

@@ -1,8 +1,10 @@
 package com.example.wimmy.db
 
 import android.app.Application
+import android.content.ContentUris
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
+import android.database.Cursor
 import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -51,10 +53,13 @@ class PhotoRepository(application: Application) {
        }
    }
 
-   fun deleteById(id: Long) {
+   fun deleteById(context: Context, id: Long) {
       DBThread.execute {
          photoDao.deleteTagById(id)
          photoDao.deleteExtraById(id)
+
+         val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
+         context.contentResolver.delete(uri, null, null)
       }
    }
 
@@ -148,7 +153,6 @@ class PhotoRepository(application: Application) {
             } while (idCursor.moveToNext())
             Handler(Looper.getMainLooper()).post {map.cameraInit()}
             idCursor.close()
-
          }
       }
    }
@@ -221,7 +225,7 @@ class PhotoRepository(application: Application) {
          val time = MediaStore_Dao.getDateById(textView.context, id)
          if(time != null) {
             handler.post {
-               val formatter = SimpleDateFormat("yyyy년 MM월 dd일 (E) / HH:mm:ss")
+               val formatter = SimpleDateFormat("yyyy년 MM월 dd일 (E) / HH:mm:ss", Locale.getDefault())
                val date_string = (formatter).format(time)
                textView.text = date_string
             }
@@ -301,7 +305,7 @@ class PhotoRepository(application: Application) {
                }
                lastAddedDate = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_ADDED))
                editor.putLong("lastAddedDate", lastAddedDate)
-               editor.commit()
+               editor.apply()
             } while (cursor!!.moveToNext())
             cursor.close()
          }
@@ -361,14 +365,6 @@ class PhotoRepository(application: Application) {
          .addOnFailureListener { e ->
             e.stackTrace
          }
-   }
-
-   fun setLastAddedDate(date : Long) {
-      lastAddedDate = date
-   }
-
-   fun getLastAddedDate() : Long {
-      return lastAddedDate
    }
 
    @Suppress("DEPRECATION")

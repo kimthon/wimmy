@@ -26,8 +26,8 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         repo.insert(extraPhotoData)
     }
 
-    fun Delete(id : Long) {
-        repo.deleteById((id))
+    fun Delete(context: Context, id : Long) {
+        repo.deleteById(context, id)
     }
     // 폴더 보기
     fun setCalendarTag(textView: TextView, inputCalendar: Calendar) {

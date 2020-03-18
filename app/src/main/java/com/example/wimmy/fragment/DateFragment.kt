@@ -57,7 +57,7 @@ open class DateFragment(v: AppBarLayout) : Fragment() {
 
 
         // 상단 스와이프 제스처
-        val gestureListener: SwipeGesture = SwipeGesture(calendar_allheader!!)
+        val gestureListener = SwipeGesture(calendar_allheader!!)
         val gesturedetector = GestureDetector(calendar_allheader!!.context, gestureListener)
         calendar_allheader!!.setOnTouchListener { v, event ->
             return@setOnTouchListener gesturedetector.onTouchEvent(event)
@@ -166,11 +166,11 @@ open class DateFragment(v: AppBarLayout) : Fragment() {
         gridViewWrapper?.viewTreeObserver?.addOnGlobalLayoutListener( object : ViewTreeObserver.OnGlobalLayoutListener {
             @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
             override fun onGlobalLayout() {
-                gridViewWrapper?.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                gridViewWrapper.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 //padding
                 val padding = header!!.paddingTop + calendar_week.paddingTop + gridViewWrapper!!.paddingTop
-                gridViewWrapper?.layoutParams!!.height = displayMetrics.heightPixels - (header.height + calendar_week.height + bnv.height + statusBarHeight + padding)
-                gridViewWrapper?.requestLayout()
+                gridViewWrapper.layoutParams!!.height = displayMetrics.heightPixels - (header.height + calendar_week.height + bnv.height + statusBarHeight + padding)
+                gridViewWrapper.requestLayout()
             }
         })
     }
@@ -197,9 +197,7 @@ open class DateFragment(v: AppBarLayout) : Fragment() {
         val year = calDate.get(Calendar.YEAR).toString()
         val month = (calDate.get(Calendar.MONTH) + 1).toString()
         month_text.text = "$year 년 $month 월"
-
     }
-
 }
 
 

@@ -1,7 +1,6 @@
 package com.example.wimmy.Adapter
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +10,6 @@ import androidx.viewpager.widget.ViewPager
 import com.example.wimmy.ImageLoad
 import com.example.wimmy.ImageLoder
 import com.example.wimmy.R
-import com.example.wimmy.db.PhotoData
 import com.example.wimmy.db.thumbnailData
 
 class PagerRecyclerAdapter(private val context: Context, var list: ArrayList<thumbnailData>, var tb: View, var bt: View) : PagerAdapter() {

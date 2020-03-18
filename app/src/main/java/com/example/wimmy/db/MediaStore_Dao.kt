@@ -154,18 +154,6 @@ object MediaStore_Dao {
         return cursor
     }
 
-    fun getPhotoDataCursor(context: Context, selection : String) : Cursor? {
-        val projection = arrayOf(
-            MediaStore.Images.ImageColumns._ID, //photo_id
-            MediaStore.Images.ImageColumns.DATA, // folder + name
-            MediaStore.Images.ImageColumns.DISPLAY_NAME,
-            MediaStore.Images.ImageColumns.DATE_TAKEN //date
-        )
-
-        val cursor = context.contentResolver.query(uri, projection, selection, null, null)
-        return cursor
-    }
-
     fun getLatLngCursor(context: Context,selection: String) : Cursor? {
         val projection = arrayOf(
             MediaStore.Images.ImageColumns.LATITUDE,
@@ -240,19 +228,6 @@ object MediaStore_Dao {
         val name = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME))
 
         return thumbnailData(id, name)
-    }
-
-    fun getPhotoData(cursor: Cursor) : PhotoData {
-        val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
-        val allPath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA))
-        val name = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME))
-        val path = allPath.subSequence(0, (allPath.length - name.length - 1)).toString()
-        val dateTaken = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN))
-        val date = Date(dateTaken)
-
-        var loc : String? = noLocationData
-        val photoData = PhotoData(id, name, path, loc, date, false)
-        return photoData
     }
 
     private fun getLatLngByCursor(cursor: Cursor) : LatLng {

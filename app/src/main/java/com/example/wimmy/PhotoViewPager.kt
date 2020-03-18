@@ -46,7 +46,6 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
         setContentView(R.layout.photoview_frame)
         val view: View = findViewById(R.id.imgViewPager)
         vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-        index = intent.getIntExtra("index", 0)
 
         getExtra()
         val text_name = findViewById<AppCompatTextView>(R.id.imgView_text)
@@ -79,7 +78,7 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setView(view: View, toolbar: androidx.appcompat.widget.Toolbar, bottombar: View) {
-        viewPager = view.findViewById<RecyclerView>(R.id.imgViewPager) as ViewPager
+        viewPager = view.findViewById(R.id.imgViewPager)
         recyclerAdapter = PagerRecyclerAdapter( this, list, toolbar, bottombar )
 
         viewPager.adapter = recyclerAdapter
@@ -107,12 +106,10 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
     }
 
     fun getExtra(){
-        if (intent.hasExtra("photo_num")) {
+        if (intent.hasExtra("index")) {
             //subimg = findViewById(R.id.sub_img) as ImageView // 뷰페이저로 넘어올 때, 애니메이션을 위한 눈속임
             //subimg!!.setImageBitmap(MediaStore_Dao.LoadThumbnail(this, thumbnail!!))
-
-            index = intent.getIntExtra("photo_num", 0)
-
+            index = intent.getIntExtra("index", 0)
         }
         else {
             Toast.makeText(this, "전달된 이름이 없습니다", Toast.LENGTH_SHORT).show()
@@ -176,7 +173,7 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
         dlg.setMessage("정말 삭제하시겠습니까? ")
         dlg.setIcon(R.drawable.ic_delete)
         dlg.setPositiveButton("확인") { _, _ ->
-            vm.Delete(list[index].photo_id)
+            vm.Delete(this, list[index].photo_id)
             list.removeAt(index)
             Toast.makeText(this, "삭제 완료 되었습니다.", Toast.LENGTH_SHORT).show()
             if(index == 0 && list.size == 0) {

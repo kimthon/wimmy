@@ -5,11 +5,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -41,11 +39,10 @@ class Main_PhotoView: AppCompatActivity() {
 
         SetHeader()
         setView(view)
-        getExtra(view)
+        getExtra()
 
         updown_Listener(recyclerView)
         updownEvent()
-
     }
 
     override fun onResume() {
@@ -57,13 +54,7 @@ class Main_PhotoView: AppCompatActivity() {
         recyclerView = view.findViewById<RecyclerView>(R.id.photo_recyclerView)
         recyclerAdapter =
             RecyclerAdapterPhoto(this, arrayListOf()) {
-                    data, num, image ->  if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
-                //TODO
-                /*
-                Toast.makeText(this, "인덱스: ${num} 이름: ${PhotoData.name}", Toast.LENGTH_SHORT)
-                    .show()
-                 */
-
+                    num ->  if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
                 val intent = Intent(this, PhotoViewPager::class.java)
                 intent.putExtra("index", num)
 
@@ -101,57 +92,59 @@ class Main_PhotoView: AppCompatActivity() {
             when (requestCode) {
                 100 -> {
                     if(data!!.hasExtra("delete_check")) {
-                        /*setView(photo_recyclerView)
+                        setView(photo_recyclerView)
                         setPhotoSize(3, 3)
-                        delete_check = 1*/
+                        delete_check = 1
                     }
-                    val doc = data!!.getIntExtra("index", 0)
+                    val doc = data.getIntExtra("index", 0)
                     recyclerView?.scrollToPosition(doc)
                 }
             }
         }
     }
 
-    fun getExtra(view: View){
+    fun getExtra() {
         val getname: String?
         val title_type: ImageView = findViewById(R.id.title_type)
         val title: TextView = findViewById(R.id.title_name)
         val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
-        if (intent.hasExtra("dir_name")) {
-            getname = intent.getStringExtra("dir_name")
+        when {
+            intent.hasExtra("dir_name") -> {
+                getname = intent.getStringExtra("dir_name")!!
 
-            vm.setOpenNameDir(recyclerAdapter!!, getname)
+                vm.setOpenNameDir(recyclerAdapter!!, getname)
 
-            title_type.setImageResource(R.drawable.ic_folder)
-            title.text = File(getname).name
-        }
-        else if (intent.hasExtra("location_name")) {
-            getname = intent.getStringExtra("location_name")
-            vm.setOpenLocationDir(recyclerAdapter!!, getname)
+                title_type.setImageResource(R.drawable.ic_folder)
+                title.text = File(getname).name
+            }
+            intent.hasExtra("location_name") -> {
+                getname = intent.getStringExtra("location_name")
+                vm.setOpenLocationDir(recyclerAdapter!!, getname)
 
-            title_type.setImageResource(R.drawable.ic_location)
-            title.text = getname
-        }
-        else if(intent.hasExtra("date_name")) {
-            val date = intent.getLongExtra("date_name", 0)
-            val cal = Calendar.getInstance()
-            cal.time = Date(date)
+                title_type.setImageResource(R.drawable.ic_location)
+                title.text = getname
+            }
+            intent.hasExtra("date_name") -> {
+                val date = intent.getLongExtra("date_name", 0)
+                val cal = Calendar.getInstance()
+                cal.time = Date(date)
 
-            vm.setOpenDateDir(recyclerAdapter!!, cal)
-            val formatter = SimpleDateFormat("yyyy년 MM월 dd일")
-            getname = formatter.format(Date(date))
+                vm.setOpenDateDir(recyclerAdapter!!, cal)
+                val formatter = SimpleDateFormat("yyyy년 MM월 dd일", Locale.getDefault())
+                getname = formatter.format(Date(date))
 
-            title_type.setImageResource(R.drawable.ic_cal)
+                title_type.setImageResource(R.drawable.ic_cal)
 
-            title.text = getname
-        }
-        else if (intent.hasExtra("tag_name")) {
-            getname = intent.getStringExtra("tag_name")
-            vm.setOpenTagDir(recyclerAdapter!!, getname)
+                title.text = getname
+            }
+            intent.hasExtra("tag_name") -> {
+                getname = intent.getStringExtra("tag_name")
+                vm.setOpenTagDir(recyclerAdapter!!, getname)
 
-            title_type.setImageResource(R.drawable.ic_tag)
-            title.text = getname
+                title_type.setImageResource(R.drawable.ic_tag)
+                title.text = getname
+            }
         }
     }
 

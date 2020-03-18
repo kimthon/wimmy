@@ -6,7 +6,6 @@ import android.os.Looper
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.db.MediaStore_Dao
-import com.example.wimmy.db.PhotoData
 import java.util.concurrent.SynchronousQueue
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
@@ -21,10 +20,10 @@ class ThumbnailLoad(holder: RecyclerView.ViewHolder, imageView: ImageView, id : 
     private val id = id
 
     override fun run() {
-        if(holder?.adapterPosition == holderPosition) {
+        if(holder.adapterPosition == holderPosition) {
             val image = MediaStore_Dao.LoadThumbnailById(imageView.context, id)
             handler.post {
-               if(holder?.adapterPosition == holderPosition) {
+               if(holder.adapterPosition == holderPosition) {
                    imageView.setImageBitmap(image)
                }
             }

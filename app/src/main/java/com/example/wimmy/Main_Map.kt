@@ -15,27 +15,20 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
-import androidx.viewpager.widget.ViewPager
 import com.example.wimmy.Main_Map.Companion.selectedMarker
 import com.example.wimmy.MarkerClusterRenderer.Companion.createDrawableFromView
 import com.example.wimmy.db.LatLngData
 import com.example.wimmy.db.MediaStore_Dao
-import com.example.wimmy.db.PhotoData
 import com.example.wimmy.db.PhotoViewModel
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
 import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
-import com.google.maps.android.ui.IconGenerator
 import kotlinx.android.synthetic.main.main_map.*
-import kotlinx.android.synthetic.main.main_map.view.*
-import kotlinx.android.synthetic.main.marker_layout.*
-import java.text.SimpleDateFormat
 
 
 class Main_Map: AppCompatActivity(), OnMapReadyCallback {
