@@ -7,8 +7,6 @@ import java.util.*
 
 
 
-
-
 class PhotoData(
     var photo_id: Long,
     var name: String,

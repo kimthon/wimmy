@@ -46,7 +46,6 @@ class tagInsertDialog(context: Context, v: View, vm: PhotoViewModel, index: Int,
     private fun insert_tag_click(view: View, dlg: androidx.appcompat.app.AlertDialog) {
         tag_addRemove(view)
         insert_saveCancel(view, dlg)
-
     }
 
     private fun tag_addRemove(view: View) {

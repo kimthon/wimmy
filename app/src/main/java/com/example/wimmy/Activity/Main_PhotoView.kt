@@ -5,9 +5,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -62,12 +64,10 @@ class Main_PhotoView: AppCompatActivity() {
                 Toast.makeText(this, "인덱스: ${num} 이름: ${PhotoData.name}", Toast.LENGTH_SHORT)
                     .show()
                  */
-
-                val intent = Intent(this, PhotoViewPager::class.java)
-                intent.putExtra("index", num)
-
-                startActivityForResult(intent, 100)
-            }
+                    val intent = Intent(this, PhotoViewPager::class.java)
+                    intent.putExtra("index", num)
+                    startActivityForResult(intent, 100)
+                }
                 mLastClickTime = SystemClock.elapsedRealtime()
             }
         recyclerView?.adapter = recyclerAdapter
@@ -136,6 +136,7 @@ class Main_PhotoView: AppCompatActivity() {
             val date = intent.getLongExtra("date_name", 0)
             val cal = Calendar.getInstance()
             cal.time = Date(date)
+            Log.d("값: ", date.toString())
 
             vm.setOpenDateDir(recyclerAdapter!!, cal)
             val formatter = SimpleDateFormat("yyyy년 MM월 dd일")
@@ -152,6 +153,20 @@ class Main_PhotoView: AppCompatActivity() {
             title_type.setImageResource(R.drawable.ic_tag)
             title.text = getname
         }
+        else if (intent.hasExtra("file_name")) {
+            getname = intent.getStringExtra("file_name")
+            vm.setOpenFileDir(recyclerAdapter!!, getname)
+
+            title_type.setImageResource(R.drawable.ic_name)
+            title.text = getname
+        }
+        else if (intent.hasExtra("favorite")) {
+            vm.setOpenFavoriteDir(recyclerAdapter!!)
+
+            title_type.setImageResource(R.drawable.ic_favorite_checked)
+            title.text = "즐겨찾기"
+        }
+
     }
 
     fun updown_Listener(view: RecyclerView?) {

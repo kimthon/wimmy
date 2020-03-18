@@ -33,14 +33,19 @@ interface PhotoData_Dao {
     fun getDateInfo(idList : List<Long>) : String
     @Query("SELECT MAX(photo_id) as photo_id, tag as data FROM tag_data GROUP BY tag")
     fun getTagDir() : List<thumbnailData>
-    @Query("SELECT MAX(photo_id) as photo_id, location as data FROM extra_photo_data GROUP BY location")
+    @Query("SELECT MAX(photo_id) as photo_id, location as data FROM extra_photo_data GROUP BY location HAVING NOT location = '위치 정보 없음'")
     fun getLocationDir() : List<thumbnailData>
+
+    @Query("SELECT MAX(photo_id) as photo_id, location as data FROM extra_photo_data GROUP BY location HAVING location LIKE '%' || :location || '%'")
+    fun getLocationDirSearch(location: String) : List<thumbnailData>
+    @Query("SELECT photo_id as photo_id, tag as data FROM tag_data GROUP BY tag HAVING tag LIKE '%' || :tags || '%'")
+    fun getTagDirSearch(tags: String) : List<thumbnailData>
 
     @Query("SELECT photo_id FROM tag_data where tag = :tag")
     fun getTagDir(tag : String) : Cursor
     @Query("SELECT photo_id FROM extra_photo_data where location = :location")
     fun getLocationDir(location : String) : Cursor
-    @Query("SELECT photo_id FROM extra_photo_data where favorite = 'true'")
+    @Query("SELECT photo_id FROM extra_photo_data where favorite = 1")
     fun getFavoriteDir() : Cursor
 
 

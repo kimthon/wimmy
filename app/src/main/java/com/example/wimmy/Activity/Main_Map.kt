@@ -25,6 +25,7 @@ import com.example.wimmy.ImageLoder
 import com.example.wimmy.R
 import com.example.wimmy.db.LatLngData
 import com.example.wimmy.db.MediaStore_Dao
+import com.example.wimmy.db.PhotoRepository.Companion.ck
 import com.example.wimmy.db.PhotoViewModel
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
@@ -32,6 +33,7 @@ import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import kotlinx.android.synthetic.main.main_map.*
+import kotlinx.android.synthetic.main.marker_layout.*
 
 
 class Main_Map: AppCompatActivity(), OnMapReadyCallback {
@@ -46,6 +48,7 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var marker_view: View
     private lateinit var tag_marker: TextView
+    private lateinit var tag_marker_layout: ViewGroup.LayoutParams
 
 
     companion object {
@@ -60,6 +63,7 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager.findFragmentById(R.id.mapview) as SupportMapFragment
         marker_view = LayoutInflater.from(this).inflate(R.layout.marker_layout, null)
         tag_marker = marker_view.findViewById(R.id.tag_marker) as TextView
+        tag_marker_layout = tag_marker.layoutParams
 
         vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
         mapFragment.getMapAsync(this)
@@ -71,17 +75,9 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
         mMap.uiSettings.isZoomControlsEnabled = true;
 
         mClusterManager = ClusterManager<LatLngData>(this, mMap)
-        clusterRenderer = MarkerClusterRenderer(
-            this,
-            mMap,
-            mClusterManager,
-            marker_view
-        )
+        clusterRenderer = MarkerClusterRenderer(this, mMap, mClusterManager, marker_view, vm)
         getExtra()
         mClusterManager.setRenderer(clusterRenderer)
-
-
-
 
         mMap.setOnCameraChangeListener (mClusterManager)
         mMap.setOnMarkerClickListener(mClusterManager)
@@ -143,6 +139,7 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
             vm.setDate(map_date, p0.id)
             vm.setLocation(map_location, p0.id)
             vm.checkFavorite(map_favorite, p0.id)
+            vm.setTags(map_tag, p0.id)
 
             Log.d("qweqwe","wqe")
             changeRenderer(p0)
@@ -155,8 +152,6 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
                 }
                 mLastClickTime = SystemClock.elapsedRealtime()
             }
-
-
 
             true
         }
@@ -172,8 +167,8 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
     private fun changeRenderer(item: LatLngData) {
         if(selectedMarker != clusterRenderer.getMarker(item)) {
             if (selectedMarker != null) {
-                tag_marker.setTextColor(Color.BLACK)
-                tag_marker.setBackgroundResource(R.drawable.ic_marker_phone)
+                markerScale(100)
+                tag_marker.setBackgroundResource(R.drawable.map_marker_free)
                 selectedMarker!!.setIcon(
                     BitmapDescriptorFactory.fromBitmap(
                         createDrawableFromView(this, marker_view)
@@ -182,9 +177,9 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
             }
 
             if (clusterRenderer.getMarker(item) != null) {
-                tag_marker.setTextColor(Color.WHITE)
-                tag_marker.setBackgroundResource(R.drawable.ic_marker_phone_blue)
-                tag_marker.text = MediaStore_Dao.getNameById(this, item.id)
+                tag_marker.setBackgroundResource(R.drawable.map_marker_checked)
+                vm.setTags(clusterRenderer.getMarker(item), item.id)
+                markerScale(150)
                 clusterRenderer.getMarker(item).setIcon(
                     BitmapDescriptorFactory.fromBitmap(
                         createDrawableFromView(
@@ -193,11 +188,19 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
                         )
                     )
                 )
+
                 selectedMarker = clusterRenderer.getMarker(item)
+                markerScale(100)
                 tag_marker.setTextColor(Color.BLACK)
-                tag_marker.setBackgroundResource(R.drawable.ic_marker_phone)
+                tag_marker.setBackgroundResource(R.drawable.map_marker_free)
             }
         }
+    }
+
+    fun markerScale(size: Int) {
+        tag_marker_layout.width = size
+        tag_marker_layout.height = size
+        tag_marker_layout.layoutAnimationParameters
     }
     fun getExtra(){
         size_check = 0
@@ -230,15 +233,16 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
 }
 
 class MarkerClusterRenderer(context: Context?, map: GoogleMap?, clusterManager: ClusterManager<LatLngData>?,
-                            marker_view: View) : DefaultClusterRenderer<LatLngData>(context, map, clusterManager) {
+                            marker_view: View, vm: PhotoViewModel) : DefaultClusterRenderer<LatLngData>(context, map, clusterManager) {
     private val context = context
     private var marker_view = marker_view
     private lateinit var tag_marker: TextView
+    private var vm = vm
+
 
     override fun onBeforeClusterItemRendered(item: LatLngData, markerOptions: MarkerOptions) { // 5
         tag_marker = marker_view.findViewById(R.id.tag_marker) as TextView
-        tag_marker.text = MediaStore_Dao.getNameById(context!!, item.id)
-        markerOptions.icon( BitmapDescriptorFactory.fromBitmap(createDrawableFromView(context, marker_view)) )
+        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(context, marker_view)))
     }
 
     override fun shouldRenderAsCluster(cluster: Cluster<LatLngData>?): Boolean {
@@ -254,6 +258,7 @@ class MarkerClusterRenderer(context: Context?, map: GoogleMap?, clusterManager: 
             selectedMarker = null
         }
     }
+
 
     companion object {
         fun createDrawableFromView(context: Context?, view: View): Bitmap {

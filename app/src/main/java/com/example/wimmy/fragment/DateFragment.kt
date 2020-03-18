@@ -24,10 +24,11 @@ import kotlinx.android.synthetic.main.main_activity.view.*
 import java.util.*
 import kotlin.collections.ArrayList
 
-open class DateFragment(v: AppBarLayout) : Fragment() {
+class DateFragment(v: AppBarLayout) : Fragment() {
     private lateinit var header : LinearLayout
     private lateinit var gridView : GridView
     private lateinit var vm : PhotoViewModel
+    private lateinit var calendar_week : LinearLayout
     private var size : Pair<Int, Int>? = null
     private var count = 0
     val ab = v
@@ -66,7 +67,7 @@ open class DateFragment(v: AppBarLayout) : Fragment() {
         return thisview
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+   /* override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
@@ -80,10 +81,11 @@ open class DateFragment(v: AppBarLayout) : Fragment() {
                 }
             }
         }
-    }
+    }*/
 
     fun setView(view : View?) {
         header = view!!.findViewById(R.id.calendar_week)
+        calendar_week = view!!.findViewById(R.id.calendar_week)
         gridView = view.findViewById(R.id.cal_grid)
     }
 
@@ -170,7 +172,7 @@ open class DateFragment(v: AppBarLayout) : Fragment() {
                 gridViewWrapper?.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 //padding
                 val padding = header!!.paddingTop + calendar_week.paddingTop + gridViewWrapper!!.paddingTop
-                gridViewWrapper?.layoutParams!!.height = displayMetrics.heightPixels - (header.height + calendar_week.height + bnv.height + statusBarHeight + padding)
+                gridViewWrapper?.layoutParams!!.height = displayMetrics.heightPixels - (header.height + calendar_week!!.height + bnv.height + statusBarHeight + padding)
                 gridViewWrapper?.requestLayout()
             }
         })

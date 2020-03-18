@@ -7,17 +7,21 @@ import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.View
+import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.example.wimmy.R
 import com.example.wimmy.db.*
 import kotlinx.android.synthetic.main.search_view.*
+import java.util.*
 
 
 class SearchView: AppCompatActivity() {
@@ -25,53 +29,64 @@ class SearchView: AppCompatActivity() {
     private var thumbnailList = arrayListOf<thumbnailData>()
 
     private var recyclerAdapter : RecyclerAdapterForder?= null
-    var recyclerView: RecyclerView? = null
+    private lateinit var recyclerView : RecyclerView
     private var mLastClickTime: Long = 0
+    private lateinit var vm: PhotoViewModel
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.search_view)
-
         searchview.queryHint = "WIMMY 검색"
         searchview.onActionViewExpanded()
         searchview.isIconified = false
-
+        vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
         dateQuery()
         searchResult()
 
     }
 
-    private fun setView() {
+
+
+    private fun setView(type : String) {
         recyclerView = findViewById<RecyclerView>(R.id.search_recyclerView)
         recyclerAdapter =
             RecyclerAdapterForder(this, thumbnailList)
             {thumbnailData ->
                 if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
-                    val intent = Intent(this, Main_PhotoView::class.java)
-                    intent.putExtra("dir_name", thumbnailData.data)
-                    startActivityForResult(intent, 205)
+                    if((MainActivity.location_type == 0) && type == "location_name") {
+                        val intent = Intent(this, Main_Map::class.java)
+                        intent.putExtra("location_name", thumbnailData.data)
+                        startActivityForResult(intent, 800)
+                    }
+                    else {
+                        val intent = Intent(this, Main_PhotoView::class.java)
+                        intent.putExtra(type, thumbnailData.data)
+                        startActivityForResult(intent, 201)
+                    }
+
                 }
                 mLastClickTime = SystemClock.elapsedRealtime()
             }
         recyclerView?.adapter = recyclerAdapter
 
         val lm = GridLayoutManager(MainActivity(), 3)
-        recyclerView?.layoutManager = lm
-
+        recyclerView!!.layoutManager = lm
     }
 
     private fun setPhotoSize(row : Int, padding : Int) {
-        val displayMetrics = DisplayMetrics()
-        this.windowManager.defaultDisplay.getMetrics(displayMetrics)
-
-        val width = displayMetrics.widthPixels
-        val size = width / row - 2*padding
-
-        recyclerAdapter!!.setPhotoSize(size, padding)
+        recyclerView = findViewById<RecyclerView>(R.id.search_recyclerView)
+        recyclerView.viewTreeObserver.addOnGlobalLayoutListener( object : ViewTreeObserver.OnGlobalLayoutListener {
+            @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
+            override fun onGlobalLayout() {
+                val width = recyclerView.width
+                val size = width / row - 2 * padding
+                recyclerAdapter!!.setPhotoSize(size, padding)
+                recyclerView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+            }
+        })
     }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    /*override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
@@ -83,7 +98,7 @@ class SearchView: AppCompatActivity() {
                 }
             }
         }
-    }
+    }*/
     fun dateQuery(){
 
         searchview_spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
@@ -98,14 +113,6 @@ class SearchView: AppCompatActivity() {
             }
         }
 
-       /* searchview.onActionViewExpandListener(object : MenuItem.OnActionExpandListener() {
-
-                override val fun onMenuItemActionExpand(item: MenuItem) {
-                    TextView text =(TextView) findViewById (R.id.txtstatus);
-                    text.setText("현재 상태 : 확장됨");
-                    return true;
-                }
-            }*/
     }
 
     fun searchResult(){
@@ -115,29 +122,39 @@ class SearchView: AppCompatActivity() {
                 when(searchview_spinner.selectedItemPosition) {
 
                     0 -> {
-                        thumbnailList = MediaStore_Dao.getNameDir(this@SearchView)
+                        setView("tag_name")
+                        vm.setTagDirSearch(recyclerAdapter!!, query!!)
                     }   // 태그
 
                     1 -> {
-                        //thumbnailList = MediaStore_Dao.getNameDir(view.context, query)
+                        setView("location_name")
+                        vm.setLocationDirSearch(recyclerAdapter!!, query!!)
                     }   // 위치
 
                     2 -> {
-                        //thumbnailList = MediaStore_Dao.getNameDir(view.context, query)
+                        setView("file_name")
+                        vm.setNameDirSearch(recyclerAdapter!!, query!!)
                     }   // 이름
 
                     3 -> {
-                        //thumbnailList = MediaStore_Dao.getNameDir(view.context, query)
+                        val cal: Calendar = Calendar.getInstance()
+                        try {
+                            cal.set(query!!.substring(0, 4).toInt(), query!!.substring(5, 7).toInt() - 1, 1, 0, 0, 0)
+                            Log.d("값>", cal.time.toString())
+                            setView("date_name")
+                            vm.setDateDirSearch(recyclerAdapter!!, cal)
+                        } catch (e: Exception) {
+                            Toast.makeText(this@SearchView, "올바른 날짜 정보를 입력해주세요. (ex. 2020 03)", Toast.LENGTH_SHORT).show()
+                        }
                     }   // 날짜
 
                 }
 
-                if(thumbnailList.size == 0) {
+                /*if(thumbnailList.size == 0) {
                     Toast.makeText(this@SearchView, "결과가 없어요. 다시 검색해주세요" , Toast.LENGTH_SHORT).show()
                     return true
-                }
-                setView()
-                setPhotoSize(3, 3)
+                }*/
+                setPhotoSize(3, 10)
                 val imm: InputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager;
                 imm.hideSoftInputFromWindow(searchview.getWindowToken(), 0)
                 return true
