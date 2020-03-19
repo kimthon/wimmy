@@ -146,21 +146,20 @@ class Main_PhotoView: AppCompatActivity() {
                 title_type.setImageResource(R.drawable.ic_tag)
                 title.text = getname
             }
-        }
-        else if (intent.hasExtra("file_name")) {
-            getname = intent.getStringExtra("file_name")
-            vm.setOpenFileDir(recyclerAdapter!!, getname)
+            intent.hasExtra("file_name") -> {
+                getname = intent.getStringExtra("file_name")
+                vm.setOpenFileDir(recyclerAdapter!!, getname)
 
-            title_type.setImageResource(R.drawable.ic_name)
-            title.text = getname
-        }
-        else if (intent.hasExtra("favorite")) {
-            vm.setOpenFavoriteDir(recyclerAdapter!!)
+                title_type.setImageResource(R.drawable.ic_name)
+                title.text = getname
+            }
+            intent.hasExtra("favorite") -> {
+                vm.setOpenFavoriteDir(recyclerAdapter!!)
 
-            title_type.setImageResource(R.drawable.ic_favorite_checked)
-            title.text = "즐겨찾기"
+                title_type.setImageResource(R.drawable.ic_favorite_checked)
+                title.text = "즐겨찾기"
+            }
         }
-
     }
 
     fun updown_Listener(view: RecyclerView?) {

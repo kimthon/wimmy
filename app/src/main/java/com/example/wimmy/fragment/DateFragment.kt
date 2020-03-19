@@ -3,7 +3,6 @@ package com.example.wimmy
 import SwipeGesture
 import YearMonthPickerDialog
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -19,7 +18,6 @@ import com.example.wimmy.Adapter.DateAdapter
 import com.example.wimmy.db.PhotoViewModel
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.android.synthetic.main.fragment_cal.*
 import kotlinx.android.synthetic.main.main_activity.view.*
 import java.util.*
 import kotlin.collections.ArrayList

@@ -25,10 +25,11 @@ object MediaStore_Dao {
     fun getNameDir(context: Context) : ArrayList<thumbnailData>{
         val thumbList = arrayListOf<thumbnailData>()
         val projection = arrayOf(
-                MediaStore.Images.ImageColumns._ID,
-                MediaStore.Images.ImageColumns.DATA,
-                MediaStore.Images.ImageColumns.DISPLAY_NAME
-            )
+            MediaStore.Images.ImageColumns._ID,
+            MediaStore.Images.ImageColumns.DATA,
+            MediaStore.Images.ImageColumns.DISPLAY_NAME,
+            MediaStore.Images.ImageColumns.DATE_ADDED
+        )
 
         val selection = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             MediaStore.Images.ImageColumns._ID + " IN (SELECT " + MediaStore.Images.ImageColumns._ID +
@@ -340,8 +341,8 @@ object MediaStore_Dao {
             MediaStore.Images.ImageColumns._ID,
             MediaStore.Images.ImageColumns.DATE_ADDED
         )
-        val selection = MediaStore.Images.ImageColumns.DATE_ADDED + " > " + date
-        val sortOrder = MediaStore.Images.ImageColumns.DATE_ADDED + " DESC"
+        val selection = MediaStore.Images.ImageColumns.DATE_ADDED + " >= " + date
+        val sortOrder = MediaStore.Images.ImageColumns.DATE_ADDED + " ASC"
         val cursor = context.contentResolver.query(uri, projection, selection, null, sortOrder)
 
         return cursor

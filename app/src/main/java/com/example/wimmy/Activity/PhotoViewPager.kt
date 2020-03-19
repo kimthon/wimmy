@@ -20,28 +20,27 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.example.wimmy.Adapter.PagerRecyclerAdapter
 import com.example.wimmy.Activity.Main_PhotoView.Companion.list
 import com.example.wimmy.R
 import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoViewModel
-import com.example.wimmy.db.TagData
 import com.example.wimmy.dialog.tagInsertDialog
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.photoview_frame.*
 import java.io.ByteArrayOutputStream
 
-class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener  {
+class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener  {
     private var recyclerAdapter : PagerRecyclerAdapter?= null
     private lateinit var viewPager: ViewPager
     private lateinit var vm : PhotoViewModel
     private lateinit var tag_name : AppCompatTextView
+    private lateinit var Inflater: LayoutInflater
+
     private var index  = 0
     private var delete_check: Int = 0
 
-    private var Inflater: LayoutInflater? = null
 
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -63,7 +62,7 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
         try {
             setView(view, mainphoto_toolbar, bottom_photo_menu)
         } catch (e: Exception){
-            android.widget.Toast.makeText(this, "위치 데이터 초기 설정중입니다. 잠시만 기다려주세요", android.widget.Toast.LENGTH_SHORT)
+            Toast.makeText(this, "위치 데이터 초기 설정중입니다. 잠시만 기다려주세요", Toast.LENGTH_SHORT)
                 .show()
         }
 
@@ -149,7 +148,7 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
 
     private fun insertTag() {
         val popupInputDialogView: View = layoutInflater.inflate(R.layout.tag_diaglog, null)
-        val dlg: tagInsertDialog = tagInsertDialog(this, popupInputDialogView, vm, index, tag_name)
+        val dlg = tagInsertDialog(this, popupInputDialogView, vm, index, tag_name)
         dlg.show(supportFragmentManager, "tagInsertDialog")
     }
 
@@ -185,7 +184,7 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
         dlg.setTitle("사진 삭제")
 
         dlg.setMessage("정말 삭제하시겠습니까? ")
-        dlg.setCancelable(false);
+        dlg.setCancelable(false)
         dlg.setIcon(R.drawable.ic_delete)
         dlg.setPositiveButton("확인") { _, _ ->
             vm.Delete(this, list[index].photo_id)

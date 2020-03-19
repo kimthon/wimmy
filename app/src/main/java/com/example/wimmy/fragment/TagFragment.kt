@@ -1,7 +1,6 @@
 package com.example.wimmy.fragment
 
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -20,7 +19,6 @@ import com.example.wimmy.Activity.MainActivity
 import com.example.wimmy.Activity.Main_PhotoView
 import com.example.wimmy.R
 import com.example.wimmy.db.PhotoViewModel
-import com.example.wimmy.db.thumbnailData
 import com.google.android.material.appbar.AppBarLayout
 import kotlinx.android.synthetic.main.main_activity.view.*
 

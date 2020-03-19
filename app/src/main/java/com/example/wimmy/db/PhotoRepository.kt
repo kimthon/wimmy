@@ -44,10 +44,6 @@ class PhotoRepository(application: Application) {
    private val handler = Handler(Looper.getMainLooper())
    private var lastAddedDate : Long = 0
 
-   companion object{
-      var ck: Int = 0
-   }
-
    init {
       val db = PhotoDB.getInstance(application)!!
       photoDao = db.PhotoData_Dao()
@@ -128,8 +124,6 @@ class PhotoRepository(application: Application) {
    // 검색
    fun setNameDirSearch(adapter: RecyclerAdapterForder, name: String) {
       DirectoryThread.execute {
-         val list = photoDao.getTagDir()
-         val thumbnailList = ArrayList(list)
          val thumbnailList = MediaStore_Dao.getNameDirSearch(adapter.context!!.baseContext, name)
          handler.post { adapter.setThumbnailList(thumbnailList) }
       }
@@ -144,14 +138,16 @@ class PhotoRepository(application: Application) {
 
    fun setTagDirSearch(adapter: RecyclerAdapterForder, tag: String) {
       DirectoryThread.execute {
-         val thumbnailList = photoDao.getTagDirSearch(tag)
+         val list = photoDao.getTagDirSearch(tag)
+         val thumbnailList = ArrayList(list)
          handler.post { adapter.setThumbnailList(thumbnailList) }
       }
    }
 
    fun setLocationDirSearch(adapter: RecyclerAdapterForder, name: String) {
       DirectoryThread.execute {
-         val thumbnailList = photoDao.getLocationDirSearch(name)
+         val list = photoDao.getLocationDirSearch(name)
+         val thumbnailList = ArrayList(list)
          handler.post { adapter.setThumbnailList(thumbnailList) }
       }
    }
@@ -279,13 +275,13 @@ class PhotoRepository(application: Application) {
    // 기타 기능
    fun setName(textView: TextView, id: Long) {
       DBThread.execute {
-         val text = MediaStore_Dao.getNameById(textView.context, id)
+         var text = MediaStore_Dao.getNameById(textView.context, id)
+         if(text == null) textView.text = "정보 없음"
+         else if(text.length >= 40) {
+            text = text.substring(0, 39)
+            text += ".."
+         }
          handler.post {
-            if(text == null) textView.text = "정보 없음"
-            else if(text!!.length >= 40) {
-               text = text!!.substring(0, 39)
-               text += ".."
-            }
             textView.text = text
          }
       }
@@ -341,7 +337,7 @@ class PhotoRepository(application: Application) {
 
 
    fun getTags(tagInsertDialog: tagInsertDialog, view: View, id : Long){
-      var tags = listOf<String>()
+      var tags : List<String>
       DBThread.execute {
          tags = photoDao.getTagsById(id)
          handler.post{ tagInsertDialog.tagsInit(view, tags) }
@@ -385,7 +381,7 @@ class PhotoRepository(application: Application) {
       if (changeCheckThread.isTerminating) changeCheckThread.shutdownNow()
       //추가 작업
       changeCheckThread.execute {
-         val pref = context.getSharedPreferences("pre", MODE_PRIVATE)
+         val pref = context.getSharedPreferences("pref", MODE_PRIVATE)
          val editor = pref.edit()
          lastAddedDate = pref.getLong("lastAddedDate", 0)
          val cursor = MediaStore_Dao.getNewlySortedCursor(context, lastAddedDate)
@@ -423,10 +419,15 @@ class PhotoRepository(application: Application) {
       }
    }
 
-   fun Drop() {
+   fun Drop(context: Context) {
       DBThread.execute {
          photoDao.dropExtraTable()
          photoDao.dropTagTable()
+
+         val pref = context.getSharedPreferences("pref", MODE_PRIVATE)
+         val editor = pref.edit()
+         editor.clear()
+         editor.apply()
       }
    }
 
@@ -448,7 +449,7 @@ class PhotoRepository(application: Application) {
                      translator.translate(label.text)
                         .addOnSuccessListener { translatedText ->
                            if(label.confidence >= 0.85) {
-                              DBThread.execute { photoDao.insert(TagData(id, translatedText, "auto"))}
+                              DBThread.execute { photoDao.insert(TagData(id, translatedText))}
                            }
                         }
                         .addOnFailureListener { e ->

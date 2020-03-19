@@ -2,8 +2,6 @@ package com.example.wimmy.Activity
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -37,7 +35,6 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var vm : PhotoViewModel
@@ -63,11 +60,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
         vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
-        /*
-        vm.Drop()
-        InitLastAddedDate()
-         */
-
+        vm.Drop(this)
         vm.checkChangedData(this)
 
         observer = ChangeObserver( Handler(), vm, this )
@@ -184,7 +177,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         if(supportFragmentManager.backStackEntryCount == 0) {
             val tempTime = System.currentTimeMillis()
             val intervalTime = tempTime - backPressedTime
-            if (0 <= intervalTime && FINISH_INTERVAL_TIME >= intervalTime) {
+            if (!(0 > intervalTime || FINISH_INTERVAL_TIME < intervalTime)) {
                 finishAffinity()
                 System.runFinalization()
                 System.exit(0)
@@ -294,13 +287,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     // 안드로이드 앱 개발시 TargetSDK가 마시멜로 버전(APK 23)이상인 경우, 디바이스의 특정 기능을 사용할 때 권한을 요구하는데
     // 그 권한 중에 위험 권한으로 분류된 권한은 개발자가 직접 사용자에게 권한 허용을 물을 수 있도록 작성해야한다.
     // 즉, 코드로 작성해야함.
-
-    private fun InitLastAddedDate() {
-        val pref = getSharedPreferences("pref", MODE_PRIVATE)
-        val editor = pref.edit()
-        editor.remove("lastAddedDate")
-        editor.apply()
-    }
 }
 
 

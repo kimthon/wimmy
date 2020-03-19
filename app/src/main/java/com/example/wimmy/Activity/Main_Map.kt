@@ -24,8 +24,6 @@ import com.example.wimmy.ImageLoad
 import com.example.wimmy.ImageLoder
 import com.example.wimmy.R
 import com.example.wimmy.db.LatLngData
-import com.example.wimmy.db.MediaStore_Dao
-import com.example.wimmy.db.PhotoRepository.Companion.ck
 import com.example.wimmy.db.PhotoViewModel
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
@@ -33,7 +31,6 @@ import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import kotlinx.android.synthetic.main.main_map.*
-import kotlinx.android.synthetic.main.marker_layout.*
 
 
 class Main_Map: AppCompatActivity(), OnMapReadyCallback {
