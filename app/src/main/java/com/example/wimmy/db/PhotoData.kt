@@ -3,18 +3,6 @@ package com.example.wimmy.db
 import androidx.room.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterItem
-import java.util.*
-
-
-
-class PhotoData(
-    var photo_id: Long,
-    var name: String,
-    var file_path: String,
-    var location_info: String?,
-    var date_info: Date?,
-    var favorite: Boolean
-)
 
 class LatLngData(
     val index : Int,

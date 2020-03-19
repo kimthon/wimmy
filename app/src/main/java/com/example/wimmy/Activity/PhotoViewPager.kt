@@ -20,7 +20,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.example.wimmy.Adapter.PagerRecyclerAdapter
 import com.example.wimmy.Activity.Main_PhotoView.Companion.list
@@ -29,22 +28,19 @@ import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.dialog.tagInsertDialog
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.firebase.ml.naturallanguage.FirebaseNaturalLanguage
-import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslateLanguage
-import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslatorOptions
-import com.google.firebase.ml.vision.FirebaseVision
-import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import kotlinx.android.synthetic.main.photoview_frame.*
 import java.io.ByteArrayOutputStream
 
-class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener  {
+class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener  {
     private var recyclerAdapter : PagerRecyclerAdapter?= null
     private lateinit var viewPager: ViewPager
     private lateinit var vm : PhotoViewModel
     private lateinit var tag_name : AppCompatTextView
+    private lateinit var Inflater: LayoutInflater
+
     private var index  = 0
     private var delete_check: Int = 0
-    private var Inflater: LayoutInflater? = null
+
 
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -54,7 +50,6 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
         setContentView(R.layout.photoview_frame)
         val view: View = findViewById(R.id.imgViewPager)
         vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-        index = intent.getIntExtra("index", 0)
 
         getExtra()
         val text_name = findViewById<AppCompatTextView>(R.id.imgView_text)
@@ -67,11 +62,11 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
         try {
             setView(view, mainphoto_toolbar, bottom_photo_menu)
         } catch (e: Exception){
-            android.widget.Toast.makeText(this, "위치 데이터 초기 설정중입니다. 잠시만 기다려주세요", android.widget.Toast.LENGTH_SHORT)
+            Toast.makeText(this, "위치 데이터 초기 설정중입니다. 잠시만 기다려주세요", Toast.LENGTH_SHORT)
                 .show()
         }
-        toolbar_text(index, text_name, date_name, location_name, tag_name, favorite)
 
+        toolbar_text(index, text_name, date_name, location_name, tag_name, favorite)
         Inflater = LayoutInflater.from(this)
 
         viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
@@ -95,7 +90,7 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setView(view: View, toolbar: androidx.appcompat.widget.Toolbar, bottombar: View) {
-        viewPager = view.findViewById<RecyclerView>(R.id.imgViewPager) as ViewPager
+        viewPager = view.findViewById(R.id.imgViewPager)
         recyclerAdapter = PagerRecyclerAdapter( this, list, toolbar, bottombar )
 
         viewPager.adapter = recyclerAdapter
@@ -106,7 +101,6 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
     override fun onBackPressed() {
         finishActivity()
     }
-
 
     @SuppressLint("SimpleDateFormat")
     fun toolbar_text(position: Int, name: AppCompatTextView, date: AppCompatTextView, location: AppCompatTextView, tag: AppCompatTextView, favorite: ImageView){
@@ -124,21 +118,15 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
     }
 
     fun getExtra(){
-        if (intent.hasExtra("photo_num")) {
+        if (intent.hasExtra("index")) {
             //subimg = findViewById(R.id.sub_img) as ImageView // 뷰페이저로 넘어올 때, 애니메이션을 위한 눈속임
             //subimg!!.setImageBitmap(MediaStore_Dao.LoadThumbnail(this, thumbnail!!))
-
-            index = intent.getIntExtra("photo_num", 0)
-
+            index = intent.getIntExtra("index", 0)
         }
         else {
             Toast.makeText(this, "전달된 이름이 없습니다", Toast.LENGTH_SHORT).show()
         }
-        //var vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-        //tagList.addAll(vm.getTag(photoList[index].photo_id))
-        //Log.d("태그는:", "${vm.getTag(0)}")
     }
-
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onNavigationItemSelected(p0: MenuItem): Boolean {
@@ -160,7 +148,7 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
 
     private fun insertTag() {
         val popupInputDialogView: View = layoutInflater.inflate(R.layout.tag_diaglog, null)
-        val dlg: tagInsertDialog = tagInsertDialog(this, popupInputDialogView, vm, index, tag_name)
+        val dlg = tagInsertDialog(this, popupInputDialogView, vm, index, tag_name)
         dlg.show(supportFragmentManager, "tagInsertDialog")
     }
 
@@ -182,7 +170,7 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
         val bytes = ByteArrayOutputStream()
         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
         val path: String = MediaStore.Images.Media.insertImage(
-            context.getContentResolver(),
+            context.contentResolver,
             inImage,
             "Title",
             null
@@ -196,10 +184,10 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
         dlg.setTitle("사진 삭제")
 
         dlg.setMessage("정말 삭제하시겠습니까? ")
-        dlg.setCancelable(false);
+        dlg.setCancelable(false)
         dlg.setIcon(R.drawable.ic_delete)
         dlg.setPositiveButton("확인") { _, _ ->
-            vm.Delete(list[index].photo_id)
+            vm.Delete(this, list[index].photo_id)
             list.removeAt(index)
             Toast.makeText(this, "삭제 완료 되었습니다.", Toast.LENGTH_SHORT).show()
             if(index == 0 && list.size == 0) {
@@ -224,10 +212,3 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
         finish()
     }
 }
-
-
-    /*fun setTagList(list : List<TagData>) {
-        tagList = list
-    }*/
-
-

@@ -26,11 +26,11 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         repo.insert(extraPhotoData)
     }
 
-    fun Delete(id : Long) {
-        repo.deleteById(id)
+    fun Delete(context: Context, id : Long) {
+        repo.deleteById(context, id)
     }
 
-    fun DeleteTag(id : Long) {
+    fun DeleteTag(id: Long) {
         repo.deleteTag(id)
     }
     // 폴더 보기
@@ -88,6 +88,7 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
     fun setOpenFileDir(adapter: RecyclerAdapterPhoto, name : String) {
         repo.setOpenFileDir(adapter, name)
     }
+
     fun setOpenTagDir(adapter: RecyclerAdapterPhoto, tag : String) {
         repo.setOpenTagDir(adapter, tag)
     }
@@ -133,7 +134,7 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         repo.checkChangedData(context)
     }
 
-    fun Drop() {
-        repo.Drop()
+    fun Drop(context: Context) {
+        repo.Drop(context)
     }
 }

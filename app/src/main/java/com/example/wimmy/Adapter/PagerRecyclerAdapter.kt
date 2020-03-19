@@ -1,8 +1,6 @@
 package com.example.wimmy.Adapter
 
 import android.content.Context
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -11,11 +9,11 @@ import androidx.viewpager.widget.ViewPager
 import com.example.wimmy.ImageLoad
 import com.example.wimmy.ImageLoder
 import com.example.wimmy.R
-import com.example.wimmy.db.PhotoData
 import com.example.wimmy.db.thumbnailData
+import android.view.LayoutInflater as LayoutInflater1
 
 class PagerRecyclerAdapter(private val context: Context, var list: ArrayList<thumbnailData>, var tb: View, var bt: View) : PagerAdapter() {
-    private var layoutInflater: LayoutInflater? = null
+    private var layoutInflater: LayoutInflater1? = null
     private var check: Boolean = false
 
     override fun isViewFromObject(view: View, `object`: Any): Boolean {
@@ -27,8 +25,7 @@ class PagerRecyclerAdapter(private val context: Context, var list: ArrayList<thu
     }
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
-
-        layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater1
         val v = layoutInflater!!.inflate(R.layout.photoview_pager, null)
         val image = v.findViewById<View>(R.id.imgView) as ImageView
         val vp = container as ViewPager

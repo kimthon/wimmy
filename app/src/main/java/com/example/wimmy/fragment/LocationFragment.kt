@@ -21,12 +21,10 @@ import com.example.wimmy.Activity.Main_PhotoView
 import com.google.android.material.appbar.AppBarLayout
 import kotlinx.android.synthetic.main.main_activity.view.*
 import com.example.wimmy.db.PhotoViewModel
-import com.example.wimmy.db.thumbnailData
 
 class LocationFragment(v: AppBarLayout) : Fragment() {
     private var thisview: View? = null
     private var recyclerAdapter : RecyclerAdapterForder?= null
-    private var thumbnailList = listOf<thumbnailData>()
     private lateinit var observer : DataBaseObserver
     private var mLastClickTime: Long = 0
     val ab = v
@@ -73,7 +71,7 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
     private fun setView(view : View?) {
         val recyclerView = view?.findViewById<RecyclerView>(R.id.fragment_RecycleView)
         recyclerAdapter =
-            RecyclerAdapterForder(activity, thumbnailList)
+            RecyclerAdapterForder(activity, ArrayList())
             {thumbnailData ->
                 if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
                     if(location_type == 1) {
@@ -108,20 +106,3 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
         })
     }
 }
-/*
-    inner class Scroll : RecyclerView.OnScrollListener() {
-        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int){
-            bottomNavigationView = view!!.findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-            if (dy > 0 && bottomNavigationView!!.isShown()) {
-                bottomNavigationView!!.setVisibility(View.GONE);
-            } else if (dy < 0 ) {
-                bottomNavigationView!!.setVisibility(View.VISIBLE);
-            }
-        }
-
-        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-            super.onScrollStateChanged(recyclerView, newState)
-        }
-    }
-}
- */

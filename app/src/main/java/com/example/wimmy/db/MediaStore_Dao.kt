@@ -14,6 +14,7 @@ import android.util.Size
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import com.example.wimmy.Activity.Main_Map
 import com.google.android.gms.maps.model.LatLng
+import java.io.FileNotFoundException
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -24,10 +25,11 @@ object MediaStore_Dao {
     fun getNameDir(context: Context) : ArrayList<thumbnailData>{
         val thumbList = arrayListOf<thumbnailData>()
         val projection = arrayOf(
-                MediaStore.Images.ImageColumns._ID,
-                MediaStore.Images.ImageColumns.DATA,
-                MediaStore.Images.ImageColumns.DISPLAY_NAME
-            )
+            MediaStore.Images.ImageColumns._ID,
+            MediaStore.Images.ImageColumns.DATA,
+            MediaStore.Images.ImageColumns.DISPLAY_NAME,
+            MediaStore.Images.ImageColumns.DATE_ADDED
+        )
 
         val selection = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             MediaStore.Images.ImageColumns._ID + " IN (SELECT " + MediaStore.Images.ImageColumns._ID +
@@ -222,18 +224,6 @@ object MediaStore_Dao {
         return cursor
     }
 
-    fun getPhotoDataCursor(context: Context, selection : String) : Cursor? {
-        val projection = arrayOf(
-            MediaStore.Images.ImageColumns._ID, //photo_id
-            MediaStore.Images.ImageColumns.DATA, // folder + name
-            MediaStore.Images.ImageColumns.DISPLAY_NAME,
-            MediaStore.Images.ImageColumns.DATE_TAKEN //date
-        )
-
-        val cursor = context.contentResolver.query(uri, projection, selection, null, null)
-        return cursor
-    }
-
     fun getLatLngCursor(context: Context,selection: String) : Cursor? {
         val projection = arrayOf(
             MediaStore.Images.ImageColumns.LATITUDE,
@@ -339,19 +329,6 @@ object MediaStore_Dao {
         return thumbnailData(id, name)
     }
 
-    fun getPhotoData(cursor: Cursor) : PhotoData {
-        val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
-        val allPath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA))
-        val name = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME))
-        val path = allPath.subSequence(0, (allPath.length - name.length - 1)).toString()
-        val dateTaken = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN))
-        val date = Date(dateTaken)
-
-        var loc : String? = noLocationData
-        val photoData = PhotoData(id, name, path, loc, date, false)
-        return photoData
-    }
-
     private fun getLatLngByCursor(cursor: Cursor) : LatLng {
         val lat = cursor!!.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LATITUDE))
         val lon = cursor.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LONGITUDE))
@@ -359,26 +336,40 @@ object MediaStore_Dao {
         return LatLng(lat, lon)
     }
 
-    fun getNewlySortedCursor(context: Context) : Cursor? {
+    fun getNewlySortedCursor(context: Context, date : Long) : Cursor? {
         val projection = arrayOf(
-            MediaStore.Images.ImageColumns._ID
+            MediaStore.Images.ImageColumns._ID,
+            MediaStore.Images.ImageColumns.DATE_ADDED
         )
-        val sortOrder = MediaStore.Images.ImageColumns.DATE_ADDED + " DESC"
-        val cursor = context.contentResolver.query(uri, projection, null, null, sortOrder)
+        val selection = MediaStore.Images.ImageColumns.DATE_ADDED + " >= " + date
+        val sortOrder = MediaStore.Images.ImageColumns.DATE_ADDED + " ASC"
+        val cursor = context.contentResolver.query(uri, projection, selection, null, sortOrder)
 
         return cursor
     }
 
     @Suppress("DEPRECATION")
-    fun LoadThumbnailById(context: Context, id : Long) : Bitmap{
-        val bitmap : Bitmap = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+    fun LoadThumbnailById(context: Context, id : Long) : Bitmap?{
+        try {
+            val bitmap = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val uri =
+                    ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
+                context.contentResolver.loadThumbnail(uri, Size(100, 100), null)
+            } else {
+                MediaStore.Images.Thumbnails.getThumbnail(
+                    context.contentResolver,
+                    id,
+                    MediaStore.Images.Thumbnails.MINI_KIND,
+                    null
+                )
+            }) ?: return null
+            return modifyOrientaionById(context, id, bitmap)
+        } catch ( e: FileNotFoundException) {
+            e.printStackTrace()
             val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
-            context.contentResolver.loadThumbnail( uri, Size(100, 100), null)
+            context.contentResolver.delete(uri, null, null)
+            return null
         }
-        else {
-            MediaStore.Images.Thumbnails.getThumbnail( context.contentResolver, id, MediaStore.Images.Thumbnails.MINI_KIND, null)
-        }
-        return modifyOrientaionById(context, id, bitmap)
     }
 
     fun modifyOrientaionById(context: Context, id: Long, bitmap: Bitmap) : Bitmap {

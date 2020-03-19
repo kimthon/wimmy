@@ -35,20 +35,20 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
 
-    private val REQUEST_TAKE_PHOTO = 200
+    private lateinit var vm : PhotoViewModel
+    private lateinit var observer: ChangeObserver
+    private var init : Boolean = false
     lateinit var mCurrentPhotoPath: String
+    private val REQUEST_TAKE_PHOTO = 200
     private var FINISH_INTERVAL_TIME: Long = 2000
     private var backPressedTime: Long = 0
-    private lateinit var observer: ChangeObserver
-    var init_check: Int = 0
-    lateinit var vm: PhotoViewModel
 
     companion object {
         var location_type: Int = 0
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
@@ -57,11 +57,13 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
         SetHeader()
         init()
+
         vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-        //vm.Drop()
+
+        vm.Drop(this)
         vm.checkChangedData(this)
 
-        observer = ChangeObserver(Handler(), vm, this)
+        observer = ChangeObserver( Handler(), vm, this )
         this.contentResolver.registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, false, observer)
 
         val go_search = findViewById<ImageView>(R.id.main_search_button)
@@ -74,11 +76,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         go_camera.setOnClickListener {
             captureCamera()
         }
-
-
-
     }
-
 
     private fun SetHeader() {
         val toolbar = findViewById<Toolbar>(R.id.main_toolbar)
@@ -94,13 +92,11 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.location_type -> {
-                var selectitem = arrayOf<String>("맵으로 보기", "목록으로 보기")
+                val selectitem = arrayOf<String>("맵으로 보기", "목록으로 보기")
 
                 val dlg: AlertDialog.Builder = AlertDialog.Builder(this,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
                 dlg.setTitle("원하는 형태를 선택하세요.")
-                dlg.setSingleChoiceItems(selectitem,
-                    location_type
-                ) { dialog, i ->
+                dlg.setSingleChoiceItems(selectitem, location_type) { dialog, i ->
                     when(i) {
                         0 -> location_type = 0
                         1 -> location_type = 1
@@ -179,20 +175,19 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     override fun onBackPressed() {
         if(supportFragmentManager.backStackEntryCount == 0) {
-            var tempTime = System.currentTimeMillis();
-            var intervalTime = tempTime - backPressedTime;
-            if (0 <= intervalTime && FINISH_INTERVAL_TIME >= intervalTime) {
-                finishAffinity();
-                System.runFinalization();
-                System.exit(0);
+            val tempTime = System.currentTimeMillis()
+            val intervalTime = tempTime - backPressedTime
+            if (!(0 > intervalTime || FINISH_INTERVAL_TIME < intervalTime)) {
+                finishAffinity()
+                System.runFinalization()
+                System.exit(0)
             } else {
-                backPressedTime = tempTime;
-                Toast.makeText(this, "'뒤로' 버튼을 한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show();
+                backPressedTime = tempTime
+                Toast.makeText(this, "'뒤로' 버튼을 한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
                 return
             }
         }
-
-        super.onBackPressed();
+        super.onBackPressed()
         val bnv = findViewById<View>(R.id.bottomNavigationView) as BottomNavigationView
         updateBottomMenu(bnv)
     }
@@ -211,39 +206,30 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }
 
     fun init(): Boolean{
-        if(init_check == 0) {
+        if(!init) {
             val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
             val fragmentA = NameFragment(appbar)
             transaction.replace(R.id.frame_layout, fragmentA, "name")
             transaction.commit()
-            init_check = 1
+            init = true
         }
         return true
     }
 
-    private fun getDate(year : Int, month : Int, day : Int) : Date {
-        val date = Calendar.getInstance()
-        date.set(year, month - 1, day)
-        return date.time
-    }
-
-
     private fun captureCamera() {
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (takePictureIntent.resolveActivity(packageManager) != null) {
-
-            var photoFile: File? = null
             try {
-                photoFile = createImageFile()
+                val photoFile = createImageFile()
+                if (photoFile != null) { // getUriForFile의 두 번째 인자는 Manifest provier의 authorites와 일치해야 함
+                    val providerURI = FileProvider.getUriForFile(this, packageName, photoFile)
+                    // 인텐트에 전달할 때는 FileProvier의 Return값인 content://로만!!, providerURI의 값에 카메라 데이터를 넣어 보냄
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, providerURI)
+                    startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
+                }
             } catch (ex: IOException) {
                 Log.e("captureCamera Error", ex.toString())
                 return
-            }
-            if (photoFile != null) { // getUriForFile의 두 번째 인자는 Manifest provier의 authorites와 일치해야 함
-                val providerURI = FileProvider.getUriForFile(this, packageName, photoFile)
-                // 인텐트에 전달할 때는 FileProvier의 Return값인 content://로만!!, providerURI의 값에 카메라 데이터를 넣어 보냄
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, providerURI)
-                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
             }
         }
     }
@@ -256,8 +242,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 Log.i("REQUEST_TAKE_PHOTO", "${Activity.RESULT_OK}" + " " + "${resultCode}")
                 if (resultCode == RESULT_OK) {
                     try {
-                        galleryAddPic();
-
+                        galleryAddPic()
                     } catch (e: Exception) {
                         Log.e("REQUEST_TAKE_PHOTO", e.toString())
                     }
@@ -302,8 +287,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     // 안드로이드 앱 개발시 TargetSDK가 마시멜로 버전(APK 23)이상인 경우, 디바이스의 특정 기능을 사용할 때 권한을 요구하는데
     // 그 권한 중에 위험 권한으로 분류된 권한은 개발자가 직접 사용자에게 권한 허용을 물을 수 있도록 작성해야한다.
     // 즉, 코드로 작성해야함.
-
-
 }
 
 
