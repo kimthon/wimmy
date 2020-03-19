@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.wimmy.Activity.Main_PhotoView.Companion.list
 import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.example.wimmy.R
 import com.example.wimmy.db.*
@@ -25,9 +26,6 @@ import java.util.*
 
 
 class SearchView: AppCompatActivity() {
-
-    private var thumbnailList = arrayListOf<thumbnailData>()
-
     private var recyclerAdapter : RecyclerAdapterForder?= null
     private lateinit var recyclerView : RecyclerView
     private var mLastClickTime: Long = 0
@@ -51,7 +49,7 @@ class SearchView: AppCompatActivity() {
     private fun setView(type : String) {
         recyclerView = findViewById<RecyclerView>(R.id.search_recyclerView)
         recyclerAdapter =
-            RecyclerAdapterForder(this, thumbnailList)
+            RecyclerAdapterForder(this, list)
             {thumbnailData ->
                 if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
                     if((MainActivity.location_type == 0) && type == "location_name") {
@@ -118,7 +116,7 @@ class SearchView: AppCompatActivity() {
     fun searchResult(){
         searchview.setOnQueryTextListener (object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
-                thumbnailList = arrayListOf()
+
                 when(searchview_spinner.selectedItemPosition) {
 
                     0 -> {
@@ -149,11 +147,13 @@ class SearchView: AppCompatActivity() {
                     }   // 날짜
 
                 }
-
-                /*if(thumbnailList.size == 0) {
+/*
+                if(list.size == 0) {
                     Toast.makeText(this@SearchView, "결과가 없어요. 다시 검색해주세요" , Toast.LENGTH_SHORT).show()
                     return true
-                }*/
+                }
+
+ */
                 setPhotoSize(3, 10)
                 val imm: InputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager;
                 imm.hideSoftInputFromWindow(searchview.getWindowToken(), 0)

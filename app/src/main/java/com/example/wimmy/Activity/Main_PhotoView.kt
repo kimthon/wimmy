@@ -112,7 +112,7 @@ class Main_PhotoView: AppCompatActivity() {
     }
 
     fun getExtra(view: View){
-        val getname: String?
+        var getname: String?
         val title_type: ImageView = findViewById(R.id.title_type)
         val title: TextView = findViewById(R.id.title_name)
         val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
@@ -158,6 +158,10 @@ class Main_PhotoView: AppCompatActivity() {
             vm.setOpenFileDir(recyclerAdapter!!, getname)
 
             title_type.setImageResource(R.drawable.ic_name)
+            if(getname.length >= 23) {
+                getname = getname.substring(0, 23)
+                getname = getname + ".."
+            }
             title.text = getname
         }
         else if (intent.hasExtra("favorite")) {
