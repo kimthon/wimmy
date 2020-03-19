@@ -44,8 +44,8 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
             mLastClickTime = SystemClock.elapsedRealtime()
         }
 
-        if(size != null) {
-            view.layoutParams.width = size!!.first
+        view.layoutParams.width = size!!.first
+        if(view.layoutParams.height != size!!.second) {
             view.layoutParams.height = size!!.second
             view.requestLayout()
         }

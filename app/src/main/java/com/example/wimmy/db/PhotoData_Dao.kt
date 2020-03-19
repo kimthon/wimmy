@@ -29,8 +29,8 @@ interface PhotoData_Dao {
     @Query("DELETE FROM tag_data WHERE photo_id = :photo_id AND tag = :tag")
     fun delete(photo_id : Long, tag : String)
 
-    @Query("SELECT tag FROM tag_data WHERE photo_id IN (:idList) GROUP BY tag ORDER BY count(*) LIMIT 1")
-    fun getDateInfo(idList : List<Long>) : String
+    @Query("SELECT tag FROM tag_data WHERE photo_id IN (:idList) GROUP BY tag ORDER BY count(*) ASC LIMIT 5")
+    fun getDateInfo(idList : List<Long>) : List<String>
     @Query("SELECT MAX(photo_id) as photo_id, tag as data FROM tag_data GROUP BY tag")
     fun getTagDir() : List<thumbnailData>
     @Query("SELECT MAX(photo_id) as photo_id, location as data FROM extra_photo_data GROUP BY location HAVING NOT location = '위치 정보 없음'")
@@ -63,5 +63,8 @@ interface PhotoData_Dao {
     fun getIdCursor() : Cursor
 
     @Query("DELETE FROM extra_photo_data")
-    fun dropTable()
+    fun dropExtraTable()
+
+    @Query("DELETE FROM tag_data")
+    fun dropTagTable()
 }

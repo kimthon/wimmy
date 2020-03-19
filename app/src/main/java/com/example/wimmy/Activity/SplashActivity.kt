@@ -1,6 +1,7 @@
 package com.example.wimmy.Activity
 
 import android.Manifest
+import android.R
 import android.app.ProgressDialog
 import android.content.DialogInterface
 import android.content.Intent
@@ -22,7 +23,6 @@ import com.google.firebase.ml.common.modeldownload.FirebaseModelManager
 import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslateLanguage
 import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslateRemoteModel
 
-
 class SplashActivity : AppCompatActivity() {
 
     private var progressDialog: ProgressDialog? = null
@@ -30,7 +30,6 @@ class SplashActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP_MR1)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
 
         checkPermission()
 
@@ -42,47 +41,51 @@ class SplashActivity : AppCompatActivity() {
         if(cm.activeNetworkInfo == null) { }*/
 
     }
+
     fun translation_api() {
         val intent = Intent(this, MainActivity::class.java)
-        val dlg: AlertDialog.Builder = AlertDialog.Builder(this@SplashActivity,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+        val dlg: AlertDialog.Builder = AlertDialog.Builder(this@SplashActivity,  R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
         val modelManager = FirebaseModelManager.getInstance()
         val Model = FirebaseTranslateRemoteModel.Builder(FirebaseTranslateLanguage.KO).build()
         val conditions = FirebaseModelDownloadConditions.Builder()
             .requireWifi()
             .build()
 
-        FirebaseModelManager.getInstance().isModelDownloaded(Model).addOnSuccessListener { isDownloaded ->
-                val options = if (isDownloaded) {
+        FirebaseModelManager.getInstance().isModelDownloaded(Model)
+            .addOnSuccessListener { isDownloaded ->
+                if (isDownloaded) {
                     startActivity(intent)
-                    } else {
-                        dlg.setTitle("환영합니다") //제목
-                        dlg.setMessage("추가 파일 설치가 필요합니다. 와이파이를 연결해주세요. \n\n다운로드 하시겠습니까? (30mb)") // 메시지
-                        dlg.setCancelable(false);
-                        dlg.setPositiveButton("확인", DialogInterface.OnClickListener { dialog, which ->
-                                loading()
-                                modelManager.download(Model, conditions).addOnSuccessListener { modelManager.getDownloadedModels(
-                                            FirebaseTranslateRemoteModel::class.java).addOnSuccessListener { models ->
-                                                Toast.makeText(this@SplashActivity, "설치가 완료 되었습니다.", Toast.LENGTH_SHORT).show()
-                                                startActivity(intent)
-                                                finish()
-                                                loadingEnd()
-                                            }.addOnFailureListener {
-                                    }
-                                }.addOnFailureListener {}
-                        })
-                        dlg.setNegativeButton("취소", DialogInterface.OnClickListener { dialog, which ->
-                                System.exit(0)
-                        })
-                        dlg.show()
-                    }
+                    finish()
+                } else {
+                    dlg.setTitle("환영합니다") //제목
+                    dlg.setMessage("추가 파일 설치가 필요합니다. 와이파이를 연결해주세요. \n\n다운로드 하시겠습니까? (30mb)") // 메시지
+                    dlg.setCancelable(false);
+                    dlg.setPositiveButton("확인", DialogInterface.OnClickListener { dialog, which ->
+                        loading()
+                        modelManager.download(Model, conditions).addOnSuccessListener { modelManager.getDownloadedModels(
+                            FirebaseTranslateRemoteModel::class.java).addOnSuccessListener { models ->
+                            Toast.makeText(this@SplashActivity, "설치가 완료 되었습니다.", Toast.LENGTH_SHORT).show()
+                            startActivity(intent)
+                            finish()
+                            loadingEnd()
+                        }.addOnFailureListener {
+                        }
+                        }.addOnFailureListener {}
+                    })
+                    dlg.setNegativeButton("취소", DialogInterface.OnClickListener { dialog, which ->
+                        System.exit(0)
+                    })
+                    dlg.show()
+                }
             }
 
     }
+
     fun loading() {
         //로딩
         Handler().postDelayed(
             {
-                progressDialog = ProgressDialog(this@SplashActivity, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+                progressDialog = ProgressDialog(this@SplashActivity, R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
                 progressDialog!!.setIndeterminate(true)
                 progressDialog!!.setCancelable(false);
                 progressDialog!!.setMessage("필요한 파일을 다운로드 중입니다.\n잠시만 기다려 주세요.")
@@ -105,7 +108,7 @@ class SplashActivity : AppCompatActivity() {
             // 처음 호출시엔 if()안의 부분은 false로 리턴 됨 -> else{..}의 요청으로 넘어감
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))
             {
-                android.app.AlertDialog.Builder(this,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+                android.app.AlertDialog.Builder(this,  R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
                     .setTitle("알림")
                     .setMessage("저장소 권한이 거부되었습니다. 사용을 원하시면 설정에서 해당 권한을 직접 허용하셔야 합니다.")
                     .setNeutralButton("설정", object: DialogInterface.OnClickListener {

@@ -18,7 +18,6 @@ import com.example.wimmy.Activity.MainActivity
 import com.example.wimmy.Activity.Main_PhotoView
 import com.example.wimmy.R
 import com.example.wimmy.db.PhotoViewModel
-import com.example.wimmy.db.thumbnailData
 import com.google.android.material.appbar.AppBarLayout
 import kotlinx.android.synthetic.main.main_activity.view.*
 
@@ -26,7 +25,6 @@ class NameFragment(v: AppBarLayout) : Fragment() {
     private var thisview: View? = null
     private lateinit var recyclerView : RecyclerView
     private var recyclerAdapter : RecyclerAdapterForder?= null
-    private var thumbnailList = listOf<thumbnailData>()
     private lateinit var observer : DataBaseObserver
     private var mLastClickTime: Long = 0
     val ab = v
@@ -63,7 +61,6 @@ class NameFragment(v: AppBarLayout) : Fragment() {
             when (requestCode) {
                 201 -> {
                     if (data!!.getIntExtra("delete_check", 0) == 1) {
-                        thumbnailList = MediaStore_Dao.getNameDir(thisview?.context!!)
                         setView(thisview)
                     }
                 }
@@ -74,7 +71,7 @@ class NameFragment(v: AppBarLayout) : Fragment() {
     private fun setView(view : View?) {
         val recyclerView = view?.findViewById<RecyclerView>(R.id.fragment_RecycleView)
         recyclerAdapter =
-            RecyclerAdapterForder(activity, thumbnailList)
+            RecyclerAdapterForder(activity, ArrayList())
             {thumbnailData ->
                 if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
                     val intent = Intent(activity, Main_PhotoView::class.java)

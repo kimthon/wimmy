@@ -24,8 +24,6 @@ import com.example.wimmy.ImageLoad
 import com.example.wimmy.ImageLoder
 import com.example.wimmy.R
 import com.example.wimmy.db.LatLngData
-import com.example.wimmy.db.MediaStore_Dao
-import com.example.wimmy.db.PhotoRepository.Companion.ck
 import com.example.wimmy.db.PhotoViewModel
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
@@ -33,7 +31,6 @@ import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import kotlinx.android.synthetic.main.main_map.*
-import kotlinx.android.synthetic.main.marker_layout.*
 
 
 class Main_Map: AppCompatActivity(), OnMapReadyCallback {
@@ -129,12 +126,7 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
             card_view.visibility = View.VISIBLE
             val center: CameraUpdate = CameraUpdateFactory.newLatLng(p0?.position)
             mMap!!.animateCamera(center)
-            ImageLoder.execute(
-                ImageLoad(
-                    map_image,
-                    p0.id
-                )
-            )
+            ImageLoder.execute(ImageLoad(map_image, p0.id))
             vm.setName(map_name, p0.id )
             vm.setDate(map_date, p0.id)
             vm.setLocation(map_location, p0.id)
@@ -202,6 +194,7 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
         tag_marker_layout.height = size
         tag_marker_layout.layoutAnimationParameters
     }
+
     fun getExtra(){
         size_check = 0
         if (intent.hasExtra("location_name")) {
@@ -258,7 +251,6 @@ class MarkerClusterRenderer(context: Context?, map: GoogleMap?, clusterManager: 
             selectedMarker = null
         }
     }
-
 
     companion object {
         fun createDrawableFromView(context: Context?, view: View): Bitmap {
