@@ -24,7 +24,7 @@ import com.example.wimmy.db.PhotoViewModel
 
 class LocationFragment(v: AppBarLayout) : Fragment() {
     private var thisview: View? = null
-    private var recyclerAdapter : RecyclerAdapterForder?= null
+    private lateinit var recyclerAdapter : RecyclerAdapterForder
     private lateinit var observer : DataBaseObserver
     private var mLastClickTime: Long = 0
     val ab = v
@@ -38,8 +38,12 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
         val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
         setView(thisview)
-        vm.setLocationDir(recyclerAdapter!!)
-        observer = DataBaseObserver(Handler(), recyclerAdapter!!)
+        DirectoryThread.execute {
+            val list = vm.getLocationDir()
+            MainHandler.post{ recyclerAdapter.setThumbnailList(list)}
+        }
+        observer = DataBaseObserver(Handler(), recyclerAdapter)
+
         return thisview
     }
 
@@ -100,7 +104,7 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
             override fun onGlobalLayout() {
                 val width = recyclerView.width
                 val size = width / row - 2 * padding
-                recyclerAdapter!!.setPhotoSize(size, padding)
+                recyclerAdapter.setPhotoSize(size, padding)
                 recyclerView.viewTreeObserver.removeOnGlobalLayoutListener(this)
             }
         })

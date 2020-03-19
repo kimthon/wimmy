@@ -10,14 +10,16 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.DialogFragment
 import com.example.wimmy.Activity.Main_PhotoView
+import com.example.wimmy.DBThread
+import com.example.wimmy.MainHandler
 import com.example.wimmy.R
 import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.db.TagData
 import kotlinx.android.synthetic.main.tag_diaglog.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class tagInsertDialog(context: Context, v: View, vm: PhotoViewModel, index: Int, tag_name : AppCompatTextView): DialogFragment() {
 
@@ -29,13 +31,19 @@ class tagInsertDialog(context: Context, v: View, vm: PhotoViewModel, index: Int,
     @RequiresApi(Build.VERSION_CODES.N)
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        vm.getTags(this, v, Main_PhotoView.list[index].photo_id)
+        DBThread.execute {
+            val tags = vm.getTagList(Main_PhotoView.list[index].photo_id)
+            MainHandler.post {
+                tagsInit(v, tags)
+            }
+        }
+
         val dlgBuilder: androidx.appcompat.app.AlertDialog.Builder = androidx.appcompat.app.AlertDialog.Builder(
             contextdlg,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
-        dlgBuilder.setTitle("태그 삽입");
+        dlgBuilder.setTitle("태그 삽입")
         dlgBuilder.setMessage("삽입할 사진의 특징을 입력해주세요. \n태그를 수정하거나 삭제할 수도 있습니다.")
-        dlgBuilder.setIcon(R.drawable.ic_tag);
-        dlgBuilder.setCancelable(false);
+        dlgBuilder.setIcon(R.drawable.ic_tag)
+        dlgBuilder.setCancelable(false)
         dlgBuilder.setView(v)
         val dlg = dlgBuilder.create()
         insert_tag_click(v, dlg)
@@ -97,29 +105,48 @@ class tagInsertDialog(context: Context, v: View, vm: PhotoViewModel, index: Int,
     private fun insert_saveCancel(view: View, dlg: androidx.appcompat.app.AlertDialog) {
         view.tag_save.setOnClickListener {
             CoroutineScope(Dispatchers.Main).launch {
-                CoroutineScope(Dispatchers.Default).async {
+                withContext(CoroutineScope(Dispatchers.Default).coroutineContext) {
                     vm.DeleteTag(Main_PhotoView.list[index].photo_id)
-                }.await()
-                if (view.tag1_edit.text.toString() != "") {
-                    vm.Insert(TagData(Main_PhotoView.list[index].photo_id, view.tag1_edit.text.toString()))
-                    vm.setTags(tag_name, Main_PhotoView.list[index].photo_id)
                 }
-                if (view.tag2_edit.text.toString() != "") {
-                    vm.Insert(TagData(Main_PhotoView.list[index].photo_id, view.tag2_edit.text.toString()))
-                    vm.setTags(tag_name, Main_PhotoView.list[index].photo_id)
+                var inserted = false
+                if (view.tag1_edit.text.toString().trim() != "") {
+                    DBThread.execute {
+                        vm.Insert( TagData( Main_PhotoView.list[index].photo_id, view.tag1_edit.text.toString() ) )
+                    }
+                    inserted = true
                 }
-                if (view.tag3_edit.text.toString() != "") {
-                    vm.Insert(TagData(Main_PhotoView.list[index].photo_id, view.tag3_edit.text.toString()))
-                    vm.setTags(tag_name, Main_PhotoView.list[index].photo_id)
+                if (view.tag2_edit.text.toString().trim() != "") {
+                    DBThread.execute {
+                        vm.Insert( TagData( Main_PhotoView.list[index].photo_id, view.tag2_edit.text.toString() ) )
+                    }
+                    inserted = true
                 }
-                if (view.tag4_edit.text.toString() != "") {
-                    vm.Insert(TagData(Main_PhotoView.list[index].photo_id, view.tag4_edit.text.toString()))
-                    vm.setTags(tag_name, Main_PhotoView.list[index].photo_id)
+                if (view.tag3_edit.text.toString().trim() != "") {
+                    DBThread.execute {
+                        vm.Insert( TagData( Main_PhotoView.list[index].photo_id, view.tag3_edit.text.toString() ) )
+                    }
+                    inserted = true
                 }
-                if (view.tag5_edit.text.toString() != "") {
-                    vm.Insert(TagData(Main_PhotoView.list[index].photo_id, view.tag5_edit.text.toString()))
-                    vm.setTags(tag_name, Main_PhotoView.list[index].photo_id)
+                if (view.tag4_edit.text.toString().trim() != "") {
+                    DBThread.execute {
+                        vm.Insert( TagData( Main_PhotoView.list[index].photo_id, view.tag4_edit.text.toString() ) )
+                    }
+                    inserted = true
                 }
+                if (view.tag5_edit.text.toString().trim() != "") {
+                    DBThread.execute {
+                        vm.Insert( TagData( Main_PhotoView.list[index].photo_id, view.tag5_edit.text.toString() ) )
+                    }
+                    inserted = true
+                }
+
+                if(inserted) {
+                    DBThread.execute {
+                        val tags = vm.getTags(Main_PhotoView.list[index].photo_id)
+                        MainHandler.post { tag_name.text = tags }
+                    }
+                }
+
                 Toast.makeText(contextdlg, "입력 완료 되었습니다.", Toast.LENGTH_SHORT).show()
                 dlg.cancel()
             }
@@ -146,8 +173,5 @@ class tagInsertDialog(context: Context, v: View, vm: PhotoViewModel, index: Int,
             view.tag4_add.performClick()
             view.tag5_edit.setText( tags.elementAt(4))
         }
-
     }
-
-
 }

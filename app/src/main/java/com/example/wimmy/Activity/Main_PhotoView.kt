@@ -2,6 +2,7 @@ package com.example.wimmy.Activity
 
 import android.app.Activity
 import android.content.Intent
+import android.database.Cursor
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.DisplayMetrics
@@ -15,6 +16,8 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
+import com.example.wimmy.DBThread
+import com.example.wimmy.MainHandler
 import com.example.wimmy.R
 import com.example.wimmy.db.*
 import kotlinx.android.synthetic.main.main_photoview.*
@@ -23,8 +26,8 @@ import java.util.*
 import java.io.File
 
 class Main_PhotoView: AppCompatActivity() {
-    private var recyclerAdapter : RecyclerAdapterPhoto?= null
-    private var recyclerView: RecyclerView? = null
+    private lateinit var recyclerAdapter : RecyclerAdapterPhoto
+    private lateinit var recyclerView: RecyclerView
     private var mLastClickTime: Long = 0
     private var delete_check: Int = 0
 
@@ -63,11 +66,11 @@ class Main_PhotoView: AppCompatActivity() {
             }
                 mLastClickTime = SystemClock.elapsedRealtime()
             }
-        recyclerView?.adapter = recyclerAdapter
-        list = recyclerAdapter!!.getThumbnailList()
+        recyclerView.adapter = recyclerAdapter
+        list = recyclerAdapter.getThumbnailList()
         val lm = GridLayoutManager(Main_PhotoView(), 3)
 
-        recyclerView?.layoutManager = lm
+        recyclerView.layoutManager = lm
     }
 
     private fun setPhotoSize(row : Int, padding : Int) {
@@ -77,7 +80,7 @@ class Main_PhotoView: AppCompatActivity() {
         val width = displayMetrics.widthPixels
         val size = width / row - 2*padding
 
-        recyclerAdapter!!.setPhotoSize(size, padding)
+        recyclerAdapter.setPhotoSize(size, padding)
     }
 
     private fun SetHeader() {
@@ -92,13 +95,15 @@ class Main_PhotoView: AppCompatActivity() {
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 100 -> {
+                    /*
                     if(data!!.hasExtra("delete_check")) {
-                        /*setView(photo_recyclerView)
+                        setView(photo_recyclerView)
                         setPhotoSize(3, 3)
-                        delete_check = 1*/
+                        delete_check = 1
                     }
-                    val doc = data.getIntExtra("index", 0)
-                    recyclerView?.scrollToPosition(doc)
+                     */
+                    val doc = data!!.getIntExtra("index", 0)
+                    recyclerView.scrollToPosition(doc)
                 }
             }
         }
@@ -114,14 +119,19 @@ class Main_PhotoView: AppCompatActivity() {
             intent.hasExtra("dir_name") -> {
                 getname = intent.getStringExtra("dir_name")!!
 
-                vm.setOpenNameDir(recyclerAdapter!!, getname)
+                DBThread.execute {
+                    getOpenDirByCursor(vm, vm.getOpenNameDirCursor(applicationContext, getname))
+                }
 
                 title_type.setImageResource(R.drawable.ic_folder)
                 title.text = File(getname).name
             }
             intent.hasExtra("location_name") -> {
                 getname = intent.getStringExtra("location_name")
-                vm.setOpenLocationDir(recyclerAdapter!!, getname)
+
+                DBThread.execute {
+                    getOpenDirByIdCursor(vm, vm.getOpenLocationDirIdCursor(getname))
+                }
 
                 title_type.setImageResource(R.drawable.ic_location)
                 title.text = getname
@@ -131,7 +141,10 @@ class Main_PhotoView: AppCompatActivity() {
                 val cal = Calendar.getInstance()
                 cal.time = Date(date)
 
-                vm.setOpenDateDir(recyclerAdapter!!, cal)
+                DBThread.execute {
+                    getOpenDirByCursor(vm, vm.getOpenDateDirCursor(applicationContext, cal))
+                }
+
                 val formatter = SimpleDateFormat("yyyy년 MM월 dd일", Locale.getDefault())
                 getname = formatter.format(Date(date))
 
@@ -141,20 +154,28 @@ class Main_PhotoView: AppCompatActivity() {
             }
             intent.hasExtra("tag_name") -> {
                 getname = intent.getStringExtra("tag_name")
-                vm.setOpenTagDir(recyclerAdapter!!, getname)
+
+                DBThread.execute {
+                    getOpenDirByIdCursor(vm, vm.getOpenTagDirIdCursor(getname))
+                }
 
                 title_type.setImageResource(R.drawable.ic_tag)
                 title.text = getname
             }
             intent.hasExtra("file_name") -> {
                 getname = intent.getStringExtra("file_name")
-                vm.setOpenFileDir(recyclerAdapter!!, getname)
+
+                DBThread.execute {
+                    getOpenDirByCursor(vm, vm.getOpenFileDirCursor(applicationContext, getname))
+                }
 
                 title_type.setImageResource(R.drawable.ic_name)
                 title.text = getname
             }
             intent.hasExtra("favorite") -> {
-                vm.setOpenFavoriteDir(recyclerAdapter!!)
+                DBThread.execute {
+                    getOpenDirByIdCursor(vm, vm.getOpenFavoriteDirIdCursor())
+                }
 
                 title_type.setImageResource(R.drawable.ic_favorite_checked)
                 title.text = "즐겨찾기"
@@ -168,7 +189,7 @@ class Main_PhotoView: AppCompatActivity() {
         }
 
         down_button.setOnClickListener {
-            view?.smoothScrollToPosition(recyclerAdapter!!.getSize())
+            view?.smoothScrollToPosition(recyclerAdapter.getSize())
         }
     }
 
@@ -203,8 +224,31 @@ class Main_PhotoView: AppCompatActivity() {
             }
         }
 
-        recyclerView?.setOnScrollListener(onScrollListener)
+        this.recyclerView.setOnScrollListener(onScrollListener)
     }
 
+    private fun getOpenDirByCursor(vm : PhotoViewModel, cursor : Cursor?) {
+        if (vm.CursorIsValid(cursor)) {
+            do {
+                val data = vm.getThumbnailDataByCursor(cursor!!)
+                recyclerAdapter.addThumbnailList(data)
+                MainHandler.post { recyclerAdapter.notifyItemInserted(recyclerAdapter.getSize()) }
+            } while (cursor!!.moveToNext())
+            cursor.close()
+        }
+    }
+
+    private fun getOpenDirByIdCursor(vm : PhotoViewModel, idCursor : Cursor?) {
+        if (vm.CursorIsValid(idCursor)) {
+            do {
+                val data = vm.getThumbnailDataByIdCursor(applicationContext, idCursor!!)
+                if(data != null) {
+                    recyclerAdapter.addThumbnailList(data)
+                    MainHandler.post { recyclerAdapter.notifyItemInserted(recyclerAdapter.getSize()) }
+                }
+            } while (idCursor!!.moveToNext())
+            idCursor.close()
+        }
+    }
 }
 

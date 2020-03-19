@@ -12,33 +12,35 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.wimmy.*
 import com.example.wimmy.Adapter.RecyclerAdapterForder
-import com.example.wimmy.DataBaseObserver
 import com.example.wimmy.Activity.MainActivity
 import com.example.wimmy.Activity.Main_PhotoView
-import com.example.wimmy.R
 import com.example.wimmy.db.PhotoViewModel
 import com.google.android.material.appbar.AppBarLayout
 import kotlinx.android.synthetic.main.main_activity.view.*
 
 class NameFragment(v: AppBarLayout) : Fragment() {
-    private var thisview: View? = null
+    private lateinit var thisview: View
     private lateinit var recyclerView : RecyclerView
-    private var recyclerAdapter : RecyclerAdapterForder?= null
+    private lateinit var recyclerAdapter : RecyclerAdapterForder
     private lateinit var observer : DataBaseObserver
     private var mLastClickTime: Long = 0
-    val ab = v
+    private val ab = v
 
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?,
                                savedInstanceState: Bundle? ): View? {
         ab.main_toolbar.visibility = View.VISIBLE
         ab.setExpanded(true,true)
 
-        val thisview = inflater.inflate(R.layout.fragment_view, container, false)
+        thisview = inflater.inflate(R.layout.fragment_view, container, false)
         val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
         setView(thisview)
-        vm.setNameDir(recyclerAdapter!!)
+        DirectoryThread.execute {
+            val list = vm.getNameDir(this.context!!)
+            MainHandler.post { recyclerAdapter.setThumbnailList(list) }
+        }
         observer = DataBaseObserver(Handler(), recyclerAdapter!!)
 
         return thisview
