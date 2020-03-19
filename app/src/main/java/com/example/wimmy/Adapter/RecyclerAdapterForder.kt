@@ -11,7 +11,6 @@ import com.example.wimmy.ImageLoder
 import com.example.wimmy.R
 import com.example.wimmy.ThumbnailLoad
 import com.example.wimmy.db.thumbnailData
-import java.io.File
 
 class RecyclerAdapterForder(val context: FragmentActivity?, var list: ArrayList<thumbnailData>, val itemClick: (thumbnailData) -> Unit) :
     RecyclerView.Adapter<RecyclerAdapterForder.Holder>()
@@ -32,7 +31,7 @@ class RecyclerAdapterForder(val context: FragmentActivity?, var list: ArrayList<
             thumbnail.setImageResource(0)
             ImageLoder.execute(ThumbnailLoad(this, thumbnail, data.photo_id))
 
-            text.text = File(data.data).name
+            text.text = data.data
             itemView.setOnClickListener { itemClick(data) }
         }
     }

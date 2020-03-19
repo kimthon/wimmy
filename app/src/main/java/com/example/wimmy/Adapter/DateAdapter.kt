@@ -10,6 +10,8 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProviders
+import com.example.wimmy.DBThread
+import com.example.wimmy.MainHandler
 import com.example.wimmy.R
 import com.example.wimmy.db.PhotoViewModel
 import java.util.*
@@ -54,7 +56,17 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
 
         textView.text = calendar.get(Calendar.DATE).toString()
         tagView.text = ""
-        vm.setCalendarTag(tagView, calendar)
+        DBThread.execute {
+            val textList = vm.getCalendarTags(this.context, calendar)
+            if(textList.isNullOrEmpty()) return@execute
+            else {
+                var text = ""
+                for (i in textList) {
+                    text += i + '\n'
+                }
+                MainHandler.post{ tagView.text = text }
+            }
+        }
 
         return view
     }

@@ -1,11 +1,10 @@
 package com.example.wimmy
 
-import android.content.Context
 import android.database.ContentObserver
 import android.os.Handler
+import com.example.wimmy.Activity.MainActivity
 import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.example.wimmy.db.MediaStore_Dao
-import com.example.wimmy.db.PhotoViewModel
 
 class DataBaseObserver(handler: Handler, val adapter : RecyclerAdapterForder) : ContentObserver(handler) {
     override fun onChange(selfChange: Boolean) {
@@ -14,9 +13,9 @@ class DataBaseObserver(handler: Handler, val adapter : RecyclerAdapterForder) : 
     }
 }
 
-class ChangeObserver(handler: Handler, val vm : PhotoViewModel, val context: Context) : ContentObserver(handler){
+class ChangeObserver(handler: Handler, val activity : MainActivity) : ContentObserver(handler){
     override fun onChange(selfChange: Boolean) {
         super.onChange(selfChange)
-        vm.checkChangedData(context)
+        activity.CheckChangeData()
     }
 }

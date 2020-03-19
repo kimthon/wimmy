@@ -22,6 +22,7 @@ import com.google.firebase.ml.common.modeldownload.FirebaseModelDownloadConditio
 import com.google.firebase.ml.common.modeldownload.FirebaseModelManager
 import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslateLanguage
 import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslateRemoteModel
+import kotlin.system.exitProcess
 
 class SplashActivity : AppCompatActivity() {
 
@@ -59,7 +60,7 @@ class SplashActivity : AppCompatActivity() {
                 } else {
                     dlg.setTitle("환영합니다") //제목
                     dlg.setMessage("추가 파일 설치가 필요합니다. 와이파이를 연결해주세요. \n\n다운로드 하시겠습니까? (30mb)") // 메시지
-                    dlg.setCancelable(false);
+                    dlg.setCancelable(false)
                     dlg.setPositiveButton("확인", DialogInterface.OnClickListener { dialog, which ->
                         loading()
                         modelManager.download(Model, conditions).addOnSuccessListener { modelManager.getDownloadedModels(
@@ -72,9 +73,9 @@ class SplashActivity : AppCompatActivity() {
                         }
                         }.addOnFailureListener {}
                     })
-                    dlg.setNegativeButton("취소", DialogInterface.OnClickListener { dialog, which ->
-                        System.exit(0)
-                    })
+                    dlg.setNegativeButton("취소") { _, _ ->
+                        exitProcess(0)
+                    }
                     dlg.show()
                 }
             }
@@ -87,7 +88,7 @@ class SplashActivity : AppCompatActivity() {
             {
                 progressDialog = ProgressDialog(this@SplashActivity, R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
                 progressDialog!!.setIndeterminate(true)
-                progressDialog!!.setCancelable(false);
+                progressDialog!!.setCancelable(false)
                 progressDialog!!.setMessage("필요한 파일을 다운로드 중입니다.\n잠시만 기다려 주세요.")
                 progressDialog!!.show()
             }, 0
