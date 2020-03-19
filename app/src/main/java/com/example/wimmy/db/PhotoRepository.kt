@@ -342,7 +342,7 @@ class PhotoRepository(application: Application) {
          .build()
       val translator = FirebaseNaturalLanguage.getInstance().getTranslator(options)
 
-      val bitmap = MediaStore_Dao.LoadThumbnailById(context, id)
+      val bitmap = MediaStore_Dao.LoadThumbnailById(context, id) ?: return
       val image = FirebaseVisionImage.fromBitmap(bitmap)
       val labeler = FirebaseVision.getInstance().onDeviceImageLabeler
       labeler.processImage(image)

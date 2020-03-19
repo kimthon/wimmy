@@ -12,6 +12,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.graphics.decodeBitmap
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.db.MediaStore_Dao
+import java.lang.Error
 import java.util.concurrent.SynchronousQueue
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
@@ -43,17 +44,20 @@ class ImageLoad(imageView: ImageView, id : Long) : Runnable {
 
     @Suppress("DEPRECATION")
     override fun run() {
-        val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
-        val image = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val src = ImageDecoder.createSource(imageView.context.contentResolver, uri)
-            ImageDecoder.decodeBitmap(src)
-        }
-        else {
-            MediaStore.Images.Media.getBitmap(imageView.context.contentResolver, uri)
-        }
+        try {
+            val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
+            val image = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val src = ImageDecoder.createSource(imageView.context.contentResolver, uri)
+                ImageDecoder.decodeBitmap(src)
+            } else {
+                MediaStore.Images.Media.getBitmap(imageView.context.contentResolver, uri)
+            } ?: return
 
-        handler.post {
-            imageView.setImageBitmap(image)
+            handler.post {
+                imageView.setImageBitmap(image)
+            }
+        } catch (e : Error) {
+            e.printStackTrace()
         }
     }
 }

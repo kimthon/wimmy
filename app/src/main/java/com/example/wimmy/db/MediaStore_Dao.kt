@@ -14,6 +14,7 @@ import android.util.Size
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import com.example.wimmy.Main_Map
 import com.google.android.gms.maps.model.LatLng
+import java.io.FileNotFoundException
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -250,15 +251,27 @@ object MediaStore_Dao {
     }
 
     @Suppress("DEPRECATION")
-    fun LoadThumbnailById(context: Context, id : Long) : Bitmap{
-        val bitmap : Bitmap = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+    fun LoadThumbnailById(context: Context, id : Long) : Bitmap?{
+        try {
+            val bitmap = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val uri =
+                    ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
+                context.contentResolver.loadThumbnail(uri, Size(100, 100), null)
+            } else {
+                MediaStore.Images.Thumbnails.getThumbnail(
+                    context.contentResolver,
+                    id,
+                    MediaStore.Images.Thumbnails.MINI_KIND,
+                    null
+                )
+            }) ?: return null
+            return modifyOrientaionById(context, id, bitmap)
+        } catch ( e: FileNotFoundException) {
+            e.printStackTrace()
             val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
-            context.contentResolver.loadThumbnail( uri, Size(100, 100), null)
+            context.contentResolver.delete(uri, null, null)
+            return null
         }
-        else {
-            MediaStore.Images.Thumbnails.getThumbnail( context.contentResolver, id, MediaStore.Images.Thumbnails.MINI_KIND, null)
-        }
-        return modifyOrientaionById(context, id, bitmap)
     }
 
     fun modifyOrientaionById(context: Context, id: Long, bitmap: Bitmap) : Bitmap {
