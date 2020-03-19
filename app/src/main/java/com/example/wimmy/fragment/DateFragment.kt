@@ -24,7 +24,6 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 open class DateFragment(v: AppBarLayout) : Fragment() {
-    private lateinit var header : LinearLayout
     private lateinit var gridView : GridView
     private lateinit var vm : PhotoViewModel
     private var size : Pair<Int, Int>? = null
@@ -82,8 +81,7 @@ open class DateFragment(v: AppBarLayout) : Fragment() {
     }
 
     fun setView(view : View?) {
-        header = view!!.findViewById(R.id.calendar_week)
-        gridView = view.findViewById(R.id.cal_grid)
+        gridView = view!!.findViewById(R.id.cal_grid)
     }
 
     fun setHeader(view : View?) {
@@ -155,7 +153,7 @@ open class DateFragment(v: AppBarLayout) : Fragment() {
     }
     private fun setGridLayout(view : View?) {
         val gridViewWrapper = view?.findViewById<LinearLayout>(R.id.cal_grid_wrapper)
-        val header = view?.findViewById<LinearLayout>(R.id.calendar_header)
+        val header = view?.findViewById<LinearLayout>(R.id.calendar_allheader)
         val statusBar = resources.getIdentifier("status_bar_height", "dimen", "android")
         val statusBarHeight = resources.getDimensionPixelSize(statusBar)
 
@@ -163,34 +161,23 @@ open class DateFragment(v: AppBarLayout) : Fragment() {
         super.getActivity()!!.windowManager.defaultDisplay.getMetrics(displayMetrics)
         val bnv = super.getActivity()!!.findViewById<BottomNavigationView>(R.id.bottomNavigationView)
 
-        gridViewWrapper?.viewTreeObserver?.addOnGlobalLayoutListener( object : ViewTreeObserver.OnGlobalLayoutListener {
-            @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
-            override fun onGlobalLayout() {
-                gridViewWrapper.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                //padding
-                val padding = header!!.paddingTop + calendar_week.paddingTop + gridViewWrapper!!.paddingTop
-                gridViewWrapper.layoutParams!!.height = displayMetrics.heightPixels - (header.height + calendar_week.height + bnv.height + statusBarHeight + padding)
-                gridViewWrapper.requestLayout()
-            }
-        })
+        //padding
+        val padding = header!!.paddingTop + header.paddingBottom + gridViewWrapper!!.paddingTop + gridViewWrapper.paddingBottom
+        gridViewWrapper.layoutParams!!.height = displayMetrics.heightPixels - (header.layoutParams.height + bnv.height + statusBarHeight + padding)
     }
 
     private fun setColumnSize(view : View, count : Int) {
+        val displayMetrics = DisplayMetrics()
+        super.getActivity()!!.windowManager.defaultDisplay.getMetrics(displayMetrics)
+
         val gridViewWrapper = view.findViewById<LinearLayout>(R.id.cal_grid_wrapper)
+        val density = context!!.resources.displayMetrics.density
+        val width = (displayMetrics.widthPixels - gridViewWrapper.paddingLeft - gridViewWrapper.paddingRight - (10*density).toInt()) / 7 - 1*density.toInt()
+        val height = (gridViewWrapper.layoutParams.height - 1*density.toInt()) / count - 1*density.toInt()
 
-        gridViewWrapper.viewTreeObserver.addOnGlobalLayoutListener( object : ViewTreeObserver.OnGlobalLayoutListener {
-            @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
-            override fun onGlobalLayout() {
-                gridViewWrapper.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                val density = context!!.resources.displayMetrics.density
-                val width = gridViewWrapper.width / 7 - 1*density.toInt()
-                val height = (gridViewWrapper.layoutParams.height - 1*density.toInt()) / count - 1*density.toInt()
-
-                val gridAdapter = gridView.adapter as DateAdapter
-                size = Pair(width, height)
-                gridAdapter.setDateSize(size as Pair<Int, Int>)
-            }
-        })
+        val gridAdapter = gridView.adapter as DateAdapter
+        size = Pair(width, height)
+        gridAdapter.setDateSize(size as Pair<Int, Int>)
     }
 
     fun setHeaderDate(month_text: TextView) {
