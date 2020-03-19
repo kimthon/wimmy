@@ -5,24 +5,32 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
 xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="wrap_content"
 android:layout_height="wrap_content"
+
 android:orientation="vertical">
-<ImageView
-    xmlns:android="http://schemas.android.com/apk/res/android"
 
-    android:id="@+id/thumbnail"
-
+    <com.makeramen.roundedimageview.RoundedImageView
+        android:id="@+id/thumbnail"
     android:layout_width="100dp"
     android:layout_height="100dp"
     android:scaleType="centerCrop"
-    />
+        app:riv_border_color="#333333"
+        app:riv_corner_radius_top_left="30dp"
+        app:riv_corner_radius_top_right="30dp"
+        app:riv_corner_radius_bottom_left="30dp"
+        app:riv_corner_radius_bottom_right="30dp"
+        app:riv_mutate_background="true"
+        app:riv_oval="false">
+
+    </com.makeramen.roundedimageview.RoundedImageView>
+
 
 <TextView
     android:id="@+id/thumbnail_text"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-
-    android:text="태그"
     android:textAlignment="center"
+    android:layout_marginHorizontal="5dp"
+    android:layout_marginBottom="10dp"
     android:gravity="center_horizontal"
     />
 </androidx.appcompat.widget.LinearLayoutCompat>

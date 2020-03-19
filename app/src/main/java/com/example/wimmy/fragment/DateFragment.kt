@@ -14,6 +14,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import com.example.wimmy.Activity.Main_PhotoView
 import com.example.wimmy.Adapter.DateAdapter
 import com.example.wimmy.db.PhotoViewModel
 import com.google.android.material.appbar.AppBarLayout
@@ -23,7 +24,7 @@ import kotlinx.android.synthetic.main.main_activity.view.*
 import java.util.*
 import kotlin.collections.ArrayList
 
-open class DateFragment(v: AppBarLayout) : Fragment() {
+class DateFragment(v: AppBarLayout) : Fragment() {
     private lateinit var gridView : GridView
     private lateinit var vm : PhotoViewModel
     private var size : Pair<Int, Int>? = null
@@ -64,7 +65,7 @@ open class DateFragment(v: AppBarLayout) : Fragment() {
         return thisview
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+   /* override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
@@ -78,7 +79,7 @@ open class DateFragment(v: AppBarLayout) : Fragment() {
                 }
             }
         }
-    }
+    }*/
 
     fun setView(view : View?) {
         gridView = view!!.findViewById(R.id.cal_grid)

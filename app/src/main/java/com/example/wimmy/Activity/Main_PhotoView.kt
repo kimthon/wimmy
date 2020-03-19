@@ -1,4 +1,4 @@
-package com.example.wimmy
+package com.example.wimmy.Activity
 
 import android.app.Activity
 import android.content.Intent
@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
+import com.example.wimmy.R
 import com.example.wimmy.db.*
 import kotlinx.android.synthetic.main.main_photoview.*
 import java.text.SimpleDateFormat
@@ -92,9 +93,9 @@ class Main_PhotoView: AppCompatActivity() {
             when (requestCode) {
                 100 -> {
                     if(data!!.hasExtra("delete_check")) {
-                        setView(photo_recyclerView)
+                        /*setView(photo_recyclerView)
                         setPhotoSize(3, 3)
-                        delete_check = 1
+                        delete_check = 1*/
                     }
                     val doc = data.getIntExtra("index", 0)
                     recyclerView?.scrollToPosition(doc)
@@ -146,6 +147,20 @@ class Main_PhotoView: AppCompatActivity() {
                 title.text = getname
             }
         }
+        else if (intent.hasExtra("file_name")) {
+            getname = intent.getStringExtra("file_name")
+            vm.setOpenFileDir(recyclerAdapter!!, getname)
+
+            title_type.setImageResource(R.drawable.ic_name)
+            title.text = getname
+        }
+        else if (intent.hasExtra("favorite")) {
+            vm.setOpenFavoriteDir(recyclerAdapter!!)
+
+            title_type.setImageResource(R.drawable.ic_favorite_checked)
+            title.text = "즐겨찾기"
+        }
+
     }
 
     fun updown_Listener(view: RecyclerView?) {

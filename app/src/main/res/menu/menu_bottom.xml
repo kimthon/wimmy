@@ -4,6 +4,11 @@
     android:id="@+id/menu_bottom">
 
     <item
+        android:id="@+id/menu_name"
+        android:icon="@drawable/ic_folder"
+        android:title="폴더" />
+
+    <item
         android:id="@+id/menu_tag"
         android:icon="@drawable/ic_tag"
         android:title="특징" />
@@ -17,11 +22,6 @@
         android:id="@+id/menu_location"
         android:icon="@drawable/ic_location"
         android:title="위치" />
-
-    <item
-        android:id="@+id/menu_name"
-        android:icon="@drawable/ic_folder"
-        android:title="폴더" />
 
 </menu>
 

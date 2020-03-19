@@ -54,7 +54,8 @@ class YearMonthPickerDialog<Button : View?>(v: View, tag: String): DialogFragmen
             }
             else if(tagname == "search")
             {
-                v.searchview.setQuery("${yearPicker.value}" + " " + "${monthPicker.value}", true)
+                if(monthPicker.value < 10) v.searchview.setQuery("${yearPicker.value}" + " " + "0${monthPicker.value}", true)
+                else v.searchview.setQuery("${yearPicker.value}" + " " + "${monthPicker.value}", true)
             }
             dismiss()
 

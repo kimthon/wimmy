@@ -1,9 +1,7 @@
-package com.example.wimmy
+package com.example.wimmy.Activity
 
 import android.Manifest
-import android.app.Activity
 import android.app.ProgressDialog
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -62,39 +60,22 @@ class SplashActivity : AppCompatActivity() {
                     } else {
                         dlg.setTitle("환영합니다") //제목
                         dlg.setMessage("추가 파일 설치가 필요합니다. 와이파이를 연결해주세요. \n\n다운로드 하시겠습니까? (30mb)") // 메시지
-                        dlg.setPositiveButton(
-                            "확인",
-                            DialogInterface.OnClickListener { dialog, which ->
-
+                        dlg.setCancelable(false);
+                        dlg.setPositiveButton("확인", DialogInterface.OnClickListener { dialog, which ->
                                 loading()
-                                modelManager.download(Model, conditions)
-                                    .addOnSuccessListener {
-                                        modelManager.getDownloadedModels(
-                                                FirebaseTranslateRemoteModel::class.java
-                                            )
-                                            .addOnSuccessListener { models ->
-                                                Toast.makeText(
-                                                    this@SplashActivity,
-                                                    "설치가 완료 되었습니다.",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
+                                modelManager.download(Model, conditions).addOnSuccessListener { modelManager.getDownloadedModels(
+                                            FirebaseTranslateRemoteModel::class.java).addOnSuccessListener { models ->
+                                                Toast.makeText(this@SplashActivity, "설치가 완료 되었습니다.", Toast.LENGTH_SHORT).show()
                                                 startActivity(intent)
                                                 finish()
                                                 loadingEnd()
-
-                                            }
-                                            .addOnFailureListener {
-                                            }
+                                            }.addOnFailureListener {
                                     }
-                                    .addOnFailureListener {
-                                    }
-
-                            })
-                        dlg.setNegativeButton(
-                            "취소",
-                            DialogInterface.OnClickListener { dialog, which ->
+                                }.addOnFailureListener {}
+                        })
+                        dlg.setNegativeButton("취소", DialogInterface.OnClickListener { dialog, which ->
                                 System.exit(0)
-                            })
+                        })
                         dlg.show()
                     }
             }
@@ -106,6 +87,7 @@ class SplashActivity : AppCompatActivity() {
             {
                 progressDialog = ProgressDialog(this@SplashActivity, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
                 progressDialog!!.setIndeterminate(true)
+                progressDialog!!.setCancelable(false);
                 progressDialog!!.setMessage("필요한 파일을 다운로드 중입니다.\n잠시만 기다려 주세요.")
                 progressDialog!!.show()
             }, 0
@@ -150,7 +132,9 @@ class SplashActivity : AppCompatActivity() {
             }
             else
             {
-                ActivityCompat.requestPermissions(this, arrayOf<String>(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), MY_PERMISSION_STORAGE)
+                ActivityCompat.requestPermissions(this, arrayOf<String>(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE),
+                    MY_PERMISSION_STORAGE
+                )
             }
         }
     }

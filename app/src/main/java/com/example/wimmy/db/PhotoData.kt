@@ -26,8 +26,7 @@ class ExtraPhotoData(
 )
 class TagData(
     var photo_id: Long,
-    var tag: String,
-    @ColumnInfo var type: String)
+    var tag: String)
 
 
 data class thumbnailData( var photo_id : Long,

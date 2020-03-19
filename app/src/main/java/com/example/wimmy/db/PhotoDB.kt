@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [TagData::class, ExtraPhotoData::class], version = 4)
+@Database(entities = [TagData::class, ExtraPhotoData::class], version = 6)
 abstract class PhotoDB: RoomDatabase() {
     abstract fun PhotoData_Dao() : PhotoData_Dao
 

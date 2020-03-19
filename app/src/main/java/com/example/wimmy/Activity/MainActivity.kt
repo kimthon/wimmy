@@ -1,46 +1,41 @@
-package com.example.wimmy
+package com.example.wimmy.Activity
 
-import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
 import android.provider.MediaStore
-import android.provider.Settings
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.core.view.children
-import androidx.core.view.get
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProviders
+import com.example.wimmy.ChangeObserver
+import com.example.wimmy.DateFragment
+import com.example.wimmy.R
 import com.example.wimmy.db.PhotoViewModel
-import com.example.wimmy.fragment.*
+import com.example.wimmy.fragment.LocationFragment
+import com.example.wimmy.fragment.NameFragment
+import com.example.wimmy.fragment.TagFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.main_activity.*
-import kotlinx.android.synthetic.main.main_map.*
-import kotlinx.coroutines.selects.select
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
@@ -121,6 +116,11 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 dlg.setNegativeButton("취소") { _, _ -> }
                 dlg.show()
             }
+            R.id.favorite -> {
+                val intent = Intent(this, Main_PhotoView::class.java)
+                intent.putExtra("favorite", "favorite")
+                startActivityForResult(intent, 300)
+            }
         }
 
         return super.onOptionsItemSelected(item)
@@ -144,27 +144,36 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }*/
 
     override fun onNavigationItemSelected(p0: MenuItem): Boolean {
-        val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
+        val fm = supportFragmentManager
+        val transaction: FragmentTransaction = fm.beginTransaction()
 
         when(p0.itemId){
-            R.id.menu_tag -> {
-                val fragmentB = TagFragment(appbar)
-                transaction.replace(R.id.frame_layout,fragmentB, "tag")
-            }
-            R.id.menu_cal -> {
-                val fragmentC = DateFragment(appbar)
-                transaction.replace(R.id.frame_layout,fragmentC, "cal")
-            }
-            R.id.menu_location -> {
-                val fragmentD = LocationFragment(appbar)
-                transaction.replace(R.id.frame_layout,fragmentD, "location")
-            }
-            R.id.menu_name ->{
+            R.id.menu_name -> {
+                fm.popBackStack("name", FragmentManager.POP_BACK_STACK_INCLUSIVE)
                 val fragmentA = NameFragment(appbar)
                 transaction.replace(R.id.frame_layout,fragmentA, "name")
+                transaction.addToBackStack("name")
+            }
+            R.id.menu_tag -> {
+                fm.popBackStack("tag", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                val fragmentB = TagFragment(appbar)
+                transaction.replace(R.id.frame_layout,fragmentB, "tag")
+                transaction.addToBackStack("tag")
+            }
+            R.id.menu_cal -> {
+                fm.popBackStack("cal", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                val fragmentC = DateFragment(appbar)
+                transaction.replace(R.id.frame_layout,fragmentC, "cal")
+                transaction.addToBackStack("cal")
+            }
+            R.id.menu_location -> {
+                fm.popBackStack("location", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                val fragmentD = LocationFragment(appbar)
+                transaction.replace(R.id.frame_layout,fragmentD, "location")
+                transaction.addToBackStack("location")
             }
         }
-        transaction.addToBackStack(null)
+
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
         transaction.commit()
         transaction.isAddToBackStackAllowed
@@ -176,7 +185,9 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             val tempTime = System.currentTimeMillis()
             val intervalTime = tempTime - backPressedTime
             if (0 <= intervalTime && FINISH_INTERVAL_TIME >= intervalTime) {
-                super.onBackPressed()
+                finishAffinity()
+                System.runFinalization()
+                System.exit(0)
             } else {
                 backPressedTime = tempTime
                 Toast.makeText(this, "'뒤로' 버튼을 한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
@@ -189,22 +200,23 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }
 
     private fun updateBottomMenu(navigation: BottomNavigationView) {
-        val tag1: Fragment? = supportFragmentManager.findFragmentByTag("tag")
-        val tag2: Fragment? = supportFragmentManager.findFragmentByTag("cal")
-        val tag3: Fragment? = supportFragmentManager.findFragmentByTag("location")
-        val tag4: Fragment? = supportFragmentManager.findFragmentByTag("name")
+        val tag1: Fragment? = supportFragmentManager.findFragmentByTag("name")
+        val tag2: Fragment? = supportFragmentManager.findFragmentByTag("tag")
+        val tag3: Fragment? = supportFragmentManager.findFragmentByTag("cal")
+        val tag4: Fragment? = supportFragmentManager.findFragmentByTag("location")
 
-        if(tag1 != null && tag1.isVisible) {navigation.menu.findItem(R.id.menu_tag).isChecked = true }
-        if(tag2 != null && tag2.isVisible) {navigation.menu.findItem(R.id.menu_cal).isChecked = true }
-        if(tag3 != null && tag3.isVisible) {navigation.menu.findItem(R.id.menu_location).isChecked = true }
-        if(tag4 != null && tag4.isVisible) {navigation.menu.findItem(R.id.menu_name).isChecked = true }
+        if(tag1 != null && tag1.isVisible) {navigation.menu.findItem(R.id.menu_name).isChecked = true }
+        if(tag2 != null && tag2.isVisible) {navigation.menu.findItem(R.id.menu_tag).isChecked = true }
+        if(tag3 != null && tag3.isVisible) {navigation.menu.findItem(R.id.menu_cal).isChecked = true }
+        if(tag4 != null && tag4.isVisible) {navigation.menu.findItem(R.id.menu_location).isChecked = true }
+
     }
 
     fun init(): Boolean{
         if(!init) {
             val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
-            val fragmentA = TagFragment(appbar)
-            transaction.replace(R.id.frame_layout, fragmentA, "tag")
+            val fragmentA = NameFragment(appbar)
+            transaction.replace(R.id.frame_layout, fragmentA, "name")
             transaction.commit()
             init = true
         }
@@ -214,7 +226,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     private fun captureCamera() {
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (takePictureIntent.resolveActivity(packageManager) != null) {
-
             try {
                 val photoFile = createImageFile()
                 if (photoFile != null) { // getUriForFile의 두 번째 인자는 Manifest provier의 authorites와 일치해야 함

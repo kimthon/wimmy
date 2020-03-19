@@ -1,6 +1,5 @@
 package com.example.wimmy.fragment
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -14,8 +13,11 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.*
+import com.example.wimmy.Activity.MainActivity
+import com.example.wimmy.Activity.Main_Map
 import com.example.wimmy.Adapter.RecyclerAdapterForder
-import com.example.wimmy.MainActivity.Companion.location_type
+import com.example.wimmy.Activity.MainActivity.Companion.location_type
+import com.example.wimmy.Activity.Main_PhotoView
 import com.google.android.material.appbar.AppBarLayout
 import kotlinx.android.synthetic.main.main_activity.view.*
 import com.example.wimmy.db.PhotoViewModel
@@ -32,7 +34,7 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
         ab.main_toolbar.visibility = View.VISIBLE
         ab.setExpanded(true,true)
 
-        thisview = inflater.inflate(R.layout.fragment_location, container, false)
+        thisview = inflater.inflate(R.layout.fragment_view, container, false)
         val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
         setView(thisview)
@@ -43,7 +45,7 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        setPhotoSize(this.view!!,3, 3)
+        setPhotoSize(this.view!!,3, 10)
         this.context!!.contentResolver.registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, false, observer)
     }
 
@@ -52,7 +54,7 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
         this.context!!.contentResolver.unregisterContentObserver(observer)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+   /* override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
@@ -64,15 +66,15 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
                 }
             }
         }
-    }
+    }*/
 
     private fun setView(view : View?) {
-        val recyclerView = view?.findViewById<RecyclerView>(R.id.locationRecycleView)
+        val recyclerView = view?.findViewById<RecyclerView>(R.id.fragment_RecycleView)
         recyclerAdapter =
             RecyclerAdapterForder(activity, ArrayList())
             {thumbnailData ->
                 if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
-                    if(thumbnailData.data == "위치 정보 없음" || location_type == 1) {
+                    if(location_type == 1) {
                         val intent = Intent(activity, Main_PhotoView::class.java)
                         intent.putExtra("location_name", thumbnailData.data)
                         startActivityForResult(intent, 201)
@@ -92,7 +94,7 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
     }
 
     private fun setPhotoSize(view : View, row : Int, padding : Int) {
-        val recyclerView = view.findViewById<RecyclerView>(R.id.locationRecycleView)
+        val recyclerView = view.findViewById<RecyclerView>(R.id.fragment_RecycleView)
         recyclerView.viewTreeObserver.addOnGlobalLayoutListener( object : ViewTreeObserver.OnGlobalLayoutListener {
             @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
             override fun onGlobalLayout() {

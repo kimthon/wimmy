@@ -1,4 +1,4 @@
-package com.example.wimmy
+package com.example.wimmy.Activity
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -10,9 +10,9 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -23,10 +23,12 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.example.wimmy.Adapter.PagerRecyclerAdapter
-import com.example.wimmy.Main_PhotoView.Companion.list
+import com.example.wimmy.Activity.Main_PhotoView.Companion.list
+import com.example.wimmy.R
 import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.db.TagData
+import com.example.wimmy.dialog.tagInsertDialog
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.photoview_frame.*
 import java.io.ByteArrayOutputStream
@@ -38,6 +40,9 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
     private lateinit var tag_name : AppCompatTextView
     private var index  = 0
     private var delete_check: Int = 0
+
+    private var Inflater: LayoutInflater? = null
+
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,8 +60,15 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
         val favorite = findViewById<ImageView>(R.id.favorite)
 
         bottom_photo_menu.setOnNavigationItemSelectedListener(this)
-        setView(view, mainphoto_toolbar, bottom_photo_menu)
+        try {
+            setView(view, mainphoto_toolbar, bottom_photo_menu)
+        } catch (e: Exception){
+            android.widget.Toast.makeText(this, "위치 데이터 초기 설정중입니다. 잠시만 기다려주세요", android.widget.Toast.LENGTH_SHORT)
+                .show()
+        }
+
         toolbar_text(index, text_name, date_name, location_name, tag_name, favorite)
+        Inflater = LayoutInflater.from(this)
 
         viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
 
@@ -71,6 +83,7 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
             }
 
             override fun onPageSelected(position: Int) {
+                index = position
                 toolbar_text(position, text_name, date_name, location_name, tag_name, favorite)
             }
         })
@@ -121,37 +134,38 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
 
         when(p0.itemId){
             R.id.menu_tag_insert -> {
-                val et = EditText(this@PhotoViewPager)
-                val dlg: AlertDialog.Builder = AlertDialog.Builder(this@PhotoViewPager,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
-                dlg.setTitle("특징 삽입")
-                dlg.setView(et)
-                dlg.setMessage("삽입할 사진의 특징을 입력해주세요 ")
-                dlg.setIcon(R.drawable.ic_tag)
-                dlg.setPositiveButton("확인") { _, _ ->
-                    Toast.makeText(this, "입력 완료 되었습니다.", Toast.LENGTH_SHORT).show()
-                    vm.Insert(TagData(list[index].photo_id, et.text.toString(), "manual"))
-                    vm.setTags(tag_name, list[index].photo_id)
-                }
-                dlg.setNegativeButton("취소") { _, _ -> }
-                dlg.show()
+                insertTag()
             }
             R.id.menu_share -> {
-                val intent = Intent(Intent.ACTION_SEND)
-                val path = MediaStore_Dao.getPathById(this, list[index].photo_id)
-                var bitmap = BitmapFactory.decodeFile(path)
-                bitmap =  MediaStore_Dao.modifyOrientaionById(this, list[index].photo_id, bitmap)
-                val uri: Uri? = getImageUri(this, bitmap)
-                intent.type = "image/*"
-                intent.putExtra(Intent.EXTRA_STREAM, uri)
-                val chooser = Intent.createChooser(intent, "친구에게 공유하기")
-                startActivity(chooser)
+                share()
             }
             R.id.menu_delete -> {
                 delete(imgViewPager, mainphoto_toolbar, bottom_photo_menu)
             }
         }
+
         return true
     }
+
+    private fun insertTag() {
+        val popupInputDialogView: View = layoutInflater.inflate(R.layout.tag_diaglog, null)
+        val dlg: tagInsertDialog = tagInsertDialog(this, popupInputDialogView, vm, index, tag_name)
+        dlg.show(supportFragmentManager, "tagInsertDialog")
+    }
+
+
+    private fun share() {
+        val intent = Intent(Intent.ACTION_SEND)
+        val path = MediaStore_Dao.getPathById(this, list[index].photo_id)
+        var bitmap = BitmapFactory.decodeFile(path)
+        bitmap =  MediaStore_Dao.modifyOrientaionById(this, list[index].photo_id, bitmap)
+        val uri: Uri? = getImageUri(this, bitmap)
+        intent.setType("image/*")
+        intent.putExtra(Intent.EXTRA_STREAM, uri)
+        val chooser = Intent.createChooser(intent, "친구에게 공유하기")
+        startActivity(chooser)
+    }
+
 
     private fun getImageUri(context: Context, inImage: Bitmap): Uri? {
         val bytes = ByteArrayOutputStream()
@@ -171,6 +185,7 @@ class PhotoViewPager(): AppCompatActivity(), BottomNavigationView.OnNavigationIt
         dlg.setTitle("사진 삭제")
 
         dlg.setMessage("정말 삭제하시겠습니까? ")
+        dlg.setCancelable(false);
         dlg.setIcon(R.drawable.ic_delete)
         dlg.setPositiveButton("확인") { _, _ ->
             vm.Delete(this, list[index].photo_id)
