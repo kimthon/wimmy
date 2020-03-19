@@ -45,7 +45,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     private lateinit var observer: ChangeObserver
     var init_check: Int = 0
     lateinit var vm: PhotoViewModel
-    private var check_fragment: Int = 0
 
     companion object {
         var location_type: Int = 0
@@ -144,36 +143,34 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     override fun onNavigationItemSelected(p0: MenuItem): Boolean {
         val fm = supportFragmentManager
         val transaction: FragmentTransaction = fm.beginTransaction()
-        val frag: Fragment? = fm.findFragmentById(R.id.frame_layout)
-        val fragtag: String? = frag?.getTag()
-        fm.popBackStack(fragtag, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+
         when(p0.itemId){
-            R.id.menu_name ->{
-                if(fragtag == "name") check_fragment = 1
-                else check_fragment = 0
+            R.id.menu_name -> {
+                fm.popBackStack("name", FragmentManager.POP_BACK_STACK_INCLUSIVE)
                 val fragmentA = NameFragment(appbar)
                 transaction.replace(R.id.frame_layout,fragmentA, "name")
+                transaction.addToBackStack("name")
             }
             R.id.menu_tag -> {
-                if(fragtag == "tag") check_fragment = 1
-                else check_fragment = 0
+                fm.popBackStack("tag", FragmentManager.POP_BACK_STACK_INCLUSIVE)
                 val fragmentB = TagFragment(appbar)
                 transaction.replace(R.id.frame_layout,fragmentB, "tag")
+                transaction.addToBackStack("tag")
             }
             R.id.menu_cal -> {
-                if(fragtag == "cal") check_fragment = 1
-                else check_fragment = 0
+                fm.popBackStack("cal", FragmentManager.POP_BACK_STACK_INCLUSIVE)
                 val fragmentC = DateFragment(appbar)
                 transaction.replace(R.id.frame_layout,fragmentC, "cal")
+                transaction.addToBackStack("cal")
             }
             R.id.menu_location -> {
-                if(fragtag == "location") check_fragment = 1
-                else check_fragment = 0
+                fm.popBackStack("location", FragmentManager.POP_BACK_STACK_INCLUSIVE)
                 val fragmentD = LocationFragment(appbar)
                 transaction.replace(R.id.frame_layout,fragmentD, "location")
+                transaction.addToBackStack("location")
             }
         }
-        transaction.addToBackStack(fragtag)
+
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
         transaction.commit()
         transaction.isAddToBackStackAllowed
@@ -181,10 +178,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }
 
     override fun onBackPressed() {
-        if(check_fragment == 1) {
-            super.onBackPressed();
-            check_fragment = 0
-        }
         if(supportFragmentManager.backStackEntryCount == 0) {
             var tempTime = System.currentTimeMillis();
             var intervalTime = tempTime - backPressedTime;
