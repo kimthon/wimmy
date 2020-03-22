@@ -11,17 +11,16 @@ import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
+import com.example.wimmy.*
 import com.example.wimmy.Activity.Main_Map.Companion.selectedMarker
+import com.example.wimmy.Activity.Main_PhotoView.Companion.list
 import com.example.wimmy.Activity.MarkerClusterRenderer.Companion.createDrawableFromView
-import com.example.wimmy.ImageLoad
-import com.example.wimmy.ImageLoder
 import com.example.wimmy.R
 import com.example.wimmy.db.LatLngData
 import com.example.wimmy.db.PhotoViewModel
@@ -39,8 +38,8 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mClusterManager: ClusterManager<LatLngData>
     private lateinit var clusterRenderer: DefaultClusterRenderer<LatLngData>
     private val builder: LatLngBounds.Builder = LatLngBounds.builder()
-    private val ZoomLevel: Int = 12
-    private var size_check: Int = 0
+    private val zoomLevel: Int = 12
+    private var sizeCheck: Int = 0
     private var mLastClickTime: Long = 0
 
     private lateinit var marker_view: View
@@ -68,8 +67,8 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        mMap.uiSettings.isMyLocationButtonEnabled = true;
-        mMap.uiSettings.isZoomControlsEnabled = true;
+        mMap.uiSettings.isMyLocationButtonEnabled = true
+        mMap.uiSettings.isZoomControlsEnabled = true
 
         mClusterManager = ClusterManager<LatLngData>(this, mMap)
         clusterRenderer = MarkerClusterRenderer(this, mMap, mClusterManager, marker_view, vm)
@@ -97,7 +96,7 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
     }
 
     fun cameraInit() {
-        if(size_check < 100) {
+        if(sizeCheck < 100) {
             boundmap()
         }
         loading_location_name.visibility = View.GONE
@@ -113,7 +112,7 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
                 }
             }
             val bounds_c: LatLngBounds = builder_c.build()
-            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds_c, ZoomLevel))
+            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds_c, zoomLevel))
             val zoom: Float = mMap.cameraPosition.zoom - 0.5f
             mMap.animateCamera(CameraUpdateFactory.zoomTo(zoom))
             true
@@ -127,13 +126,34 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
             val center: CameraUpdate = CameraUpdateFactory.newLatLng(p0?.position)
             mMap!!.animateCamera(center)
             ImageLoder.execute(ImageLoad(map_image, p0.id))
-            vm.setName(map_name, p0.id )
-            vm.setDate(map_date, p0.id)
-            vm.setLocation(map_location, p0.id)
-            vm.checkFavorite(map_favorite, p0.id)
-            vm.setTags(map_tag, p0.id)
+            DBThread.execute {
+                val data = vm.getName(applicationContext, p0.id)
+                MainHandler.post { map_name.text = data }
+            }
 
-            Log.d("qweqwe","wqe")
+            DBThread.execute {
+                val data = vm.getStringDate(applicationContext, p0.id)
+                MainHandler.post { map_date.text = data}
+            }
+
+            DBThread.execute {
+                val data = vm.getLocation(applicationContext, p0.id)
+                MainHandler.post { map_location.text = data}
+            }
+
+            DBThread.execute {
+                val data = vm.getTags(p0.id)
+                MainHandler.post { map_tag.text = data }
+            }
+
+            DBThread.execute {
+                val data = vm.getFavorite(p0.id)
+                MainHandler.post {
+                    if (data) map_favorite.setImageResource(R.drawable.ic_favorite_checked)
+                    else map_favorite.setImageResource(R.drawable.ic_favorite)
+                }
+            }
+
             changeRenderer(p0)
 
             card_view.setOnClickListener {
@@ -151,7 +171,7 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
 
     fun boundmap() {
         val bounds: LatLngBounds = builder.build()
-        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, ZoomLevel))
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, zoomLevel))
         val zoom: Float = mMap.getCameraPosition().zoom - 0.5f
         mMap.animateCamera(CameraUpdateFactory.zoomTo(zoom))
     }
@@ -170,7 +190,11 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
 
             if (clusterRenderer.getMarker(item) != null) {
                 tag_marker.setBackgroundResource(R.drawable.map_marker_checked)
-                vm.setTags(clusterRenderer.getMarker(item), item.id)
+                DBThread.execute {
+                    val tags = vm.getTags(item.id)
+                    MainHandler.post { clusterRenderer.getMarker(item).title = tags }
+                }
+
                 markerScale(150)
                 clusterRenderer.getMarker(item).setIcon(
                     BitmapDescriptorFactory.fromBitmap(
@@ -196,24 +220,42 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
     }
 
     fun getExtra(){
-        size_check = 0
+        sizeCheck = 0
         if (intent.hasExtra("location_name")) {
             val getname = intent.getStringExtra("location_name")
             val title: TextView = findViewById(R.id.title_location_name)
             title.text = getname
-            vm.setOpenLocationDir(this, getname, this@Main_Map)
+            DirectoryThread.execute {
+                val idCursor = vm.getOpenLocationDirIdCursor(getname)
+                if(vm.CursorIsValid(idCursor)) {
+                    list.clear()
+                    do {
+                        val data = vm.getThumbnailDataByIdCursor(this.applicationContext, idCursor!!)
+                        if(data != null) {
+                            list.add(data)
+                            val latlng = vm.getLatLngById(this.applicationContext, data.photo_id)
+                            if(latlng != null) {
+                                addLatLNgData(data.photo_id, latlng)
+                            }
+                        }
+                    } while (idCursor!!.moveToNext())
+
+                    MainHandler.post{ cameraInit() }
+                    idCursor!!.close()
+                }
+            }
         }
     }
 
     fun addLatLNgData(id : Long, latlng : LatLng) {
         val data = LatLngData(index++, id, latlng)
-        if(size_check == 0) {
+        if(sizeCheck == 0) {
             Handler(Looper.getMainLooper()).post { mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(data.latlng, 12F)) }
         }
         mClusterManager.addItem(data)
         builder.include(data.latlng)
-        size_check++
-        if(size_check == 100) {
+        sizeCheck++
+        if(sizeCheck == 100) {
             Handler(Looper.getMainLooper()).post {boundmap()}
         }
     }

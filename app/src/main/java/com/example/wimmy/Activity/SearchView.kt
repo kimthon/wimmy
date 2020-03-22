@@ -1,13 +1,10 @@
 package com.example.wimmy.Activity
 
 import YearMonthPickerDialog
-import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
-import android.util.DisplayMetrics
-import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
@@ -18,6 +15,8 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
+import com.example.wimmy.DirectoryThread
+import com.example.wimmy.MainHandler
 import com.example.wimmy.R
 import com.example.wimmy.db.*
 import kotlinx.android.synthetic.main.search_view.*
@@ -26,8 +25,7 @@ import java.util.*
 class SearchView: AppCompatActivity() {
 
     private var thumbnailList = arrayListOf<thumbnailData>()
-
-    private var recyclerAdapter : RecyclerAdapterForder?= null
+    private lateinit var recyclerAdapter : RecyclerAdapterForder
     private lateinit var recyclerView : RecyclerView
     private var mLastClickTime: Long = 0
     private lateinit var vm: PhotoViewModel
@@ -44,8 +42,6 @@ class SearchView: AppCompatActivity() {
         searchResult()
     }
 
-
-
     private fun setView(type : String) {
         recyclerView = findViewById(R.id.search_recyclerView)
         recyclerAdapter = RecyclerAdapterForder(this, thumbnailList)
@@ -61,14 +57,13 @@ class SearchView: AppCompatActivity() {
                         intent.putExtra(type, thumbnailData.data)
                         startActivityForResult(intent, 201)
                     }
-
                 }
                 mLastClickTime = SystemClock.elapsedRealtime()
             }
-        recyclerView?.adapter = recyclerAdapter
+        recyclerView.adapter = recyclerAdapter
 
         val lm = GridLayoutManager(MainActivity(), 3)
-        recyclerView!!.layoutManager = lm
+        recyclerView.layoutManager = lm
     }
 
     private fun setPhotoSize(row : Int, padding : Int) {
@@ -78,7 +73,7 @@ class SearchView: AppCompatActivity() {
             override fun onGlobalLayout() {
                 val width = recyclerView.width
                 val size = width / row - 2 * padding
-                recyclerAdapter!!.setPhotoSize(size, padding)
+                recyclerAdapter.setPhotoSize(size, padding)
                 recyclerView.viewTreeObserver.removeOnGlobalLayoutListener(this)
             }
         })
@@ -121,26 +116,43 @@ class SearchView: AppCompatActivity() {
 
                     0 -> {
                         setView("tag_name")
-                        vm.setTagDirSearch(recyclerAdapter!!, query!!)
+                        DirectoryThread.execute {
+                            val list = vm.getTagDirSearch(query!!)
+                            MainHandler.post {
+                                recyclerAdapter.setThumbnailList(list)
+                            }
+                        }
                     }   // 태그
 
                     1 -> {
                         setView("location_name")
-                        vm.setLocationDirSearch(recyclerAdapter!!, query!!)
+                        DirectoryThread.execute {
+                            val list = vm.getLocationDirSearch(query!!)
+                            MainHandler.post { recyclerAdapter.setThumbnailList(list) }
+                        }
                     }   // 위치
 
                     2 -> {
                         setView("file_name")
-                        vm.setNameDirSearch(recyclerAdapter!!, query!!)
+                        DirectoryThread.execute {
+                            val list = vm.getNameDirSearch(searchview.context, query!!)
+                            MainHandler.post {
+                                recyclerAdapter.setThumbnailList(list)
+                            }
+                        }
                     }   // 이름
 
                     3 -> {
                         val cal: Calendar = Calendar.getInstance()
                         try {
-                            cal.set(query!!.substring(0, 4).toInt(), query!!.substring(5, 7).toInt() - 1, 1, 0, 0, 0)
-                            Log.d("값>", cal.time.toString())
+                            cal.set(query!!.substring(0, 4).toInt(), query.substring(5, 7).toInt() - 1, 1, 0, 0, 0)
                             setView("date_name")
-                            vm.setDateDirSearch(recyclerAdapter!!, cal)
+                            DirectoryThread.execute {
+                                val list = vm.getDateDirSearch(searchview.context, cal)
+                                MainHandler.post {
+                                    recyclerAdapter.setThumbnailList(list)
+                                }
+                            }
                         } catch (e: Exception) {
                             Toast.makeText(this@SearchView, "올바른 날짜 정보를 입력해주세요. (ex. 2020 03)", Toast.LENGTH_SHORT).show()
                         }

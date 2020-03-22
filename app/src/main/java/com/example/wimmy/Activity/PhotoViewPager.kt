@@ -23,6 +23,8 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
 import com.example.wimmy.Adapter.PagerRecyclerAdapter
 import com.example.wimmy.Activity.Main_PhotoView.Companion.list
+import com.example.wimmy.DBThread
+import com.example.wimmy.MainHandler
 import com.example.wimmy.R
 import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoViewModel
@@ -106,14 +108,38 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
     fun toolbar_text(position: Int, name: AppCompatTextView, date: AppCompatTextView, location: AppCompatTextView, tag: AppCompatTextView, favorite: ImageView){
         val id = list[position].photo_id
 
-        vm.setName(name, id)
-        vm.setDate(date, id)
-        vm.setLocation(location, id)
-        vm.setTags(tag, id)
-        vm.checkFavorite(favorite, id)
+        DBThread.execute {
+            val data = vm.getName(this.applicationContext, id)
+            MainHandler.post { name.text = data }
+        }
+
+        DBThread.execute {
+            val data = vm.getStringDate(applicationContext, id)
+            MainHandler.post { date.text = data}
+        }
+
+        DBThread.execute {
+            val data = vm.getLocation(applicationContext, id)
+            MainHandler.post { location.text = data}
+        }
+
+        DBThread.execute {
+            val data = vm.getTags(id)
+            MainHandler.post { tag.text = data }
+        }
+
+        DBThread.execute {
+            val data = vm.getFavorite(id)
+            if (data) favorite.setImageResource(R.drawable.ic_favorite_checked)
+            else favorite.setImageResource(R.drawable.ic_favorite)
+        }
 
         favorite.setOnClickListener {
-            vm.changeFavorite(favorite, id)
+            DBThread.execute {
+                val data = vm.changeFavorite(id)
+                if (data) favorite.setImageResource(R.drawable.ic_favorite_checked)
+                else favorite.setImageResource(R.drawable.ic_favorite)
+            }
         }
     }
 
@@ -187,7 +213,9 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
         dlg.setCancelable(false)
         dlg.setIcon(R.drawable.ic_delete)
         dlg.setPositiveButton("확인") { _, _ ->
-            vm.Delete(this, list[index].photo_id)
+            val id = list[index].photo_id
+            DBThread.execute { vm.Delete(this, id) }
+
             list.removeAt(index)
             Toast.makeText(this, "삭제 완료 되었습니다.", Toast.LENGTH_SHORT).show()
             if(index == 0 && list.size == 0) {

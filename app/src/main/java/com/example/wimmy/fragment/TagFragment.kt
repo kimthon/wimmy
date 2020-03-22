@@ -1,6 +1,5 @@
 package com.example.wimmy.fragment
 
-
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -17,14 +16,16 @@ import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.example.wimmy.DataBaseObserver
 import com.example.wimmy.Activity.MainActivity
 import com.example.wimmy.Activity.Main_PhotoView
+import com.example.wimmy.DirectoryThread
+import com.example.wimmy.MainHandler
 import com.example.wimmy.R
 import com.example.wimmy.db.PhotoViewModel
 import com.google.android.material.appbar.AppBarLayout
 import kotlinx.android.synthetic.main.main_activity.view.*
 
 class TagFragment(v: AppBarLayout) : Fragment() {
-    private var thisview: View? = null
-    private var recyclerAdapter : RecyclerAdapterForder?= null
+    private lateinit var thisview: View
+    private lateinit var recyclerAdapter : RecyclerAdapterForder
     private lateinit var observer : DataBaseObserver
     private var mLastClickTime: Long = 0
     val ab = v
@@ -38,7 +39,10 @@ class TagFragment(v: AppBarLayout) : Fragment() {
         val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
         setView(thisview)
-        vm.setTagDir(recyclerAdapter!!)
+        DirectoryThread.execute {
+            val list = vm.getTagDir()
+            MainHandler.post { recyclerAdapter.setThumbnailList(list)}
+        }
         observer = DataBaseObserver(Handler(), recyclerAdapter!!)
 
         return thisview

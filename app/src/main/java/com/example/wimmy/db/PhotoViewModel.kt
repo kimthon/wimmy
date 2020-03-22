@@ -2,17 +2,14 @@ package com.example.wimmy.db
 
 import android.app.Application
 import android.content.Context
-import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
+import android.database.Cursor
 import androidx.lifecycle.AndroidViewModel
-import com.example.wimmy.Adapter.RecyclerAdapterForder
-import com.example.wimmy.Adapter.RecyclerAdapterPhoto
-import com.example.wimmy.Activity.Main_Map
-import com.example.wimmy.dialog.tagInsertDialog
+import com.example.wimmy.DBThread
+import com.example.wimmy.DirectoryThread
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
+import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 class PhotoViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -34,104 +31,169 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         repo.deleteTag(id)
     }
     // 폴더 보기
-    fun setCalendarTag(textView: TextView, inputCalendar: Calendar) {
-        repo.setCalendarTag(textView, inputCalendar)
+    fun getCalendarTags(context: Context, inputCalendar: Calendar) : List<String> {
+        return repo.getCalendarTag(context, inputCalendar)
     }
 
-    fun setLocationDir(adapter: RecyclerAdapterForder) {
-        repo.setLocationDir(adapter)
+    fun getLocationDir() : ArrayList<thumbnailData>{
+        if(DirectoryThread.isTerminating) DirectoryThread.shutdownNow()
+        return repo.getLocationDir()
     }
 
-    fun setNameDir(adapter: RecyclerAdapterForder) {
-        repo.setNameDir(adapter)
+    fun getNameDir(context: Context) : ArrayList<thumbnailData>{
+        if(DirectoryThread.isTerminating) DirectoryThread.shutdownNow()
+        return repo.getNameDir(context)
     }
 
-    fun setTagDir(adapter: RecyclerAdapterForder) {
-        repo.setTagDir(adapter)
+    fun getTagDir() : ArrayList<thumbnailData>{
+        if(DBThread.isTerminating) DBThread.shutdownNow()
+        return repo.getTagDir()
     }
 
     // 검색
-    fun setNameDirSearch(adapter: RecyclerAdapterForder, name: String) {
-        repo.setNameDirSearch(adapter, name)
+    fun getNameDirSearch(context: Context, name: String) : ArrayList<thumbnailData>{
+        if(DBThread.isTerminating) DBThread.shutdownNow()
+        return repo.getNameDirSearch(context, name)
     }
 
-    fun setLocationDirSearch(adapter: RecyclerAdapterForder, location: String) {
-        repo.setLocationDirSearch(adapter, location)
+    fun getLocationDirSearch(location: String) : ArrayList<thumbnailData>{
+        if(DBThread.isTerminating) DBThread.shutdownNow()
+        return repo.getLocationDirSearch(location)
     }
 
-    fun setDateDirSearch(adapter: RecyclerAdapterForder, cal: Calendar) {
-        repo.setDateDirSearch(adapter, cal)
+    fun getDateDirSearch(context: Context, cal: Calendar) : ArrayList<thumbnailData>{
+        if(DBThread.isTerminating) DBThread.shutdownNow()
+        return repo.getDateDirSearch(context, cal)
     }
 
-    fun setTagDirSearch(adapter: RecyclerAdapterForder, tag: String) {
-        repo.setTagDirSearch(adapter, tag)
+    fun getTagDirSearch(tag: String) : ArrayList<thumbnailData>{
+        if(DBThread.isTerminating) DBThread.shutdownNow()
+        return repo.getTagDirSearch(tag)
     }
 
     // 폴더 내용 보기
-    fun setOpenDateDir(adapter: RecyclerAdapterPhoto, cal : Calendar) {
-        repo.setOpenDateDir(adapter, cal)
-    }
-    fun setOpenLocationDir(adapter: RecyclerAdapterPhoto, loc : String) {
-        repo.setOpenLocationDir(adapter, loc)
+    fun getOpenDateDirCursor(context: Context, cal : Calendar) : Cursor? {
+        return repo.getOpenDateDirCursor(context, cal)
     }
 
-    // test
-    fun setOpenLocationDir(context: Context, loc : String, map: Main_Map) {
-        repo.setOpenLocationDir(context, loc, map)
+    fun getOpenLocationDirIdCursor(loc: String) : Cursor? {
+        return repo.getOpenLocationDirIdCursor(loc)
     }
 
-
-    fun setOpenNameDir(adapter: RecyclerAdapterPhoto, path : String) {
-        repo.setOpenNameDir(adapter, path)
+    fun getOpenNameDirCursor(context: Context, path : String) : Cursor? {
+        return repo.getOpenNameDirCursor(context, path)
     }
 
-    fun setOpenFileDir(adapter: RecyclerAdapterPhoto, name : String) {
-        repo.setOpenFileDir(adapter, name)
+    fun getOpenFileDirCursor(context: Context, name : String) : Cursor? {
+        return repo.getOpenFileDirCursor(context , name)
     }
 
-    fun setOpenTagDir(adapter: RecyclerAdapterPhoto, tag : String) {
-        repo.setOpenTagDir(adapter, tag)
+    fun getOpenTagDirIdCursor(tag : String) : Cursor? {
+        return repo.getOpenTagDirIdCursor(tag)
     }
 
-    fun setOpenFavoriteDir(adapter: RecyclerAdapterPhoto) {
-        repo.setOpenFavoriteDir(adapter)
+    fun getOpenFavoriteDirIdCursor() : Cursor? {
+        return repo.getOpenFavoriteDirIdCursor()
     }
 
     // 기타 기능
-    fun setName(textView: TextView, id: Long) {
-        repo.setName(textView, id)
+    fun getFullName(context: Context, id: Long) : String {
+        return repo.getName(context , id)
     }
 
-    fun setDate(textView: TextView, id: Long) {
-        repo.setDate(textView, id)
+    fun getName(context: Context, id: Long) : String {
+        var name = repo.getName(context, id)
+        if(name.length >= 40) {
+            name = name.substring(0, 39)
+            name += ".."
+        }
+        return name
     }
 
-    fun setLocation(textView: TextView, id : Long) {
-        repo.setLocation(textView, id)
+    fun getLongDate(context: Context, id: Long) : Long? {
+        return repo.getDate(context, id)
     }
 
-    fun setTags(textView: TextView, id : Long) {
-        repo.setTags(textView, id)
+    fun getStringDate(context: Context, id: Long) : String {
+        val date = repo.getDate(context, id)
+        return if(date == null) { "날짜 정보 없음" }
+        else {
+            val formatter = SimpleDateFormat("yyyy년 MM월 dd일 (E) / HH:mm:ss", Locale.getDefault())
+            (formatter).format(date)
+        }
     }
 
-    fun setTags(marker: Marker, id : Long) {
-        repo.setTags(marker, id)
+    fun getFullLocation(context: Context, id : Long) : String{
+        return repo.getLocation(context, id)
     }
 
-    fun getTags(tagInsertDialog: tagInsertDialog, view: View, id : Long) {
-        repo.getTags(tagInsertDialog, view, id)
+    fun getLocation(context: Context, id : Long) : String{
+        var loc =  repo.getLocation(context, id)
+        if(loc.length >=30) {
+            loc = loc.substring(0, 29)
+            loc += ".."
+        }
+        return loc
     }
 
-    fun checkFavorite(imageView: ImageView, id: Long) {
-        repo.checkFavorite(imageView, id)
+    fun getTagList(id : Long) : List<String> {
+        return repo.getTagList(id)
     }
 
-    fun changeFavorite(imageView: ImageView, id: Long){
-        repo.changeFavorite(imageView, id)
+    fun getTags(id : Long) : String {
+        val tagList = repo.getTagList(id)
+        var tags = tagList.joinToString(", ")
+        if(tags.length >= 30) {
+            tags = tags.substring(0, 29)
+            tags += ".."
+        }
+        return tags
     }
 
-    fun checkChangedData(context: Context) {
-        repo.checkChangedData(context)
+    fun getFavorite(id : Long) : Boolean {
+        return repo.getFavorite(id)
+    }
+
+    fun getThumbnailDataByCursor(cursor : Cursor) : thumbnailData {
+        return MediaStore_Dao.getThumbnailDataByCursor(cursor)
+    }
+
+    fun getThumbnailDataByIdCursor(context: Context, idCursor : Cursor) : thumbnailData? {
+        val id = idCursor.getLong(idCursor.getColumnIndex("photo_id"))
+        val name = MediaStore_Dao.getNameById(context, id)
+        if(name == null) {
+            repo.deleteById(context, id)
+            return null
+        }
+        return thumbnailData(id, name)
+    }
+
+    fun getLatLngById(context: Context, id: Long) : LatLng?{
+        return MediaStore_Dao.getLatLngById(context, id)
+    }
+
+    fun CursorIsValid(cursor: Cursor?) : Boolean {
+        return MediaStore_Dao.cursorIsValid(cursor)
+    }
+
+    fun CheckIdCursorValid(context: Context, cursor: Cursor) : Boolean {
+        val id = cursor.getLong(cursor.getColumnIndex("photo_id"))
+        if (!MediaStore_Dao.IsItValidId(context, id)) {
+            repo.deleteById(context, id)
+        }
+        return MediaStore_Dao.IsItValidId(context, id)
+    }
+
+    fun changeFavorite(id: Long) : Boolean {
+        return repo.changeFavorite(id)
+    }
+
+    fun getNewlySortedCursor(context: Context, lastAddedDate : Long) : Cursor? {
+        return repo.getNewlySortedCursor(context, lastAddedDate)
+    }
+
+    fun getIdCursor() : Cursor? {
+       return repo.getIdCursor()
     }
 
     fun Drop(context: Context) {

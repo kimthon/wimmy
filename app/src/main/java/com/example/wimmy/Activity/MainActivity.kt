@@ -2,8 +2,12 @@ package com.example.wimmy.Activity
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
@@ -21,14 +25,19 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProviders
-import com.example.wimmy.ChangeObserver
-import com.example.wimmy.DateFragment
-import com.example.wimmy.R
+import com.example.wimmy.*
+import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoViewModel
+import com.example.wimmy.db.TagData
 import com.example.wimmy.fragment.LocationFragment
 import com.example.wimmy.fragment.NameFragment
 import com.example.wimmy.fragment.TagFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.ml.naturallanguage.FirebaseNaturalLanguage
+import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslateLanguage
+import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslatorOptions
+import com.google.firebase.ml.vision.FirebaseVision
+import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import kotlinx.android.synthetic.main.main_activity.*
 import java.io.File
 import java.io.IOException
@@ -60,10 +69,12 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
         vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
-        vm.Drop(this)
-        vm.checkChangedData(this)
+        DBThread.execute {
+            vm.Drop(this)
+            CheckChangeData()
+        }
 
-        observer = ChangeObserver( Handler(), vm, this )
+        observer = ChangeObserver( Handler(), this)
         this.contentResolver.registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, false, observer)
 
         val go_search = findViewById<ImageView>(R.id.main_search_button)
@@ -282,6 +293,114 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         Toast.makeText(this, "사진이 앨범에 저장되었습니다.", Toast.LENGTH_SHORT).show()
     }
 
+
+    // 위험 권한, 권한 전용 팝업
+    // 안드로이드 앱 개발시 TargetSDK가 마시멜로 버전(APK 23)이상인 경우, 디바이스의 특정 기능을 사용할 때 권한을 요구하는데
+    // 그 권한 중에 위험 권한으로 분류된 권한은 개발자가 직접 사용자에게 권한 허용을 물을 수 있도록 작성해야한다.
+    // 즉, 코드로 작성해야함.
+
+    fun CheckChangeData() {
+        if(ChangeCheckThread.isTerminating) ChangeCheckThread.shutdownNow()
+        ChangeCheckThread.execute {
+            CheckAddedPhoto()
+            CheckDeletedPhoto()
+        }
+    }
+
+    private fun CheckAddedPhoto() {
+        val pref = getSharedPreferences("pref", Context.MODE_PRIVATE)
+        val editor = pref.edit()
+        var lastAddedDate = pref.getLong("lastAddedDate", 0)
+        val cursor = vm.getNewlySortedCursor(this, lastAddedDate)
+
+        if (MediaStore_Dao.cursorIsValid(cursor)) {
+            do {
+                val id = cursor!!.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
+                // 인터넷이 끊길 시 스톱
+                if (!NetworkIsValid(this)) break
+                ChangeCheckThread.execute {
+                    vm.getFullLocation(this, id)
+                    vm.getFavorite(id)
+                    AddTagsByApi(this, id)
+                }
+
+                lastAddedDate = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_ADDED))
+                editor.putLong("lastAddedDate", lastAddedDate)
+                editor.apply()
+            } while (cursor!!.moveToNext())
+            cursor.close()
+        }
+    }
+
+    private fun CheckDeletedPhoto() {
+        val idCursor = vm.getIdCursor()
+        if (MediaStore_Dao.cursorIsValid(idCursor)) {
+            do {
+                vm.CheckIdCursorValid(this, idCursor!!)
+
+            } while (idCursor!!.moveToNext())
+            idCursor.close()
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    private fun NetworkIsValid(context: Context) : Boolean {
+        var result = false
+        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val networkCapabilities = cm.activeNetwork ?: return false
+            val actNw = cm.getNetworkCapabilities(networkCapabilities) ?: return false
+            result = when {
+                actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+                else -> false
+            }
+        } else {
+            cm.run {
+                cm.activeNetworkInfo?.run {
+                    result = when(type) {
+                        ConnectivityManager.TYPE_WIFI -> true
+                        ConnectivityManager.TYPE_MOBILE -> true
+                        ConnectivityManager.TYPE_ETHERNET -> true
+                        else -> false
+                    }
+                }
+            }
+        }
+        return result
+    }
+
+    private fun AddTagsByApi(context: Context, id: Long) {
+        val options = FirebaseTranslatorOptions.Builder()
+            .setSourceLanguage(FirebaseTranslateLanguage.EN)
+            .setTargetLanguage(FirebaseTranslateLanguage.KO)
+            .build()
+        val translator = FirebaseNaturalLanguage.getInstance().getTranslator(options)
+
+        val bitmap = MediaStore_Dao.LoadThumbnailById(context, id) ?: return
+        val image = FirebaseVisionImage.fromBitmap(bitmap)
+        val labeler = FirebaseVision.getInstance().onDeviceImageLabeler
+        labeler.processImage(image)
+            .addOnSuccessListener { labels ->
+                translator.downloadModelIfNeeded()
+                    .addOnSuccessListener {
+                        for (label in labels) {
+                            translator.translate(label.text)
+                                .addOnSuccessListener { translatedText ->
+                                    if(label.confidence >= 0.85) {
+                                        DBThread.execute {
+                                            vm.Insert(TagData(id, translatedText))
+                                        }
+                                    }
+                                }
+                                .addOnFailureListener { e -> e.stackTrace }
+                        }
+                    }
+                    .addOnFailureListener { e -> e.stackTrace }
+            }
+            .addOnFailureListener { e -> e.stackTrace }
+    }
 }
 
 

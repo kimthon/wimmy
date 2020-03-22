@@ -6,29 +6,26 @@ import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.location.Geocoder
-import android.media.ExifInterface
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import android.util.Size
-import com.example.wimmy.Adapter.RecyclerAdapterPhoto
-import com.example.wimmy.Activity.Main_Map
+import androidx.exifinterface.media.ExifInterface
 import com.google.android.gms.maps.model.LatLng
 import java.io.FileNotFoundException
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
 object MediaStore_Dao {
     private val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-    private const val noLocationData = "위치 정보 없음"
+    const val noLocationData = "위치 정보 없음"
 
     fun getNameDir(context: Context) : ArrayList<thumbnailData>{
         val thumbList = arrayListOf<thumbnailData>()
         val projection = arrayOf(
             MediaStore.Images.ImageColumns._ID,
-            MediaStore.Images.ImageColumns.DATA,
-            MediaStore.Images.ImageColumns.DISPLAY_NAME,
-            MediaStore.Images.ImageColumns.DATE_ADDED
+            MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME
         )
 
         val selection = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -44,11 +41,9 @@ object MediaStore_Dao {
 
         do {
             val id = cursor!!.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
-            val allPath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA))
-            val name = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME))
-            val path = allPath.subSequence(0, (allPath.length - name.length - 1)).toString()
+            val folder = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns .BUCKET_DISPLAY_NAME))
 
-            thumbList.add(thumbnailData(id, path))
+            thumbList.add(thumbnailData(id, folder))
         } while (cursor!!.moveToNext())
         cursor.close()
 
@@ -59,7 +54,6 @@ object MediaStore_Dao {
         val thumbList = arrayListOf<thumbnailData>()
         val projection = arrayOf(
             MediaStore.Images.ImageColumns._ID,
-            MediaStore.Images.ImageColumns.DATA,
             MediaStore.Images.ImageColumns.TITLE
         )
         val selection = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -75,7 +69,6 @@ object MediaStore_Dao {
 
         do {
             val id = cursor!!.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
-            val allPath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA))
             val title = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.TITLE))
 
             thumbList.add(thumbnailData(id, title))
@@ -89,7 +82,6 @@ object MediaStore_Dao {
         val thumbList = arrayListOf<thumbnailData>()
         val projection = arrayOf(
             MediaStore.Images.ImageColumns._ID,
-            MediaStore.Images.ImageColumns.DATA,
             MediaStore.Images.ImageColumns.DATE_TAKEN
         )
         val selection = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -105,10 +97,10 @@ object MediaStore_Dao {
 
         do {
             val id = cursor!!.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
-            val allPath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA))
-            val date = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN))
+            val date= cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN))
+            val formatter = SimpleDateFormat("MM월 dd일", Locale.getDefault())
 
-            thumbList.add(thumbnailData(id, date))
+            thumbList.add(thumbnailData(id, formatter.format(date)))
         } while (cursor!!.moveToNext())
         cursor.close()
 
@@ -116,71 +108,28 @@ object MediaStore_Dao {
     }
 
     fun getLocation(context: Context, id : Long) : String?{
-        val loc = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            //TODO 파일 위치를 얻어 올 방법이 필요
-            val projection = arrayOf(
-                MediaStore.Images.ImageColumns.DATA
-            )
-            val selection = MediaStore.Images.ImageColumns._ID + " = " + id
+        val latLng = getLatLngById(context, id) ?: return noLocationData
 
-            val cursor = context.contentResolver.query(uri, projection, selection, null, null)
-            if (!cursorIsValid(cursor)) return noLocationData
-            val path = cursor!!.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA))
-
-            val exif = ExifInterface(path)
-
-            val attrLat = exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE)
-            val attrLatRef = exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF)
-            val attrLon = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE)
-            val attrLonRef = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF)
-            if(attrLat.isNullOrEmpty() || attrLatRef.isNullOrEmpty() || attrLon.isNullOrEmpty() || attrLonRef.isNullOrEmpty()) return noLocationData
-            val lat = if(attrLatRef == "N") {
-                convertToDegree(attrLat)
-            } else { -convertToDegree(attrLat) }
-            val lon = if(attrLonRef == "E") {
-               convertToDegree(attrLon)
-            } else { -convertToDegree(attrLon)}
-
-            Pair(lat, lon)
-        } else {
-            val projection = arrayOf(
-                MediaStore.Images.ImageColumns.LATITUDE,
-                MediaStore.Images.ImageColumns.LONGITUDE
-            )
-
-            val selection = MediaStore.Images.ImageColumns._ID + " = " + id
-
-            val cursor = context.contentResolver.query(uri, projection, selection, null, null)
-            if (!cursorIsValid(cursor)) return noLocationData
-
-            val loc= Pair(cursor!!.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LATITUDE)),
-                cursor.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LONGITUDE)))
-            cursor.close()
-            loc
-        }
         val geo = Geocoder(context)
-
-        var locString : String = ""
+        var locString = ""
         try {
-            val locTmp = geo.getFromLocation(loc.first, loc.second, 1)
+            val locTmp = geo.getFromLocation(latLng.latitude, latLng.longitude, 1)
             if (locTmp != null && locTmp.isNotEmpty()) {
                 if (locTmp[0].adminArea != null) locString += locTmp[0].adminArea
                 if (locTmp[0].locality != null && locString.length < 23) locString += " ${locTmp[0].locality}"
                 if (locTmp[0].subLocality != null  && locString.length < 23) locString += " ${locTmp[0].subLocality}"
                 if (locTmp[0].countryName != null && locString == "") locString = locTmp[0].countryName
             }
-            else
-                locString = noLocationData
+            else locString = noLocationData
         }catch (e : Exception) {
             e.printStackTrace()
             return null
         }
-
         return locString
     }
 
     fun getDateIdInfo(context: Context, cal : Calendar) : ArrayList<Long>{
-        val IdList = arrayListOf<Long>()
+        val idList = arrayListOf<Long>()
 
         val projection = arrayOf(
             MediaStore.Images.ImageColumns._ID //photo_id
@@ -188,49 +137,38 @@ object MediaStore_Dao {
         val selection = MediaStore.Images.ImageColumns.DATE_TAKEN + " BETWEEN " + getDateStart(cal) + " AND " + getDateEnd(cal)
 
         val cursor = context.contentResolver.query(uri, projection, selection, null, null)
-        if(!cursorIsValid(cursor)) return IdList
+        if(!cursorIsValid(cursor)) return idList
 
         do {
             val id = cursor!!.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
-            IdList.add(id)
+            idList.add(id)
         } while (cursor!!.moveToNext())
         cursor.close()
 
-        return IdList
+        return idList
     }
 
-    fun getNameDir(adapter : RecyclerAdapterPhoto, path : String) : Cursor?{
-        val selection = MediaStore.Images.ImageColumns.DATA + " LIKE '" + path + "/%' AND " +
-                MediaStore.Images.ImageColumns.DATA + " NOT LIKE '" + path + "/%/%'"
-        return getDir(adapter, selection)
+    fun getNameDir(context: Context, path : String) : Cursor? {
+        val selection = MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME + " = '" + path + "'"
+        return getDir(context, selection)
     }
 
-    fun getFileDir(adapter : RecyclerAdapterPhoto, name : String) : Cursor?{
+    fun getFileDir(context: Context, name : String) : Cursor? {
         val selection = MediaStore.Images.ImageColumns.TITLE + " LIKE '" + name + "'"
-        return getDir(adapter, selection)
+        return getDir(context, selection)
     }
 
-    fun getDateDir(adapter: RecyclerAdapterPhoto, cal : Calendar) : Cursor? {
+    fun getDateDir(context: Context, cal : Calendar) : Cursor? {
         val selection = MediaStore.Images.ImageColumns.DATE_TAKEN + " BETWEEN " + getDateStart(cal) + " AND " + getDateEnd(cal)
-        return getDir(adapter, selection)
+        return getDir(context, selection)
     }
 
-    fun getDir(adapter: RecyclerAdapterPhoto, selection : String) : Cursor? {
+    private fun getDir(context: Context, selection : String) : Cursor? {
         val projection = arrayOf(
             MediaStore.Images.ImageColumns._ID, //photo_id
             MediaStore.Images.ImageColumns.DISPLAY_NAME
         )
-        val cursor = adapter.context!!.contentResolver.query(uri, projection, selection, null, null)
-        return cursor
-    }
-
-    fun getLatLngCursor(context: Context,selection: String) : Cursor? {
-        val projection = arrayOf(
-            MediaStore.Images.ImageColumns.LATITUDE,
-            MediaStore.Images.ImageColumns.LONGITUDE
-        )
-        val cursor = context.contentResolver.query(uri, projection, selection, null, null)
-        return cursor
+        return context.contentResolver.query(uri, projection, selection, null, null)
     }
 
     fun getPathById(context: Context, id: Long) : String?{
@@ -242,14 +180,6 @@ object MediaStore_Dao {
         return if(cursorIsValid(cursor)) {
             cursor!!.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA))
         } else null
-    }
-    fun getDataById(adapter: RecyclerAdapterPhoto, id : Long) : thumbnailData? {
-        val selection = MediaStore.Images.ImageColumns._ID + " = " + id
-        val cursor = getDir(adapter, selection)
-        if(cursorIsValid(cursor)) {
-            return getData(cursor!!)
-        }
-        else return null
     }
 
     fun getNameById(context: Context, id: Long) : String? {
@@ -274,55 +204,36 @@ object MediaStore_Dao {
         } else null
     }
 
-    fun setLatLngDataById(context: Context, id : Long, map: Main_Map) {
-        val selection = MediaStore.Images.ImageColumns._ID + " = " + id
-        val cursor = getLatLngCursor(context, selection)
-        if(cursorIsValid(cursor)) {
-            val latLng = getLatLngById(context, id) ?: return
-            map.addLatLNgData(id, latLng)
+    fun getLatLngById(context: Context, id : Long) : LatLng? {
+        return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            var photoUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
+            photoUri = MediaStore.setRequireOriginal(photoUri)
+
+            val stream = context.contentResolver.openInputStream(photoUri) ?: return null
+            val exif = ExifInterface(stream)
+            val latLng = exif.latLong ?: return null
+
+            stream.close()
+            LatLng(latLng[0], latLng[1])
+        } else {
+            val projection = arrayOf(
+                MediaStore.Images.ImageColumns.LATITUDE,
+                MediaStore.Images.ImageColumns.LONGITUDE
+            )
+
+            val selection = MediaStore.Images.ImageColumns._ID + " = " + id
+
+            val cursor = context.contentResolver.query(uri, projection, selection, null, null)
+            if (!cursorIsValid(cursor)) return null
+
+            val loc= LatLng(cursor!!.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LATITUDE)),
+                cursor.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LONGITUDE)))
+            cursor.close()
+            loc
         }
     }
 
-    private fun getLatLngById(context: Context, id : Long) : LatLng? {
-        val selection = MediaStore.Images.ImageColumns._ID + " = " + id
-        val cursor = getLatLngCursor(context, selection)
-        if(cursorIsValid(cursor)) {
-            val latLng = getLatLngByCursor(cursor!!)
-            return latLng
-        }
-        else return null
-    }
-
-    fun getAddress(context: Context, id : Long) : String? {
-        val selection = MediaStore.Images.ImageColumns._ID + " = " + id
-        val cursor = getLatLngCursor(context, selection)
-        if(cursorIsValid(cursor)) {
-            val latLng = getLatLngByCursor(cursor!!)
-            val geo = Geocoder(context)
-            lateinit var locString : String
-            try {
-                val locTmp = geo.getFromLocation(latLng.latitude, latLng.longitude, 5)
-                if (locTmp != null && locTmp.isNotEmpty()) {
-                    locString = locTmp[0].getAddressLine(0)
-                }
-                else
-                    locString = noLocationData
-            }catch (e : Exception) {
-                e.printStackTrace()
-                return null
-            }
-            if(locString.length >=30) {
-                locString = locString.substring(0, 29)
-                locString += ".."
-            }
-            return locString
-        }
-        else return null
-    }
-
-
-
-    fun getData(cursor: Cursor) : thumbnailData {
+    fun getThumbnailDataByCursor(cursor: Cursor) : thumbnailData {
         val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
         val name = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME))
 
@@ -343,9 +254,8 @@ object MediaStore_Dao {
         )
         val selection = MediaStore.Images.ImageColumns.DATE_ADDED + " >= " + date
         val sortOrder = MediaStore.Images.ImageColumns.DATE_ADDED + " ASC"
-        val cursor = context.contentResolver.query(uri, projection, selection, null, sortOrder)
 
-        return cursor
+        return context.contentResolver.query(uri, projection, selection, null, sortOrder)
     }
 
     @Suppress("DEPRECATION")
@@ -412,21 +322,6 @@ object MediaStore_Dao {
         val selection = MediaStore.Images.ImageColumns._ID + " = " + id
         val cursor = context.contentResolver.query(uri, projection, selection, null, null)
         return (cursorIsValid(cursor))
-    }
-
-    private fun convertToDegree (string: String) : Double {
-        val dms = string.split(",")
-
-        val dList = dms[0].split("/")
-        val d = dList[0].toDouble() / dList[1].toDouble()
-
-        val mList = dms[1].split("/")
-        val m = mList[0].toDouble() / mList[1].toDouble()
-
-        val sList = dms[2].split("/")
-        val s = sList[0].toDouble() / sList[1].toDouble()
-
-        return d + m/60 + s/3600
     }
 
     private fun getDateStart(cal : Calendar) : Long{
