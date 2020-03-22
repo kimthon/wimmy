@@ -16,6 +16,8 @@ import java.io.FileNotFoundException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.time.ExperimentalTime
+import kotlin.time.days
 
 object MediaStore_Dao {
     private val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
@@ -78,7 +80,9 @@ object MediaStore_Dao {
         return thumbList
     }
 
+
     fun getDateDirSearch(context: Context, cal: Calendar) : ArrayList<thumbnailData>{
+        var checkdays: Int = 0
         val thumbList = arrayListOf<thumbnailData>()
         val projection = arrayOf(
             MediaStore.Images.ImageColumns._ID,
@@ -96,11 +100,15 @@ object MediaStore_Dao {
         if(!cursorIsValid(cursor)) return thumbList
 
         do {
-            val id = cursor!!.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
-            val date= cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN))
-            val formatter = SimpleDateFormat("MM월 dd일", Locale.getDefault())
+            val date= cursor!!.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN))
+            val days = SimpleDateFormat("d", Locale.getDefault()).format(date).toInt()
 
-            thumbList.add(thumbnailData(id, formatter.format(date)))
+            if(days > checkdays) {
+                val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
+                val formatter = SimpleDateFormat("YYYY년 MM월 dd일", Locale.getDefault())
+                thumbList.add(thumbnailData(id, formatter.format(date)))
+                checkdays = days
+            }
         } while (cursor!!.moveToNext())
         cursor.close()
 
@@ -338,9 +346,10 @@ object MediaStore_Dao {
         return cal.time.time
     }
 
+
     private fun getDateEndSearch(cal : Calendar) : Long{
         cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH))
-        cal.set(Calendar.HOUR_OF_DAY, 23)
+        cal.set(Calendar.HOUR_OF_DAY, 59)
         cal.set(Calendar.MINUTE, 59)
         cal.set(Calendar.SECOND, 59)
         return cal.time.time

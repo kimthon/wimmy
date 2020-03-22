@@ -113,13 +113,13 @@ class SearchView: AppCompatActivity() {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 thumbnailList = arrayListOf()
                 when(searchview_spinner.selectedItemPosition) {
-
                     0 -> {
                         setView("tag_name")
                         DirectoryThread.execute {
-                            val list = vm.getTagDirSearch(query!!)
+                            thumbnailList = vm.getTagDirSearch(query!!)
                             MainHandler.post {
-                                recyclerAdapter.setThumbnailList(list)
+                                recyclerAdapter.setThumbnailList(thumbnailList)
+                                sizeCheck()
                             }
                         }
                     }   // 태그
@@ -127,17 +127,21 @@ class SearchView: AppCompatActivity() {
                     1 -> {
                         setView("location_name")
                         DirectoryThread.execute {
-                            val list = vm.getLocationDirSearch(query!!)
-                            MainHandler.post { recyclerAdapter.setThumbnailList(list) }
+                            thumbnailList = vm.getLocationDirSearch(query!!)
+                            MainHandler.post {
+                                recyclerAdapter.setThumbnailList(thumbnailList)
+                                sizeCheck()
+                            }
                         }
                     }   // 위치
 
                     2 -> {
                         setView("file_name")
                         DirectoryThread.execute {
-                            val list = vm.getNameDirSearch(searchview.context, query!!)
+                            thumbnailList = vm.getNameDirSearch(searchview.context, query!!)
                             MainHandler.post {
-                                recyclerAdapter.setThumbnailList(list)
+                                recyclerAdapter.setThumbnailList(thumbnailList)
+                                sizeCheck()
                             }
                         }
                     }   // 이름
@@ -145,29 +149,22 @@ class SearchView: AppCompatActivity() {
                     3 -> {
                         val cal: Calendar = Calendar.getInstance()
                         try {
-                            cal.set(query!!.substring(0, 4).toInt(), query.substring(5, 7).toInt() - 1, 1, 0, 0, 0)
-                            setView("date_name")
+                            if (query!!.length == 7) cal.set(query!!.substring(0, 4).toInt(), query.substring(5, 7).toInt() - 1, 1, 0, 0, 0)
+                            else if (query!!.length == 6) cal.set(query!!.substring(0, 4).toInt(), query.substring(5, 6).toInt() - 1, 1, 0, 0, 0)
+                            setView("search_date")
+
                             DirectoryThread.execute {
-                                val list = vm.getDateDirSearch(searchview.context, cal)
+                                thumbnailList = vm.getDateDirSearch(searchview.context, cal)
                                 MainHandler.post {
-                                    recyclerAdapter.setThumbnailList(list)
+                                    recyclerAdapter.setThumbnailList(thumbnailList)
+                                    sizeCheck()
                                 }
                             }
                         } catch (e: Exception) {
                             Toast.makeText(this@SearchView, "올바른 날짜 정보를 입력해주세요. (ex. 2020 03)", Toast.LENGTH_SHORT).show()
                         }
                     }   // 날짜
-
                 }
-
-                /*if(thumbnailList.size == 0) {
-                    Toast.makeText(this@SearchView, "결과가 없어요. 다시 검색해주세요" , Toast.LENGTH_SHORT).show()
-                    return true
-                }*/
-
-                setPhotoSize(3, 10)
-                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(searchview.windowToken, 0)
                 return true
             }
 
@@ -176,6 +173,17 @@ class SearchView: AppCompatActivity() {
                 return true
             }
         })
+    }
+
+    fun sizeCheck() {
+        if(recyclerAdapter.getItemCount() == 0) {
+            Toast.makeText(this@SearchView, "결과가 없어요. 다시 검색해주세요" , Toast.LENGTH_SHORT).show()
+        }
+        else {
+            setPhotoSize(3, 10)
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(searchview.windowToken, 0)
+        }
     }
 
     fun dialogCreate(view: View) {

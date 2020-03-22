@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -126,6 +127,7 @@ class Main_PhotoView: AppCompatActivity() {
                 title_type.setImageResource(R.drawable.ic_folder)
                 title.text = File(getname).name
             }
+
             intent.hasExtra("location_name") -> {
                 getname = intent.getStringExtra("location_name")
 
@@ -136,6 +138,7 @@ class Main_PhotoView: AppCompatActivity() {
                 title_type.setImageResource(R.drawable.ic_location)
                 title.text = getname
             }
+
             intent.hasExtra("date_name") -> {
                 val date = intent.getLongExtra("date_name", 0)
                 val cal = Calendar.getInstance()
@@ -152,6 +155,7 @@ class Main_PhotoView: AppCompatActivity() {
 
                 title.text = getname
             }
+
             intent.hasExtra("tag_name") -> {
                 getname = intent.getStringExtra("tag_name")
 
@@ -162,22 +166,22 @@ class Main_PhotoView: AppCompatActivity() {
                 title_type.setImageResource(R.drawable.ic_tag)
                 title.text = getname
             }
+
             intent.hasExtra("file_name") -> {
-                var getname = intent.getStringExtra("file_name")
-                getname = intent.getStringExtra("file_name")
+                var filename = intent.getStringExtra("file_name")
 
                 DBThread.execute {
-                    getOpenDirByCursor(vm, vm.getOpenFileDirCursor(applicationContext, getname))
+                    getOpenDirByCursor(vm, vm.getOpenFileDirCursor(applicationContext, filename))
                 }
 
                 title_type.setImageResource(R.drawable.ic_name)
-                if(getname.length >= 23) {
-                    getname = getname.substring(0, 23)
-                    getname = getname + ".."
+                if(filename.length >= 23) {
+                    filename = filename.substring(0, 23)
+                    filename = filename + ".."
                 }
-                title.text = getname
-                title.text = getname
+                title.text = filename
             }
+
             intent.hasExtra("favorite") -> {
                 DBThread.execute {
                     getOpenDirByIdCursor(vm, vm.getOpenFavoriteDirIdCursor())
@@ -185,6 +189,19 @@ class Main_PhotoView: AppCompatActivity() {
 
                 title_type.setImageResource(R.drawable.ic_favorite_checked)
                 title.text = "즐겨찾기"
+            }
+
+            intent.hasExtra("search_date") -> {
+                val date = intent.getStringExtra("search_date")
+                val cal: Calendar = Calendar.getInstance()
+                cal.set(date.substring(0, 4).toInt(), date.substring(6, 8).toInt() - 1, date.substring(10, 12).toInt(), 0, 0, 0)
+
+                DBThread.execute {
+                    getOpenDirByCursor(vm, vm.getOpenDateDirCursor(applicationContext, cal))
+                }
+                title_type.setImageResource(R.drawable.ic_cal)
+
+                title.text = date
             }
         }
     }
