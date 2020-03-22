@@ -147,7 +147,7 @@ class Main_PhotoView: AppCompatActivity() {
                 title.text = getname
             }
             intent.hasExtra("file_name") -> {
-                getname = intent.getStringExtra("file_name")
+                var getname = intent.getStringExtra("file_name")
                 vm.setOpenFileDir(recyclerAdapter!!, getname)
 
                 title_type.setImageResource(R.drawable.ic_name)
