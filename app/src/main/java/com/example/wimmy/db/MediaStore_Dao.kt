@@ -16,6 +16,8 @@ import java.io.FileNotFoundException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.time.ExperimentalTime
+import kotlin.time.days
 
 object MediaStore_Dao {
     private val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
@@ -41,7 +43,7 @@ object MediaStore_Dao {
 
         do {
             val id = cursor!!.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
-            val folder = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns .BUCKET_DISPLAY_NAME))
+            val folder = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME))
 
             thumbList.add(thumbnailData(id, folder))
         } while (cursor!!.moveToNext())
@@ -78,7 +80,9 @@ object MediaStore_Dao {
         return thumbList
     }
 
+
     fun getDateDirSearch(context: Context, cal: Calendar) : ArrayList<thumbnailData>{
+        var checkdays: Int = 0
         val thumbList = arrayListOf<thumbnailData>()
         val projection = arrayOf(
             MediaStore.Images.ImageColumns._ID,
@@ -96,11 +100,15 @@ object MediaStore_Dao {
         if(!cursorIsValid(cursor)) return thumbList
 
         do {
-            val id = cursor!!.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
-            val date= cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN))
-            val formatter = SimpleDateFormat("MM월 dd일", Locale.getDefault())
+            val date= cursor!!.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN))
+            val days = SimpleDateFormat("d", Locale.getDefault()).format(date).toInt()
 
-            thumbList.add(thumbnailData(id, formatter.format(date)))
+            if(days > checkdays) {
+                val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
+                val formatter = SimpleDateFormat("YYYY년 MM월 dd일", Locale.getDefault())
+                thumbList.add(thumbnailData(id, formatter.format(date)))
+                checkdays = days
+            }
         } while (cursor!!.moveToNext())
         cursor.close()
 
@@ -116,8 +124,9 @@ object MediaStore_Dao {
             val locTmp = geo.getFromLocation(latLng.latitude, latLng.longitude, 1)
             if (locTmp != null && locTmp.isNotEmpty()) {
                 if (locTmp[0].adminArea != null) locString += locTmp[0].adminArea
-                if (locTmp[0].locality != null && locString.length < 23) locString += " ${locTmp[0].locality}"
-                if (locTmp[0].subLocality != null  && locString.length < 23) locString += " ${locTmp[0].subLocality}"
+                if (locTmp[0].subAdminArea != null) locString += " ${locTmp[0].subAdminArea}"
+                if (locTmp[0].locality != null) locString += " ${locTmp[0].locality}"
+                if (locTmp[0].subLocality != null) locString += " ${locTmp[0].subLocality}"
                 if (locTmp[0].countryName != null && locString == "") locString = locTmp[0].countryName
             }
             else locString = noLocationData
@@ -338,9 +347,10 @@ object MediaStore_Dao {
         return cal.time.time
     }
 
+
     private fun getDateEndSearch(cal : Calendar) : Long{
         cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH))
-        cal.set(Calendar.HOUR_OF_DAY, 23)
+        cal.set(Calendar.HOUR_OF_DAY, 59)
         cal.set(Calendar.MINUTE, 59)
         cal.set(Calendar.SECOND, 59)
         return cal.time.time

@@ -204,7 +204,7 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
                         )
                     )
                 )
-
+                clusterRenderer.getMarker(item).showInfoWindow()
                 selectedMarker = clusterRenderer.getMarker(item)
                 markerScale(100)
                 tag_marker.setTextColor(Color.BLACK)
