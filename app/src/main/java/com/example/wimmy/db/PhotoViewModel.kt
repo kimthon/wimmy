@@ -142,10 +142,15 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
 
     fun getTags(id : Long) : String {
         val tagList = repo.getTagList(id)
-        var tags = tagList.joinToString(", ")
-        if(tags.length >= 30) {
-            tags = tags.substring(0, 29)
-            tags += ".."
+        var tags: String = ""
+        if(tagList.size != 0) {
+            tags = tagList.joinToString(", ")
+            if (tags.length >= 30) {
+                tags = tags.substring(0, 29)
+                tags += ".."
+            }
+        } else {
+            tags = "태그 정보 없음"
         }
         return tags
     }

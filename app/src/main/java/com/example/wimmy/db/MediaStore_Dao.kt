@@ -43,7 +43,7 @@ object MediaStore_Dao {
 
         do {
             val id = cursor!!.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
-            val folder = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns .BUCKET_DISPLAY_NAME))
+            val folder = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME))
 
             thumbList.add(thumbnailData(id, folder))
         } while (cursor!!.moveToNext())
@@ -124,8 +124,9 @@ object MediaStore_Dao {
             val locTmp = geo.getFromLocation(latLng.latitude, latLng.longitude, 1)
             if (locTmp != null && locTmp.isNotEmpty()) {
                 if (locTmp[0].adminArea != null) locString += locTmp[0].adminArea
-                if (locTmp[0].locality != null && locString.length < 23) locString += " ${locTmp[0].locality}"
-                if (locTmp[0].subLocality != null  && locString.length < 23) locString += " ${locTmp[0].subLocality}"
+                if (locTmp[0].subAdminArea != null) locString += " ${locTmp[0].subAdminArea}"
+                if (locTmp[0].locality != null) locString += " ${locTmp[0].locality}"
+                if (locTmp[0].subLocality != null) locString += " ${locTmp[0].subLocality}"
                 if (locTmp[0].countryName != null && locString == "") locString = locTmp[0].countryName
             }
             else locString = noLocationData
