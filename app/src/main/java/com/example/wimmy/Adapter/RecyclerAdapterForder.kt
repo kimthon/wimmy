@@ -61,9 +61,11 @@ class RecyclerAdapterForder(val context: FragmentActivity?, var list: ArrayList<
             for( i in list.withIndex()) {
                 //바뀐 것 만 변경
                 if(this.list.size > i.index) {
-                    if (this.list[i.index].photo_id != i.value.photo_id) {
-                        this.list[i.index] = i.value
-                        notifyItemInserted(i.index)
+                    if (this.list[i.index].data != i.value.data) {
+                        if (this.list[i.index].photo_id != i.value.photo_id) {
+                            this.list.add(i.index, i.value)
+                            notifyItemInserted(i.index)
+                        }
                     }
                 } else {
                     this.list.add(i.value)
