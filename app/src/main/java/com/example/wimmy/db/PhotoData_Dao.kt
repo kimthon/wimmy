@@ -1,6 +1,7 @@
 package com.example.wimmy.db
 
 import android.database.Cursor
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
 
@@ -32,9 +33,9 @@ interface PhotoData_Dao {
     @Query("SELECT tag FROM tag_data WHERE photo_id IN (:idList) GROUP BY tag ORDER BY count(*) ASC LIMIT 5")
     fun getDateInfo(idList : List<Long>) : List<String>
     @Query("SELECT MAX(photo_id) as photo_id, tag as data FROM tag_data GROUP BY tag")
-    fun getTagDir() : List<thumbnailData>
+    fun getTagDir() : LiveData<List<thumbnailData>>
     @Query("SELECT MAX(photo_id) as photo_id, location as data FROM extra_photo_data GROUP BY location HAVING NOT location = '위치 정보 없음'")
-    fun getLocationDir() : List<thumbnailData>
+    fun getLocationDir() : LiveData<List<thumbnailData>>
 
     @Query("SELECT MAX(photo_id) as photo_id, location as data FROM extra_photo_data GROUP BY location HAVING location LIKE '%' || :location || '%'")
     fun getLocationDirSearch(location: String) : List<thumbnailData>

@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.database.Cursor
 import android.provider.MediaStore
+import androidx.lifecycle.LiveData
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -42,18 +43,16 @@ class PhotoRepository(application: Application) {
       return photoDao.getDateInfo(list)
    }
 
-   fun getLocationDir() : ArrayList<thumbnailData> {
-      val list = photoDao.getLocationDir()
-      return ArrayList(list)
+   fun getLocationDir() : LiveData<List<thumbnailData>> {
+      return photoDao.getLocationDir()
    }
 
    fun getNameDir(context: Context) : ArrayList<thumbnailData>{
       return MediaStore_Dao.getNameDir(context)
    }
 
-    fun getTagDir(): ArrayList<thumbnailData>{
-       val list = photoDao.getTagDir()
-       return ArrayList(list)
+    fun getTagDir(): LiveData<List<thumbnailData>> {
+       return photoDao.getTagDir()
     }
 
    // 검색

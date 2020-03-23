@@ -9,6 +9,8 @@ import android.provider.MediaStore
 import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,13 +22,14 @@ import com.example.wimmy.DirectoryThread
 import com.example.wimmy.MainHandler
 import com.example.wimmy.R
 import com.example.wimmy.db.PhotoViewModel
+import com.example.wimmy.db.thumbnailData
 import com.google.android.material.appbar.AppBarLayout
 import kotlinx.android.synthetic.main.main_activity.view.*
 
 class TagFragment(v: AppBarLayout) : Fragment() {
     private lateinit var thisview: View
     private lateinit var recyclerAdapter : RecyclerAdapterForder
-    private lateinit var observer : DataBaseObserver
+    private lateinit var liveData : LiveData<List<thumbnailData>>
     private var mLastClickTime: Long = 0
     val ab = v
 
@@ -39,11 +42,11 @@ class TagFragment(v: AppBarLayout) : Fragment() {
         val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
         setView(thisview)
-        DirectoryThread.execute {
-            val list = vm.getTagDir()
-            MainHandler.post { recyclerAdapter.setThumbnailList(list)}
-        }
-        observer = DataBaseObserver(Handler(), recyclerAdapter!!)
+        liveData = vm.getTagDir()
+        liveData.observe(this, Observer { list ->
+            val arrayList = ArrayList(list)
+            recyclerAdapter.setThumbnailList(arrayList)
+        })
 
         return thisview
     }
@@ -51,12 +54,10 @@ class TagFragment(v: AppBarLayout) : Fragment() {
     override fun onResume() {
         super.onResume()
         setPhotoSize(this.view!!,3, 10)
-        this.context!!.contentResolver.registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, false, observer)
     }
 
     override fun onPause() {
         super.onPause()
-        this.context!!.contentResolver.unregisterContentObserver(observer)
     }
 
    /* override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

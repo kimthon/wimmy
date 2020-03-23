@@ -16,8 +16,6 @@ import java.io.FileNotFoundException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.time.ExperimentalTime
-import kotlin.time.days
 
 object MediaStore_Dao {
     private val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI

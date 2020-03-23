@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.database.Cursor
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import com.example.wimmy.DBThread
 import com.example.wimmy.DirectoryThread
 import com.google.android.gms.maps.model.LatLng
@@ -35,17 +36,17 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         return repo.getCalendarTag(context, inputCalendar)
     }
 
-    fun getLocationDir() : ArrayList<thumbnailData>{
+    fun getLocationDir() : LiveData<List<thumbnailData>> {
         if(DirectoryThread.isTerminating) DirectoryThread.shutdownNow()
         return repo.getLocationDir()
     }
 
-    fun getNameDir(context: Context) : ArrayList<thumbnailData>{
+    fun getNameDir(context: Context) : ArrayList<thumbnailData> {
         if(DirectoryThread.isTerminating) DirectoryThread.shutdownNow()
         return repo.getNameDir(context)
     }
 
-    fun getTagDir() : ArrayList<thumbnailData>{
+    fun getTagDir() : LiveData<List<thumbnailData>> {
         if(DBThread.isTerminating) DBThread.shutdownNow()
         return repo.getTagDir()
     }
