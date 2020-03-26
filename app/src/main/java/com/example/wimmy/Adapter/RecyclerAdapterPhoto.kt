@@ -12,7 +12,7 @@ import com.example.wimmy.R
 import com.example.wimmy.ThumbnailLoad
 import com.example.wimmy.db.thumbnailData
 
-class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<thumbnailData>, val itemClick: (Int) -> Unit) :
+class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<thumbnailData>, val itemClick: (thumbnailData, Int) -> Unit) :
     RecyclerView.Adapter<RecyclerAdapterPhoto.Holder>()
 {
     private var size : Int = 200
@@ -32,7 +32,7 @@ class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<thumbnail
             ImageLoder.execute(ThumbnailLoad(this, thumbnail, data.photo_id))
 
             text!!.text = data.data
-            itemView.setOnClickListener { itemClick(num) }
+            itemView.setOnClickListener { itemClick(data, num) }
         }
     }
 

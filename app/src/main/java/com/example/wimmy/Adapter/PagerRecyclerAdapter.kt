@@ -35,7 +35,6 @@ class PagerRecyclerAdapter(private val context: Context, var list: ArrayList<thu
         image.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
                 if(check == false) {
-                   // Log.d("이건?", tb.toString())
                     tb.visibility = View.GONE
                     bt.visibility = View.GONE
                     check = true

@@ -59,7 +59,7 @@ class Main_PhotoView: AppCompatActivity() {
         recyclerView = view.findViewById<RecyclerView>(R.id.photo_recyclerView)
         recyclerAdapter =
             RecyclerAdapterPhoto(this, arrayListOf()) {
-                    num ->  if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
+                    thumbnailData, num ->  if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
                 val intent = Intent(this, PhotoViewPager::class.java)
                 intent.putExtra("index", num)
 

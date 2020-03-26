@@ -15,6 +15,11 @@
         android:title="공유" />
 
     <item
+        android:id="@+id/menu_similar"
+        android:icon="@drawable/ic_similar_photo"
+        android:title="유사이미지" />
+
+    <item
         android:id="@+id/menu_delete"
         android:icon="@drawable/ic_delete"
         android:title="삭제" />
