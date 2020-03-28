@@ -79,7 +79,7 @@ class PhotoRepository(application: Application) {
        return MediaStore_Dao.getDateDir(context, cal)
    }
 
-   fun getOpenLocationDirIdCursor(loc: String) : Cursor? {
+   fun getOpenLocationDirIdList(loc: String) : LiveData<List<Long>> {
       return photoDao.getLocationDir(loc)
    }
 
@@ -87,11 +87,11 @@ class PhotoRepository(application: Application) {
       return MediaStore_Dao.getNameDir(context, path)
    }
 
-   fun getOpenTagDirIdCursor(tag : String) : Cursor?{
+   fun getOpenTagDirIdList(tag : String) : LiveData<List<Long>> {
       return photoDao.getTagDir(tag)
    }
 
-   fun getOpenFavoriteDirIdCursor(): Cursor? {
+   fun getOpenFavoriteDirIdList(): LiveData<List<Long>> {
       return photoDao.getFavoriteDir()
    }
 

@@ -20,10 +20,6 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         repo.insert(tag)
     }
 
-    fun Insert(extraPhotoData: ExtraPhotoData) {
-        repo.insert(extraPhotoData)
-    }
-
     fun Delete(context: Context, id : Long) {
         repo.deleteById(context, id)
     }
@@ -77,8 +73,8 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         return repo.getOpenDateDirCursor(context, cal)
     }
 
-    fun getOpenLocationDirIdCursor(loc: String) : Cursor? {
-        return repo.getOpenLocationDirIdCursor(loc)
+    fun getOpenLocationDirIdList(loc: String) : LiveData<List<Long>> {
+        return repo.getOpenLocationDirIdList(loc)
     }
 
     fun getOpenNameDirCursor(context: Context, path : String) : Cursor? {
@@ -89,12 +85,12 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         return repo.getOpenFileDirCursor(context , name)
     }
 
-    fun getOpenTagDirIdCursor(tag : String) : Cursor? {
-        return repo.getOpenTagDirIdCursor(tag)
+    fun getOpenTagDirIdList(tag : String) : LiveData<List<Long>> {
+        return repo.getOpenTagDirIdList(tag)
     }
 
-    fun getOpenFavoriteDirIdCursor() : Cursor? {
-        return repo.getOpenFavoriteDirIdCursor()
+    fun getOpenFavoriteDirIdList() : LiveData<List<Long>> {
+        return repo.getOpenFavoriteDirIdList()
     }
 
     // 기타 기능
@@ -143,8 +139,8 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
 
     fun getTags(id : Long) : String {
         val tagList = repo.getTagList(id)
-        var tags: String = ""
-        if(tagList.size != 0) {
+        var tags: String
+        if(tagList.isNotEmpty()) {
             tags = tagList.joinToString(", ")
             if (tags.length >= 30) {
                 tags = tags.substring(0, 29)
