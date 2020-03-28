@@ -29,7 +29,7 @@ interface PhotoData_Dao {
     @Query("DELETE FROM tag_data WHERE photo_id = :photo_id AND tag = :tag")
     fun delete(photo_id : Long, tag : String)
 
-    @Query("SELECT tag FROM tag_data WHERE photo_id IN (:idList) GROUP BY tag ORDER BY count(*) ASC LIMIT 5")
+    @Query("SELECT tag FROM tag_data WHERE photo_id IN (:idList) GROUP BY tag ORDER BY count(*) DESC LIMIT 5")
     fun getDateInfo(idList : List<Long>) : List<String>
     @Query("SELECT MAX(photo_id) as photo_id, tag as data FROM tag_data GROUP BY tag")
     fun getTagDir() : List<thumbnailData>

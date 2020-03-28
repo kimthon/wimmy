@@ -16,12 +16,11 @@ import java.io.FileNotFoundException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.time.ExperimentalTime
-import kotlin.time.days
 
 object MediaStore_Dao {
     private val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
     const val noLocationData = "위치 정보 없음"
+    const val sortdate = MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC"
 
     fun getNameDir(context: Context) : ArrayList<thumbnailData>{
         val thumbList = arrayListOf<thumbnailData>()
@@ -144,8 +143,7 @@ object MediaStore_Dao {
             MediaStore.Images.ImageColumns._ID //photo_id
         )
         val selection = MediaStore.Images.ImageColumns.DATE_TAKEN + " BETWEEN " + getDateStart(cal) + " AND " + getDateEnd(cal)
-
-        val cursor = context.contentResolver.query(uri, projection, selection, null, null)
+        val cursor = context.contentResolver.query(uri, projection, selection, null, sortdate)
         if(!cursorIsValid(cursor)) return idList
 
         do {
@@ -163,7 +161,7 @@ object MediaStore_Dao {
     }
 
     fun getFileDir(context: Context, name : String) : Cursor? {
-        val selection = MediaStore.Images.ImageColumns.TITLE + " LIKE '" + name + "'"
+        val selection = MediaStore.Images.ImageColumns.TITLE + " = '" + name + "'"
         return getDir(context, selection)
     }
 
@@ -177,7 +175,7 @@ object MediaStore_Dao {
             MediaStore.Images.ImageColumns._ID, //photo_id
             MediaStore.Images.ImageColumns.DISPLAY_NAME
         )
-        return context.contentResolver.query(uri, projection, selection, null, null)
+        return context.contentResolver.query(uri, projection, selection, null, sortdate)
     }
 
     fun getPathById(context: Context, id: Long) : String?{
@@ -185,7 +183,7 @@ object MediaStore_Dao {
         val projection = arrayOf(
             MediaStore.Images.ImageColumns.DATA
         )
-        val cursor = context.contentResolver.query(uri, projection, selection, null, null)
+        val cursor = context.contentResolver.query(uri, projection, selection, null, sortdate)
         return if(cursorIsValid(cursor)) {
             cursor!!.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA))
         } else null
@@ -196,7 +194,23 @@ object MediaStore_Dao {
         val projection = arrayOf(
             MediaStore.Images.ImageColumns.DISPLAY_NAME
         )
-        val cursor = context.contentResolver.query(uri, projection, selection, null, null)
+        val cursor = context.contentResolver.query(uri, projection, selection, null, sortdate)
+        return if(cursorIsValid(cursor)) {
+            cursor!!.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME))
+        } else null
+    }
+
+    fun getSimilarById(context: Context, id: Long, cal: Calendar) : String? {
+        /*val calMin = cal
+        val calMax = cal
+        calMin.add(Calendar.SECOND, -30)
+        calMax.add(Calendar.SECOND, 300)*/
+        val selection = MediaStore.Images.ImageColumns._ID + " = " + id + " AND " + MediaStore.Images.ImageColumns.DATE_TAKEN + " BETWEEN " + (cal.time.time - 30000) + " AND " + (cal.time.time + 30000)
+
+        val projection = arrayOf(
+            MediaStore.Images.ImageColumns.DISPLAY_NAME
+        )
+        val cursor = context.contentResolver.query(uri, projection, selection, null, sortdate)
         return if(cursorIsValid(cursor)) {
             cursor!!.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME))
         } else null
@@ -207,7 +221,7 @@ object MediaStore_Dao {
         val projection = arrayOf(
             MediaStore.Images.ImageColumns.DATE_TAKEN
         )
-        val cursor = context.contentResolver.query(uri, projection, selection, null, null)
+        val cursor = context.contentResolver.query(uri, projection, selection, null, sortdate)
         return if(cursorIsValid(cursor)) {
             cursor!!.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATE_TAKEN))
         } else null
@@ -232,7 +246,7 @@ object MediaStore_Dao {
 
             val selection = MediaStore.Images.ImageColumns._ID + " = " + id
 
-            val cursor = context.contentResolver.query(uri, projection, selection, null, null)
+            val cursor = context.contentResolver.query(uri, projection, selection, null, sortdate)
             if (!cursorIsValid(cursor)) return null
 
             val loc= LatLng(cursor!!.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LATITUDE)),
@@ -261,10 +275,9 @@ object MediaStore_Dao {
             MediaStore.Images.ImageColumns._ID,
             MediaStore.Images.ImageColumns.DATE_ADDED
         )
-        val selection = MediaStore.Images.ImageColumns.DATE_ADDED + " >= " + date
-        val sortOrder = MediaStore.Images.ImageColumns.DATE_ADDED + " ASC"
+        val selection = MediaStore.Images.ImageColumns.DATE_ADDED + " <= " + date
 
-        return context.contentResolver.query(uri, projection, selection, null, sortOrder)
+        return context.contentResolver.query(uri, projection, selection, null, sortdate)
     }
 
     @Suppress("DEPRECATION")
@@ -296,7 +309,7 @@ object MediaStore_Dao {
             MediaStore.Images.ImageColumns.ORIENTATION
         )
         val selection = MediaStore.Images.ImageColumns._ID + "=" + id
-        val cursor = context.contentResolver.query(uri, projection, selection, null, null)
+        val cursor = context.contentResolver.query(uri, projection, selection, null, sortdate)
         cursor!!.moveToFirst()
 
         val orientation = cursor.getFloat(cursor.getColumnIndex(MediaStore.Images.ImageColumns.ORIENTATION))
@@ -329,7 +342,7 @@ object MediaStore_Dao {
             MediaStore.Images.ImageColumns._ID
         )
         val selection = MediaStore.Images.ImageColumns._ID + " = " + id
-        val cursor = context.contentResolver.query(uri, projection, selection, null, null)
+        val cursor = context.contentResolver.query(uri, projection, selection, null, sortdate)
         return (cursorIsValid(cursor))
     }
 

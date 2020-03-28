@@ -21,11 +21,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
+import com.example.wimmy.*
 import com.example.wimmy.Adapter.PagerRecyclerAdapter
 import com.example.wimmy.Activity.Main_PhotoView.Companion.list
-import com.example.wimmy.DBThread
-import com.example.wimmy.MainHandler
-import com.example.wimmy.R
 import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.dialog.similarImageDialog
@@ -85,7 +83,6 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
                 mainphoto_toolbar!!.visibility = View.VISIBLE
                 bottom_photo_menu.visibility = View.VISIBLE
-                //subimg!!.setImageResource(0)    // 애니메이션
             }
 
             override fun onPageSelected(position: Int) {
@@ -151,8 +148,6 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
 
     fun getExtra(){
         if (intent.hasExtra("index")) {
-            //subimg = findViewById(R.id.sub_img) as ImageView // 뷰페이저로 넘어올 때, 애니메이션을 위한 눈속임
-            //subimg!!.setImageBitmap(MediaStore_Dao.LoadThumbnail(this, thumbnail!!))
             index = intent.getIntExtra("index", 0)
         }
         else {
@@ -183,13 +178,15 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
 
     private fun similarImage() {
         val similarImageDialogView: View = layoutInflater.inflate(R.layout.similar_image_layout, null)
-        val dlg = similarImageDialog(this, similarImageDialogView, vm, location_name.text.toString(), date_name.text.toString())
+        val dlg = similarImageDialog(similarImageDialogView, vm, location_name.text.toString(), date_name.text.toString())
+        dlg.setCancelable(false)
         dlg.show(supportFragmentManager, "similarImageDialog")
     }
 
     private fun insertTag() {
         val popupInputDialogView: View = layoutInflater.inflate(R.layout.tag_diaglog, null)
-        val dlg = tagInsertDialog(this, popupInputDialogView, vm, index, tag_name)
+        val dlg = tagInsertDialog(popupInputDialogView, vm, index, tag_name)
+        dlg.setCancelable(false)
         dlg.show(supportFragmentManager, "tagInsertDialog")
     }
 

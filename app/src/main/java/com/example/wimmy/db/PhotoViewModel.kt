@@ -173,6 +173,14 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         return thumbnailData(id, name)
     }
 
+    fun getThumbnailDataByIdCursor(context: Context, idCursor : Cursor, cal: Calendar) : thumbnailData? {
+        val id = idCursor.getLong(idCursor.getColumnIndex("photo_id"))
+        val name = MediaStore_Dao.getSimilarById(context, id, cal)
+        if(name == null)
+            return null
+        return thumbnailData(id, name)
+    }
+
     fun getLatLngById(context: Context, id: Long) : LatLng?{
         return MediaStore_Dao.getLatLngById(context, id)
     }

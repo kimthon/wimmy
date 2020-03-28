@@ -1,63 +1,81 @@
 package com.example.wimmy.dialog
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.app.Dialog
-import android.content.Context
 import android.content.DialogInterface
 import android.database.Cursor
 import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.*
-import com.example.wimmy.Activity.MainActivity
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.db.thumbnailData
 import kotlinx.android.synthetic.main.similar_image_layout.view.*
 import kotlinx.android.synthetic.main.similar_image_select.view.*
+import java.lang.Exception
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
-class similarImageDialog(context: Context, v: View, vm: PhotoViewModel, location: String, date: String): DialogFragment() {
+class similarImageDialog(v: View, vm: PhotoViewModel, location: String, date: String): DialogFragment() {
 
-    private val contextdlg = context
     private lateinit var recyclerAdapter : RecyclerAdapterPhoto
     private lateinit var recyclerView : RecyclerView
     private val v = v
     private val vm = vm
     private val location = location
     private val date = date
-    private val savePhotoList = arrayListOf<Long>()
+    private val calendar = Calendar.getInstance()
     private var similarList = arrayListOf<thumbnailData>()
     private var selectnum: Int = 0
 
     @RequiresApi(Build.VERSION_CODES.N)
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        stringToCalendar()
         recyclerView = v.findViewById<RecyclerView>(R.id.similar_RecycleView)
-        setView(v)
-        setPhotoSize(2, 5)
+        setView(ArrayList())
         DBThread.execute {
-            MainHandler.post {
-                 getOpenDirByCursor(vm, vm.getOpenNameDirCursor(v.context, "Facebook"))
-            }
+            getOpenDirByIdCursorDESC(vm, vm.getOpenLocationDirIdCursor(location))
         }
 
-        val dlgBuilder: androidx.appcompat.app.AlertDialog.Builder = androidx.appcompat.app.AlertDialog.Builder(    // 메인 다이얼로그
-            contextdlg,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+        val maindlgBuilder: androidx.appcompat.app.AlertDialog.Builder = androidx.appcompat.app.AlertDialog.Builder(    // 메인 다이얼로그
+            context!!, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+        maindlgBuilder.setView(v)
 
-        dlgBuilder.setCancelable(false)
-        dlgBuilder.setView(v)
-        val dlg = dlgBuilder.create()
+        val dlg = maindlgBuilder.create()
         saveSimilarPhoto(dlg)
         return dlg
+    }
+
+    private fun stringToCalendar() {
+        val formatter = SimpleDateFormat("yyyy년 MM월 dd일 (E) / HH:mm:ss", Locale.getDefault())
+        val tempDate = formatter.parse(date)
+        calendar.setTime(tempDate)
+    }
+
+    private fun getOpenDirByIdCursorDESC(vm : PhotoViewModel, idCursor : Cursor?) {
+        if (vm.CursorIsValid(idCursor)) {
+            idCursor!!.moveToLast()
+            do {
+                try {
+                    val data = vm.getThumbnailDataByIdCursor(context!!, idCursor!!, calendar)
+                    if (data != null) {
+                        recyclerAdapter.addThumbnailList(data)
+                        similarList.add(data)
+                        MainHandler.post { recyclerAdapter.notifyItemInserted(recyclerAdapter.getSize()) }
+                    }
+                } catch (e: Exception) { }
+            } while (idCursor!!.moveToPrevious())
+            idCursor.close()
+        }
     }
 
     private fun saveSimilarPhoto(dlg: androidx.appcompat.app.AlertDialog) {
@@ -71,12 +89,14 @@ class similarImageDialog(context: Context, v: View, vm: PhotoViewModel, location
             warningBuilder.setMessage("선택한 사진들을 제외하고는 모든 사진이 삭제됩니다.\n정말 저장하시겠습니까?\n\n (선택한사진: ${selectnum} 개)") // 메시지
             warningBuilder.setCancelable(false)
             warningBuilder.setPositiveButton("확인", DialogInterface.OnClickListener { dialog, which ->
-                //PhotoViewPager.this.finish()
+                for(i in similarList.indices) {
+                    DBThread.execute { vm.Delete(context!!, similarList[i].photo_id) }
+                }
                 dialog.cancel()
                 dlg.cancel()
-                val pager: Activity = contextdlg as Activity        // 액티비티 종료
+                val pager: Activity = context!! as Activity        // 액티비티 종료
                 pager.finish()
-                Toast.makeText(contextdlg, "${selectnum} 개의 사진이 저장 완료 되었습니다. \n", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context!!, "${selectnum} 개의 사진이 저장 완료 되었습니다. \n", Toast.LENGTH_SHORT).show()
             })
             warningBuilder.setNegativeButton("취소", DialogInterface.OnClickListener { dialog, which ->
                 dialog.cancel()
@@ -86,41 +106,36 @@ class similarImageDialog(context: Context, v: View, vm: PhotoViewModel, location
         }
 
     }
-    private fun getOpenDirByCursor(vm : PhotoViewModel, cursor : Cursor?) {
-        if (vm.CursorIsValid(cursor)) {
-            do {
-                val data = vm.getThumbnailDataByCursor(cursor!!)
-                recyclerAdapter.addThumbnailList(data)
-                MainHandler.post { recyclerAdapter.notifyItemInserted(recyclerAdapter.getSize()) }
-            } while (cursor!!.moveToNext())
-            cursor.close()
-        }
-    }
+
     override fun onResume() {
         super.onResume()
         setPhotoSize(2, 5)
     }
 
-    private fun setView(view : View?) {
+    private fun setView(list: ArrayList<thumbnailData>) {
         recyclerAdapter =
-            RecyclerAdapterPhoto(activity, ArrayList()) { thumbnailData, num ->
+            RecyclerAdapterPhoto(activity, list) { thumbnailData, num ->
                 val similarImageSelectView: View = layoutInflater.inflate(R.layout.similar_image_select, null)
+                ImageLoder.execute(ImageLoad(context!!, similarImageSelectView.select_photo, thumbnailData.photo_id))
                 val dlgBuilder: androidx.appcompat.app.AlertDialog.Builder = androidx.appcompat.app.AlertDialog.Builder(    // 확인 다이얼로그
-                    contextdlg,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
-                //dlgBuilder.setCancelable(false)
-                ImageLoder.execute(ImageLoad(similarImageSelectView.select_photo, thumbnailData.photo_id))
+                    context!!,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+                dlgBuilder.setCancelable(false)
 
                 dlgBuilder.setView(similarImageSelectView)
-                dlgBuilder.setMessage("보존할 사진이 맞나요?")
+                dlgBuilder.setTitle("보존할 사진이 맞나요?")
+                dlgBuilder.setIcon(R.drawable.ic_image)
                 val dlgselect = dlgBuilder.create()
                 dlgselect.show()
                 similarImageSelectView.select_cancel.setOnClickListener{
                     dlgselect.cancel()
                 }
                 similarImageSelectView.select_ok.setOnClickListener{
-                    savePhotoList.add(thumbnailData.photo_id)
+                    similarList.removeAt(num)
+                    setView(similarList)
+                    setPhotoSize(2, 5)
+                    selectnum++
                     dlgselect.cancel()
-                    Toast.makeText(contextdlg, "입력 완료 되었습니다. \n저장을 누르시면 입력된 사진들만 저장됩니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context!!, "입력 완료 되었습니다. \n저장을 누르시면 입력된 사진들만 저장됩니다.", Toast.LENGTH_SHORT).show()
                 }
 
             }

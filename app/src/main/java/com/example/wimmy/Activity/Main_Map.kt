@@ -125,7 +125,7 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
             card_view.visibility = View.VISIBLE
             val center: CameraUpdate = CameraUpdateFactory.newLatLng(p0?.position)
             mMap!!.animateCamera(center)
-            ImageLoder.execute(ImageLoad(map_image, p0.id))
+            ImageLoder.execute(ImageLoad(this, map_image, p0.id))
             DBThread.execute {
                 val data = vm.getName(applicationContext, p0.id)
                 MainHandler.post { map_name.text = data }

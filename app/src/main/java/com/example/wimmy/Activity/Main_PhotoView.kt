@@ -6,7 +6,6 @@ import android.database.Cursor
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -132,7 +131,7 @@ class Main_PhotoView: AppCompatActivity() {
                 getname = intent.getStringExtra("location_name")
 
                 DBThread.execute {
-                    getOpenDirByIdCursor(vm, vm.getOpenLocationDirIdCursor(getname))
+                    getOpenDirByIdCursorDESC(vm, vm.getOpenLocationDirIdCursor(getname))
                 }
 
                 title_type.setImageResource(R.drawable.ic_location)
@@ -140,16 +139,16 @@ class Main_PhotoView: AppCompatActivity() {
             }
 
             intent.hasExtra("date_name") -> {
-                val date = intent.getLongExtra("date_name", 0)
-                val cal = Calendar.getInstance()
-                cal.time = Date(date)
+                val cal = intent.getSerializableExtra("date_name") as Date
+                val calendar = Calendar.getInstance()
 
+                calendar.time = cal
                 DBThread.execute {
-                    getOpenDirByCursor(vm, vm.getOpenDateDirCursor(applicationContext, cal))
+                    getOpenDirByCursor(vm, vm.getOpenDateDirCursor(applicationContext, calendar))
                 }
 
                 val formatter = SimpleDateFormat("yyyy년 MM월 dd일", Locale.getDefault())
-                getname = formatter.format(Date(date))
+                getname = formatter.format(calendar.time)
 
                 title_type.setImageResource(R.drawable.ic_cal)
 
@@ -184,25 +183,13 @@ class Main_PhotoView: AppCompatActivity() {
 
             intent.hasExtra("favorite") -> {
                 DBThread.execute {
-                    getOpenDirByIdCursor(vm, vm.getOpenFavoriteDirIdCursor())
+                    getOpenDirByIdCursorDESC(vm, vm.getOpenFavoriteDirIdCursor())
                 }
 
                 title_type.setImageResource(R.drawable.ic_favorite_checked)
                 title.text = "즐겨찾기"
             }
 
-            intent.hasExtra("search_date") -> {
-                val date = intent.getStringExtra("search_date")
-                val cal: Calendar = Calendar.getInstance()
-                cal.set(date.substring(0, 4).toInt(), date.substring(6, 8).toInt() - 1, date.substring(10, 12).toInt(), 0, 0, 0)
-
-                DBThread.execute {
-                    getOpenDirByCursor(vm, vm.getOpenDateDirCursor(applicationContext, cal))
-                }
-                title_type.setImageResource(R.drawable.ic_cal)
-
-                title.text = date
-            }
         }
     }
 
@@ -270,6 +257,20 @@ class Main_PhotoView: AppCompatActivity() {
                     MainHandler.post { recyclerAdapter.notifyItemInserted(recyclerAdapter.getSize()) }
                 }
             } while (idCursor!!.moveToNext())
+            idCursor.close()
+        }
+    }
+
+    private fun getOpenDirByIdCursorDESC(vm : PhotoViewModel, idCursor : Cursor?) {
+        if (vm.CursorIsValid(idCursor)) {
+            idCursor!!.moveToLast()
+            do {
+                val data = vm.getThumbnailDataByIdCursor(applicationContext, idCursor!!)
+                if(data != null) {
+                    recyclerAdapter.addThumbnailList(data)
+                    MainHandler.post { recyclerAdapter.notifyItemInserted(recyclerAdapter.getSize()) }
+                }
+            } while (idCursor!!.moveToPrevious())
             idCursor.close()
         }
     }
