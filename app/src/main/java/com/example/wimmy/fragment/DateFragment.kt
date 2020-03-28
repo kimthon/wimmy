@@ -1,6 +1,5 @@
 package com.example.wimmy
 
-import SwipeGesture
 import YearMonthPickerDialog
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -55,7 +54,8 @@ class DateFragment(v: AppBarLayout) : Fragment() {
 
 
         // 상단 스와이프 제스처
-        val gestureListener = SwipeGesture(calendar_allheader!!)
+        val gestureListener =
+            SwipeGesture(calendar_allheader!!)
         val gesturedetector = GestureDetector(calendar_allheader!!.context, gestureListener)
         calendar_allheader!!.setOnTouchListener { v, event ->
             return@setOnTouchListener gesturedetector.onTouchEvent(event)
@@ -135,7 +135,9 @@ class DateFragment(v: AppBarLayout) : Fragment() {
         if(gridView.adapter == null ) {
             gridView.adapter = DateAdapter(activity!!, size, cells, month) { Date ->
                 val intent = Intent(activity, Main_PhotoView::class.java)
-                intent.putExtra("date_name", Date.time)
+                val cal = Calendar.getInstance()
+                cal.time = Date(Date.time)
+                intent.putExtra("date_name", cal.time)
                 startActivityForResult(intent, 204)
             }
         }

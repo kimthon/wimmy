@@ -21,13 +21,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
+import com.example.wimmy.*
 import com.example.wimmy.Adapter.PagerRecyclerAdapter
 import com.example.wimmy.Activity.Main_PhotoView.Companion.list
-import com.example.wimmy.DBThread
-import com.example.wimmy.MainHandler
-import com.example.wimmy.R
 import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoViewModel
+import com.example.wimmy.dialog.similarImageDialog
 import com.example.wimmy.dialog.tagInsertDialog
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.photoview_frame.*
@@ -37,7 +36,11 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
     private var recyclerAdapter : PagerRecyclerAdapter?= null
     private lateinit var viewPager: ViewPager
     private lateinit var vm : PhotoViewModel
+    private lateinit var text_name : AppCompatTextView
+    private lateinit var favorite: ImageView
     private lateinit var tag_name : AppCompatTextView
+    private lateinit var date_name : AppCompatTextView
+    private lateinit var location_name : AppCompatTextView
     private lateinit var Inflater: LayoutInflater
 
     private var index  = 0
@@ -54,11 +57,11 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
         vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
         getExtra()
-        val text_name = findViewById<AppCompatTextView>(R.id.imgView_text)
-        val date_name = findViewById<AppCompatTextView>(R.id.imgView_date)
-        val location_name = findViewById<AppCompatTextView>(R.id.imgView_location)
+        text_name = findViewById<AppCompatTextView>(R.id.imgView_text)
+        date_name = findViewById<AppCompatTextView>(R.id.imgView_date)
+        location_name = findViewById<AppCompatTextView>(R.id.imgView_location)
         tag_name = findViewById<AppCompatTextView>(R.id.imgView_tag)
-        val favorite = findViewById<ImageView>(R.id.favorite)
+        favorite = findViewById<ImageView>(R.id.favorite)
 
         bottom_photo_menu.setOnNavigationItemSelectedListener(this)
         try {
@@ -68,7 +71,7 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
                 .show()
         }
 
-        toolbar_text(index, text_name, date_name, location_name, tag_name, favorite)
+        toolbar_text(index)
         Inflater = LayoutInflater.from(this)
 
         viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
@@ -80,12 +83,11 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
                 mainphoto_toolbar!!.visibility = View.VISIBLE
                 bottom_photo_menu.visibility = View.VISIBLE
-                //subimg!!.setImageResource(0)    // 애니메이션
             }
 
             override fun onPageSelected(position: Int) {
                 index = position
-                toolbar_text(position, text_name, date_name, location_name, tag_name, favorite)
+                toolbar_text(position)
             }
         })
     }
@@ -105,27 +107,27 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
     }
 
     @SuppressLint("SimpleDateFormat")
-    fun toolbar_text(position: Int, name: AppCompatTextView, date: AppCompatTextView, location: AppCompatTextView, tag: AppCompatTextView, favorite: ImageView){
+    fun toolbar_text(position: Int){
         val id = list[position].photo_id
 
         DBThread.execute {
             val data = vm.getName(this.applicationContext, id)
-            MainHandler.post { name.text = data }
+            MainHandler.post { text_name.text = data }
         }
 
         DBThread.execute {
             val data = vm.getStringDate(applicationContext, id)
-            MainHandler.post { date.text = data}
+            MainHandler.post { date_name.text = data}
         }
 
         DBThread.execute {
             val data = vm.getLocation(applicationContext, id)
-            MainHandler.post { location.text = data}
+            MainHandler.post { location_name.text = data}
         }
 
         DBThread.execute {
             val data = vm.getTags(id)
-            MainHandler.post { tag.text = data }
+            MainHandler.post { tag_name.text = data }
         }
 
         DBThread.execute {
@@ -143,10 +145,9 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
         }
     }
 
+
     fun getExtra(){
         if (intent.hasExtra("index")) {
-            //subimg = findViewById(R.id.sub_img) as ImageView // 뷰페이저로 넘어올 때, 애니메이션을 위한 눈속임
-            //subimg!!.setImageBitmap(MediaStore_Dao.LoadThumbnail(this, thumbnail!!))
             index = intent.getIntExtra("index", 0)
         }
         else {
@@ -164,6 +165,9 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
             R.id.menu_share -> {
                 share()
             }
+            R.id.menu_similar -> {
+                similarImage()
+            }
             R.id.menu_delete -> {
                 delete(imgViewPager, mainphoto_toolbar, bottom_photo_menu)
             }
@@ -172,9 +176,17 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
         return true
     }
 
+    private fun similarImage() {
+        val similarImageDialogView: View = layoutInflater.inflate(R.layout.similar_image_layout, null)
+        val dlg = similarImageDialog(similarImageDialogView, vm, location_name.text.toString(), date_name.text.toString())
+        dlg.setCancelable(false)
+        dlg.show(supportFragmentManager, "similarImageDialog")
+    }
+
     private fun insertTag() {
         val popupInputDialogView: View = layoutInflater.inflate(R.layout.tag_diaglog, null)
-        val dlg = tagInsertDialog(this, popupInputDialogView, vm, index, tag_name)
+        val dlg = tagInsertDialog(popupInputDialogView, vm, index, tag_name)
+        dlg.setCancelable(false)
         dlg.show(supportFragmentManager, "tagInsertDialog")
     }
 
@@ -225,7 +237,7 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
                     index -= 1
                 }
                 setView(view, toolbar, bottombar)
-                toolbar_text(index, imgView_text, imgView_date, imgView_location, imgView_tag, favorite)
+                toolbar_text(index)
             }
             delete_check = 1
         }

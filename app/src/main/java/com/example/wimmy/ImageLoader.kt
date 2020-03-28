@@ -1,15 +1,13 @@
 package com.example.wimmy
 
 import android.content.ContentUris
-import android.graphics.BitmapFactory
+import android.content.Context
 import android.graphics.ImageDecoder
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 import android.widget.ImageView
-import androidx.annotation.RequiresApi
-import androidx.core.graphics.decodeBitmap
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.db.MediaStore_Dao
 import java.lang.Error
@@ -38,20 +36,24 @@ class ThumbnailLoad(holder: RecyclerView.ViewHolder, imageView: ImageView, id : 
     }
 }
 
-class ImageLoad(imageView: ImageView, id : Long) : Runnable {
+class ImageLoad(context: Context, imageView: ImageView, id : Long) : Runnable {
     private val imageView = imageView
     private val id = id
+    private val context = context
 
     @Suppress("DEPRECATION")
     override fun run() {
         try {
+            handler.post { imageView.setImageBitmap(MediaStore_Dao.LoadThumbnailById(imageView.context, id)) }
+
             val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
-            val image = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            var image = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 val src = ImageDecoder.createSource(imageView.context.contentResolver, uri)
                 ImageDecoder.decodeBitmap(src)
             } else {
                 MediaStore.Images.Media.getBitmap(imageView.context.contentResolver, uri)
             } ?: return
+            image = MediaStore_Dao.modifyOrientaionById(context, id, image)
 
             handler.post {
                 imageView.setImageBitmap(image)
@@ -61,3 +63,4 @@ class ImageLoad(imageView: ImageView, id : Long) : Runnable {
         }
     }
 }
+

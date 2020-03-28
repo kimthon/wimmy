@@ -5,14 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.ImageLoder
 import com.example.wimmy.R
 import com.example.wimmy.ThumbnailLoad
 import com.example.wimmy.db.thumbnailData
 
-class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<thumbnailData>, val itemClick: (Int) -> Unit) :
+class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<thumbnailData>, val itemClick: (thumbnailData, Int) -> Unit) :
     RecyclerView.Adapter<RecyclerAdapterPhoto.Holder>()
 {
     private var size : Int = 200
@@ -20,7 +19,6 @@ class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<thumbnail
 
     inner class Holder(itemView: View?) : RecyclerView.ViewHolder(itemView!!) {
         var thumbnail: ImageView = itemView!!.findViewById<ImageView>(R.id.thumbnail_img)
-        var text = itemView?.findViewById<TextView>(R.id.thumbnail_img_text)
 
         fun bind(data : thumbnailData, num: Int) {
             val layoutParam = thumbnail.layoutParams as ViewGroup.MarginLayoutParams
@@ -31,8 +29,7 @@ class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<thumbnail
             thumbnail.setImageResource(0)
             ImageLoder.execute(ThumbnailLoad(this, thumbnail, data.photo_id))
 
-            text!!.text = data.data
-            itemView.setOnClickListener { itemClick(num) }
+            itemView.setOnClickListener { itemClick(data, num) }
         }
     }
 

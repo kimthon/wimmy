@@ -1,8 +1,9 @@
+package com.example.wimmy
+
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import androidx.appcompat.widget.AppCompatImageButton
-import com.example.wimmy.R
 
 class SwipeGesture(v: View) : GestureDetector.OnGestureListener {
     private val SWIPE_THRESHOLD = 100

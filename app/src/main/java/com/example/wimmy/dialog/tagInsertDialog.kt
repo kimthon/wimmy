@@ -1,10 +1,12 @@
 package com.example.wimmy.dialog
 
 import android.app.Dialog
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
+import android.widget.TableRow
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatTextView
@@ -21,9 +23,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class tagInsertDialog(context: Context, v: View, vm: PhotoViewModel, index: Int, tag_name : AppCompatTextView): DialogFragment() {
+class tagInsertDialog(v: View, vm: PhotoViewModel, index: Int, tag_name : AppCompatTextView): DialogFragment() {
 
-    private val contextdlg = context
     private val v = v
     private val vm = vm
     private val index = index
@@ -39,7 +40,7 @@ class tagInsertDialog(context: Context, v: View, vm: PhotoViewModel, index: Int,
         }
 
         val dlgBuilder: androidx.appcompat.app.AlertDialog.Builder = androidx.appcompat.app.AlertDialog.Builder(
-            contextdlg,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+            context!!,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
         dlgBuilder.setTitle("태그 삽입")
         dlgBuilder.setMessage("삽입할 사진의 특징을 입력해주세요. \n태그를 수정하거나 삭제할 수도 있습니다.")
         dlgBuilder.setIcon(R.drawable.ic_tag)
@@ -52,92 +53,48 @@ class tagInsertDialog(context: Context, v: View, vm: PhotoViewModel, index: Int,
 
 
     private fun insert_tag_click(view: View, dlg: androidx.appcompat.app.AlertDialog) {
-        tag_addRemove(view)
-        insert_saveCancel(view, dlg)
+        val editlist = arrayListOf<TextView>(view.tag1_edit, view.tag2_edit, view.tag3_edit, view.tag4_edit, view.tag5_edit)
+        tag_addRemove(view, editlist)
+        insert_saveCancel(view, dlg, editlist)
     }
 
-    private fun tag_addRemove(view: View) {
-        view.tag1_add.setOnClickListener{
-            view.tag1_add.visibility = View.INVISIBLE
-            view.tag2.visibility = View.VISIBLE
-        }
-        view.tag2_add.setOnClickListener{
-            view.tag2_add.visibility = View.INVISIBLE
-            view.tag3.visibility = View.VISIBLE
-            view.tag2_remove.visibility = View.INVISIBLE
-        }
-        view.tag3_add.setOnClickListener{
-            view.tag3_add.visibility = View.INVISIBLE
-            view.tag4.visibility = View.VISIBLE
-            view.tag3_remove.visibility = View.INVISIBLE
-        }
-        view.tag4_add.setOnClickListener{
-            view.tag4_add.visibility = View.INVISIBLE
-            view.tag5.visibility = View.VISIBLE
-            view.tag4_remove.visibility = View.INVISIBLE
+    private fun tag_addRemove(view: View, editlist: ArrayList<TextView>) {
+
+        val addlist = arrayListOf<ImageView>(view.tag1_add, view.tag2_add, view.tag3_add, view.tag4_add)
+        val taglist = arrayListOf<TableRow>(view.tag2, view.tag3, view.tag4, view.tag5)
+        val removelist = arrayListOf<ImageView>(view.tag2_remove, view.tag3_remove, view.tag4_remove, view.tag5_remove)
+        for(i in 0..3) {
+            addlist[i].setOnClickListener {
+                addlist[i].visibility = View.INVISIBLE
+                taglist[i].visibility = View.VISIBLE
+                if(i != 0)
+                    removelist[i-1].visibility = View.INVISIBLE
+            }
+            removelist[i].setOnClickListener {
+                addlist[i].visibility = View.VISIBLE
+                taglist[i].visibility = View.GONE
+                editlist[i+1].setText("")
+                if(i != 0)
+                    removelist[i-1].visibility = View.VISIBLE
+            }
         }
 
-        view.tag5_remove.setOnClickListener{
-            view.tag5.visibility = View.GONE
-            view.tag4_add.visibility = View.VISIBLE
-            view.tag4_remove.visibility = View.VISIBLE
-            view.tag5_edit.setText("")
-        }
-        view.tag4_remove.setOnClickListener{
-            view.tag4.visibility = View.GONE
-            view.tag3_add.visibility = View.VISIBLE
-            view.tag3_remove.visibility = View.VISIBLE
-            view.tag4_edit.setText("")
-        }
-        view.tag3_remove.setOnClickListener{
-            view.tag3.visibility = View.GONE
-            view.tag2_add.visibility = View.VISIBLE
-            view.tag2_remove.visibility = View.VISIBLE
-            view.tag3_edit.setText("")
-        }
-        view.tag2_remove.setOnClickListener{
-            view.tag2.visibility = View.GONE
-            view.tag1_add.visibility = View.VISIBLE
-            view.tag2_edit.setText("")
-        }
     }
 
-    private fun insert_saveCancel(view: View, dlg: androidx.appcompat.app.AlertDialog) {
+    private fun insert_saveCancel(view: View, dlg: androidx.appcompat.app.AlertDialog, editlist: ArrayList<TextView>) {
         view.tag_save.setOnClickListener {
             CoroutineScope(Dispatchers.Main).launch {
-                withContext(CoroutineScope(Dispatchers.Default).coroutineContext) {
+                withContext(CoroutineScope(Dispatchers.IO).coroutineContext) {
                     vm.DeleteTag(Main_PhotoView.list[index].photo_id)
                 }
                 var inserted = false
-                if (view.tag1_edit.text.toString().trim() != "") {
-                    DBThread.execute {
-                        vm.Insert( TagData( Main_PhotoView.list[index].photo_id, view.tag1_edit.text.toString() ) )
+                for(i in 0..4) {
+                    if (editlist[i].text.toString().trim() != "") {
+                        DBThread.execute {
+                            vm.Insert( TagData( Main_PhotoView.list[index].photo_id, editlist[i].text.toString() ) )
+                        }
+                        inserted = true
                     }
-                    inserted = true
-                }
-                if (view.tag2_edit.text.toString().trim() != "") {
-                    DBThread.execute {
-                        vm.Insert( TagData( Main_PhotoView.list[index].photo_id, view.tag2_edit.text.toString() ) )
-                    }
-                    inserted = true
-                }
-                if (view.tag3_edit.text.toString().trim() != "") {
-                    DBThread.execute {
-                        vm.Insert( TagData( Main_PhotoView.list[index].photo_id, view.tag3_edit.text.toString() ) )
-                    }
-                    inserted = true
-                }
-                if (view.tag4_edit.text.toString().trim() != "") {
-                    DBThread.execute {
-                        vm.Insert( TagData( Main_PhotoView.list[index].photo_id, view.tag4_edit.text.toString() ) )
-                    }
-                    inserted = true
-                }
-                if (view.tag5_edit.text.toString().trim() != "") {
-                    DBThread.execute {
-                        vm.Insert( TagData( Main_PhotoView.list[index].photo_id, view.tag5_edit.text.toString() ) )
-                    }
-                    inserted = true
                 }
 
                 if(inserted) {
@@ -147,7 +104,7 @@ class tagInsertDialog(context: Context, v: View, vm: PhotoViewModel, index: Int,
                     }
                 }
 
-                Toast.makeText(contextdlg, "입력 완료 되었습니다.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context!!, "입력 완료 되었습니다.", Toast.LENGTH_SHORT).show()
                 dlg.cancel()
             }
         }

@@ -310,7 +310,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     private fun CheckAddedPhoto() {
         val pref = getSharedPreferences("pref", Context.MODE_PRIVATE)
         val editor = pref.edit()
-        var lastAddedDate = pref.getLong("lastAddedDate", 0)
+        var lastAddedDate = pref.getLong("lastAddedDate", Calendar.getInstance().time.time)
         val cursor = vm.getNewlySortedCursor(this, lastAddedDate)
 
         if (MediaStore_Dao.cursorIsValid(cursor)) {

@@ -52,6 +52,13 @@ class SearchView: AppCompatActivity() {
                         intent.putExtra("location_name", thumbnailData.data)
                         startActivityForResult(intent, 800)
                     }
+                    else if(type == "date_name"){
+                        val cal: Calendar = Calendar.getInstance()
+                        cal.set(thumbnailData.data.substring(0, 4).toInt(), thumbnailData.data.substring(6, 8).toInt() - 1, thumbnailData.data.substring(10, 12).toInt(), 0, 0, 0)
+                        val intent = Intent(this, Main_PhotoView::class.java)
+                        intent.putExtra(type, cal.time)
+                        startActivityForResult(intent, 201)
+                    }
                     else {
                         val intent = Intent(this, Main_PhotoView::class.java)
                         intent.putExtra(type, thumbnailData.data)
@@ -151,7 +158,7 @@ class SearchView: AppCompatActivity() {
                         try {
                             if (query!!.length == 7) cal.set(query!!.substring(0, 4).toInt(), query.substring(5, 7).toInt() - 1, 1, 0, 0, 0)
                             else if (query!!.length == 6) cal.set(query!!.substring(0, 4).toInt(), query.substring(5, 6).toInt() - 1, 1, 0, 0, 0)
-                            setView("search_date")
+                            setView("date_name")
 
                             DirectoryThread.execute {
                                 thumbnailList = vm.getDateDirSearch(searchview.context, cal)
