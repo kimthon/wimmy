@@ -16,6 +16,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.wimmy.*
 import com.example.wimmy.Activity.Main_Map.Companion.selectedMarker
@@ -24,6 +25,7 @@ import com.example.wimmy.Activity.MarkerClusterRenderer.Companion.createDrawable
 import com.example.wimmy.R
 import com.example.wimmy.db.LatLngData
 import com.example.wimmy.db.PhotoViewModel
+import com.example.wimmy.db.thumbnailData
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
 import com.google.maps.android.clustering.Cluster
@@ -90,7 +92,7 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
         clusterItemClick(mMap)
         clusterClick(mMap)
 
-        refresh_loaction.setOnClickListener() {
+        refresh_loaction.setOnClickListener {
             boundmap()
         }
     }
@@ -172,7 +174,7 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
     fun boundmap() {
         val bounds: LatLngBounds = builder.build()
         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, zoomLevel))
-        val zoom: Float = mMap.getCameraPosition().zoom - 0.5f
+        val zoom: Float = mMap.cameraPosition.zoom - 0.5f
         mMap.animateCamera(CameraUpdateFactory.zoomTo(zoom))
     }
 
@@ -225,25 +227,22 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
             val getname = intent.getStringExtra("location_name")
             val title: TextView = findViewById(R.id.title_location_name)
             title.text = getname
-            DirectoryThread.execute {
-                val idCursor = vm.getOpenLocationDirIdCursor(getname)
-                if(vm.CursorIsValid(idCursor)) {
-                    list.clear()
-                    do {
-                        val data = vm.getThumbnailDataByIdCursor(this.applicationContext, idCursor!!)
-                        if(data != null) {
-                            list.add(data)
-                            val latlng = vm.getLatLngById(this.applicationContext, data.photo_id)
-                            if(latlng != null) {
-                                addLatLNgData(data.photo_id, latlng)
-                            }
-                        }
-                    } while (idCursor!!.moveToNext())
 
-                    MainHandler.post{ cameraInit() }
-                    idCursor!!.close()
+            val liveData = vm.getOpenLocationDirIdList(getname!!)
+            liveData.observe(this, Observer { idList ->
+                DirectoryThread.execute {
+                    list.clear()
+                    for (id in idList) {
+                        val latLng = vm.getLatLngById(this.applicationContext, id)
+                        if (latLng != null) {
+                            val name = vm.getName(this.applicationContext, id)
+                            list.add(thumbnailData(id, name))
+                            addLatLNgData(id, latLng)
+                        }
+                    }
+                    MainHandler.post { cameraInit() }
                 }
-            }
+            })
         }
     }
 

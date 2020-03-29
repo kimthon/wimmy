@@ -63,22 +63,6 @@ class DateFragment(v: AppBarLayout) : Fragment() {
         return thisview
     }
 
-   /* override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                204 -> {
-                    if(data!!.getIntExtra("delete_check", 0) == 1) {
-                        calendar_allheader = thisview?.findViewById(R.id.calendar_allheader) as View
-                        setView(thisview)
-                        setHeader(thisview)
-                        setGridLayout(thisview)
-                    }
-                }
-            }
-        }
-    }*/
-
     fun setView(view : View?) {
         gridView = view!!.findViewById(R.id.cal_grid)
     }

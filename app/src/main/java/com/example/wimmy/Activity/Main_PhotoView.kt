@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import com.example.wimmy.DBThread
-import com.example.wimmy.MainHandler
 import com.example.wimmy.R
 import com.example.wimmy.db.*
 import kotlinx.android.synthetic.main.main_photoview.*
@@ -87,7 +86,7 @@ class Main_PhotoView: AppCompatActivity() {
         val toolbar = findViewById<Toolbar>(R.id.photo_toolbar)
         toolbar.bringToFront()
         setSupportActionBar(toolbar)
-        supportActionBar?.setTitle(null)
+        supportActionBar?.title = null
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -95,13 +94,6 @@ class Main_PhotoView: AppCompatActivity() {
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 100 -> {
-                    /*
-                    if(data!!.hasExtra("delete_check")) {
-                        setView(photo_recyclerView)
-                        setPhotoSize(3, 3)
-                        delete_check = 1
-                    }
-                     */
                     val doc = data!!.getIntExtra("index", 0)
                     recyclerView.scrollToPosition(doc)
                 }
@@ -128,11 +120,14 @@ class Main_PhotoView: AppCompatActivity() {
             }
 
             intent.hasExtra("location_name") -> {
-                getname = intent.getStringExtra("location_name")
+                getname = intent.getStringExtra("location_name")!!
 
-                DBThread.execute {
-                    getOpenDirByIdCursorDESC(vm, vm.getOpenLocationDirIdCursor(getname))
-                }
+                val liveData = vm.getOpenLocationDirIdList(getname)
+                liveData.observe(this, androidx.lifecycle.Observer { idList ->
+                    DBThread.execute {
+                        getOpenDirByIdList(vm, idList)
+                    }
+                })
 
                 title_type.setImageResource(R.drawable.ic_location)
                 title.text = getname
@@ -156,18 +151,21 @@ class Main_PhotoView: AppCompatActivity() {
             }
 
             intent.hasExtra("tag_name") -> {
-                getname = intent.getStringExtra("tag_name")
+                getname = intent.getStringExtra("tag_name")!!
 
-                DBThread.execute {
-                    getOpenDirByIdCursor(vm, vm.getOpenTagDirIdCursor(getname))
-                }
+                val liveData = vm.getOpenTagDirIdList(getname)
+                liveData.observe(this, androidx.lifecycle.Observer { idList ->
+                    DBThread.execute {
+                        getOpenDirByIdList(vm, idList)
+                    }
+                })
 
                 title_type.setImageResource(R.drawable.ic_tag)
                 title.text = getname
             }
 
             intent.hasExtra("file_name") -> {
-                var filename = intent.getStringExtra("file_name")
+                var filename = intent.getStringExtra("file_name")!!
 
                 DBThread.execute {
                     getOpenDirByCursor(vm, vm.getOpenFileDirCursor(applicationContext, filename))
@@ -176,20 +174,35 @@ class Main_PhotoView: AppCompatActivity() {
                 title_type.setImageResource(R.drawable.ic_name)
                 if(filename.length >= 23) {
                     filename = filename.substring(0, 23)
-                    filename = filename + ".."
+                    filename += ".."
                 }
                 title.text = filename
             }
 
             intent.hasExtra("favorite") -> {
-                DBThread.execute {
-                    getOpenDirByIdCursorDESC(vm, vm.getOpenFavoriteDirIdCursor())
-                }
+                val liveData = vm.getOpenFavoriteDirIdList()
+                liveData.observe(this, androidx.lifecycle.Observer { idList ->
+                    DBThread.execute {
+                        getOpenDirByIdList(vm, idList)
+                    }
+                })
 
                 title_type.setImageResource(R.drawable.ic_favorite_checked)
                 title.text = "즐겨찾기"
             }
 
+            intent.hasExtra("search_date") -> {
+                val date = intent.getStringExtra("search_date")!!
+                val cal: Calendar = Calendar.getInstance()
+                cal.set(date.substring(0, 4).toInt(), date.substring(6, 8).toInt() - 1, date.substring(10, 12).toInt(), 0, 0, 0)
+
+                DBThread.execute {
+                    getOpenDirByCursor(vm, vm.getOpenDateDirCursor(applicationContext, cal))
+                }
+                title_type.setImageResource(R.drawable.ic_cal)
+
+                title.text = date
+            }
         }
     }
 
@@ -242,37 +255,15 @@ class Main_PhotoView: AppCompatActivity() {
             do {
                 val data = vm.getThumbnailDataByCursor(cursor!!)
                 recyclerAdapter.addThumbnailList(data)
-                MainHandler.post { recyclerAdapter.notifyItemInserted(recyclerAdapter.getSize()) }
             } while (cursor!!.moveToNext())
             cursor.close()
         }
     }
 
-    private fun getOpenDirByIdCursor(vm : PhotoViewModel, idCursor : Cursor?) {
-        if (vm.CursorIsValid(idCursor)) {
-            do {
-                val data = vm.getThumbnailDataByIdCursor(applicationContext, idCursor!!)
-                if(data != null) {
-                    recyclerAdapter.addThumbnailList(data)
-                    MainHandler.post { recyclerAdapter.notifyItemInserted(recyclerAdapter.getSize()) }
-                }
-            } while (idCursor!!.moveToNext())
-            idCursor.close()
-        }
-    }
-
-    private fun getOpenDirByIdCursorDESC(vm : PhotoViewModel, idCursor : Cursor?) {
-        if (vm.CursorIsValid(idCursor)) {
-            idCursor!!.moveToLast()
-            do {
-                val data = vm.getThumbnailDataByIdCursor(applicationContext, idCursor!!)
-                if(data != null) {
-                    recyclerAdapter.addThumbnailList(data)
-                    MainHandler.post { recyclerAdapter.notifyItemInserted(recyclerAdapter.getSize()) }
-                }
-            } while (idCursor!!.moveToPrevious())
-            idCursor.close()
-        }
+    private fun getOpenDirByIdList(vm : PhotoViewModel, idList : List<Long>) {
+        val list = vm.getThumbnailListByIdList(this, idList)
+        recyclerAdapter.setThumbnailList(list)
+        Main_PhotoView.list = list
     }
 }
 

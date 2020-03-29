@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -193,11 +192,10 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
 
     private fun share() {
         val intent = Intent(Intent.ACTION_SEND)
-        val path = MediaStore_Dao.getPathById(this, list[index].photo_id)
-        var bitmap = BitmapFactory.decodeFile(path)
+        var bitmap = getImage(this, list[index].photo_id)
         bitmap =  MediaStore_Dao.modifyOrientaionById(this, list[index].photo_id, bitmap)
         val uri: Uri? = getImageUri(this, bitmap)
-        intent.setType("image/*")
+        intent.type = "image/*"
         intent.putExtra(Intent.EXTRA_STREAM, uri)
         val chooser = Intent.createChooser(intent, "친구에게 공유하기")
         startActivity(chooser)
@@ -230,7 +228,7 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
 
             list.removeAt(index)
             Toast.makeText(this, "삭제 완료 되었습니다.", Toast.LENGTH_SHORT).show()
-            if(index == 0 && list.size == 0) {
+            if(list.size == 0) {
                 finishActivity()
             } else {
                 if (index >= list.size) {

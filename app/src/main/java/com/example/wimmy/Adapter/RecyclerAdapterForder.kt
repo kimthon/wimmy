@@ -56,19 +56,40 @@ class RecyclerAdapterForder(val context: FragmentActivity?, var list: ArrayList<
     }
 
     fun setThumbnailList(list : ArrayList<thumbnailData>?) {
-        if(list.isNullOrEmpty()) this.list = arrayListOf<thumbnailData>()
+        if(list.isNullOrEmpty()) this.list = arrayListOf()
         else {
-            for( i in list.withIndex()) {
-                //바뀐 것 만 변경
-                if(this.list.size > i.index) {
-                    if (this.list[i.index].photo_id != i.value.photo_id) {
-                        this.list[i.index] = i.value
-                        notifyItemInserted(i.index)
+            var thisIndex = 0
+            for(pData in list) {
+                do {
+                    val pre = if(thisIndex < this.list.size) {
+                        pData.data.compareTo(this.list[thisIndex].data)
                     }
-                } else {
-                    this.list.add(i.value)
-                    notifyItemInserted(i.index)
-                }
+                    else { Int.MIN_VALUE }
+
+                    //pre > 0 : 이전 데이터가 사라진 경우
+                    if(pre > 0) {
+                        this.list.removeAt(thisIndex)
+                        notifyItemRemoved(thisIndex)
+                        //제자리에 머물러야함
+                        continue
+                    }
+                    //그대로 일 경우
+                    else if(pre == 0) {
+                        if(this.list[thisIndex].photo_id != pData.photo_id) {
+                            this.list[thisIndex].photo_id = pData.photo_id
+                            notifyItemChanged(thisIndex)
+                        }
+                        ++thisIndex
+                        break
+                    }
+                    //삽입
+                    else {
+                        this.list.add(thisIndex, pData)
+                        notifyItemInserted(thisIndex)
+                        ++thisIndex
+                        break
+                    }
+                } while(true)
             }
         }
     }

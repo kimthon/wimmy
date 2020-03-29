@@ -1,6 +1,7 @@
 package com.example.wimmy.db
 
 import android.database.Cursor
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
 
@@ -32,9 +33,9 @@ interface PhotoData_Dao {
     @Query("SELECT tag FROM tag_data WHERE photo_id IN (:idList) GROUP BY tag ORDER BY count(*) DESC LIMIT 5")
     fun getDateInfo(idList : List<Long>) : List<String>
     @Query("SELECT MAX(photo_id) as photo_id, tag as data FROM tag_data GROUP BY tag")
-    fun getTagDir() : List<thumbnailData>
+    fun getTagDir() : LiveData<List<thumbnailData>>
     @Query("SELECT MAX(photo_id) as photo_id, location as data FROM extra_photo_data GROUP BY location HAVING NOT location = '위치 정보 없음'")
-    fun getLocationDir() : List<thumbnailData>
+    fun getLocationDir() : LiveData<List<thumbnailData>>
 
     @Query("SELECT MAX(photo_id) as photo_id, location as data FROM extra_photo_data GROUP BY location HAVING location LIKE '%' || :location || '%'")
     fun getLocationDirSearch(location: String) : List<thumbnailData>
@@ -42,11 +43,11 @@ interface PhotoData_Dao {
     fun getTagDirSearch(tags: String) : List<thumbnailData>
 
     @Query("SELECT photo_id FROM tag_data where tag = :tag")
-    fun getTagDir(tag : String) : Cursor
+    fun getTagDir(tag : String) : LiveData<List<Long>>
     @Query("SELECT photo_id FROM extra_photo_data where location = :location")
-    fun getLocationDir(location : String) : Cursor
+    fun getLocationDir(location : String) : LiveData<List<Long>>
     @Query("SELECT photo_id FROM extra_photo_data where favorite = 1")
-    fun getFavoriteDir() : Cursor
+    fun getFavoriteDir() : LiveData<List<Long>>
 
 
     @Query("SELECT location FROM extra_photo_data WHERE photo_id = :id")

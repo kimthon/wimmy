@@ -24,6 +24,7 @@ class NameFragment(v: AppBarLayout) : Fragment() {
     private lateinit var thisview: View
     private lateinit var recyclerView : RecyclerView
     private lateinit var recyclerAdapter : RecyclerAdapterForder
+    private lateinit var vm : PhotoViewModel
     private lateinit var observer : DataBaseObserver
     private var mLastClickTime: Long = 0
     private val ab = v
@@ -34,14 +35,10 @@ class NameFragment(v: AppBarLayout) : Fragment() {
         ab.setExpanded(true,true)
 
         thisview = inflater.inflate(R.layout.fragment_view, container, false)
-        val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+        vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
         setView(thisview)
-        DirectoryThread.execute {
-            val list = vm.getNameDir(this.context!!)
-            MainHandler.post { recyclerAdapter.setThumbnailList(list) }
-        }
-        observer = DataBaseObserver(Handler(), recyclerAdapter!!)
+        observer = DataBaseObserver(Handler(), recyclerAdapter)
 
         return thisview
     }
@@ -49,6 +46,10 @@ class NameFragment(v: AppBarLayout) : Fragment() {
     override fun onResume() {
         super.onResume()
         setPhotoSize(this.view!!,3, 10)
+        DirectoryThread.execute {
+            val list = vm.getNameDir(this.context!!)
+            MainHandler.post { recyclerAdapter.setThumbnailList(list) }
+        }
         this.context!!.contentResolver.registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, false, observer)
     }
 
@@ -56,19 +57,6 @@ class NameFragment(v: AppBarLayout) : Fragment() {
         super.onPause()
         this.context!!.contentResolver.unregisterContentObserver(observer)
     }
-
-   /* override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                201 -> {
-                    if (data!!.getIntExtra("delete_check", 0) == 1) {
-                        setView(thisview)
-                    }
-                }
-            }
-        }
-    }*/
 
     private fun setView(view : View?) {
         val recyclerView = view?.findViewById<RecyclerView>(R.id.fragment_RecycleView)
@@ -94,30 +82,13 @@ class NameFragment(v: AppBarLayout) : Fragment() {
             override fun onGlobalLayout() {
                 val width = recyclerView.width
                 val size = width / row - 2 * padding
-                recyclerAdapter!!.setPhotoSize(size, padding)
+                recyclerAdapter.setPhotoSize(size, padding)
                 recyclerView.viewTreeObserver.removeOnGlobalLayoutListener(this)
             }
         })
     }
 }
 
-/*
-    inner class Scroll : RecyclerView.OnScrollListener() {
-        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int){
-            bottomNavigationView = view!!.findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-            if (dy > 0 && bottomNavigationView!!.isShown()) {
-                bottomNavigationView!!.setVisibility(View.GONE);
-            } else if (dy < 0 ) {
-                bottomNavigationView!!.setVisibility(View.VISIBLE);
-            }
-        }
-
-        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-            super.onScrollStateChanged(recyclerView, newState)
-        }
-    }
-}
- */
 
 
 
