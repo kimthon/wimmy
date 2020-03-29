@@ -31,6 +31,7 @@ class PhotoRepository(application: Application) {
 
       val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
       context.contentResolver.delete(uri, null, null)
+      context.contentResolver.notifyChange( MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null)
    }
 
    fun deleteTag(id: Long) {

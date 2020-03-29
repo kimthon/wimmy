@@ -160,14 +160,8 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         return MediaStore_Dao.getThumbnailDataByCursor(cursor)
     }
 
-    fun getThumbnailDataByIdCursor(context: Context, idCursor : Cursor) : thumbnailData? {
-        val id = idCursor.getLong(idCursor.getColumnIndex("photo_id"))
-        val name = MediaStore_Dao.getNameById(context, id)
-        if(name == null) {
-            repo.deleteById(context, id)
-            return null
-        }
-        return thumbnailData(id, name)
+    fun getThumbnailListByIdLIst(context: Context, idList : List<Long>) : ArrayList<thumbnailData> {
+        return MediaStore_Dao.getDirByIdList(context, idList)
     }
 
     fun getLatLngById(context: Context, id: Long) : LatLng?{

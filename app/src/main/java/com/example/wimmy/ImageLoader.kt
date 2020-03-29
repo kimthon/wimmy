@@ -1,6 +1,8 @@
 package com.example.wimmy
 
 import android.content.ContentUris
+import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.os.Build
@@ -60,4 +62,15 @@ class ImageLoad(imageView: ImageView, id : Long) : Runnable {
             e.printStackTrace()
         }
     }
+}
+
+fun getImage(context: Context, id: Long) : Bitmap {
+    val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
+    val image = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        val src = ImageDecoder.createSource(context.contentResolver, uri)
+        ImageDecoder.decodeBitmap(src)
+    } else {
+        MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+    }
+    return image
 }

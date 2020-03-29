@@ -21,11 +21,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
+import com.example.wimmy.*
 import com.example.wimmy.Adapter.PagerRecyclerAdapter
 import com.example.wimmy.Activity.Main_PhotoView.Companion.list
-import com.example.wimmy.DBThread
-import com.example.wimmy.MainHandler
-import com.example.wimmy.R
 import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.dialog.tagInsertDialog
@@ -181,11 +179,10 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
 
     private fun share() {
         val intent = Intent(Intent.ACTION_SEND)
-        val path = MediaStore_Dao.getPathById(this, list[index].photo_id)
-        var bitmap = BitmapFactory.decodeFile(path)
+        var bitmap = getImage(this, list[index].photo_id)
         bitmap =  MediaStore_Dao.modifyOrientaionById(this, list[index].photo_id, bitmap)
         val uri: Uri? = getImageUri(this, bitmap)
-        intent.setType("image/*")
+        intent.type = "image/*"
         intent.putExtra(Intent.EXTRA_STREAM, uri)
         val chooser = Intent.createChooser(intent, "친구에게 공유하기")
         startActivity(chooser)
@@ -218,7 +215,7 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
 
             list.removeAt(index)
             Toast.makeText(this, "삭제 완료 되었습니다.", Toast.LENGTH_SHORT).show()
-            if(index == 0 && list.size == 0) {
+            if(list.size == 0) {
                 finishActivity()
             } else {
                 if (index >= list.size) {
