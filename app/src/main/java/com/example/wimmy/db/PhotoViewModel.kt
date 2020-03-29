@@ -160,7 +160,7 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         return MediaStore_Dao.getThumbnailDataByCursor(cursor)
     }
 
-    fun getThumbnailListByIdLIst(context: Context, idList : List<Long>) : ArrayList<thumbnailData> {
+    fun getThumbnailListByIdList(context: Context, idList : List<Long>) : ArrayList<thumbnailData> {
         return MediaStore_Dao.getDirByIdList(context, idList)
     }
 

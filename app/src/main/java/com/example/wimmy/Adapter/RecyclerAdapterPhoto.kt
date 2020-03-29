@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.ImageLoder
+import com.example.wimmy.MainHandler
 import com.example.wimmy.R
 import com.example.wimmy.ThumbnailLoad
 import com.example.wimmy.db.thumbnailData
@@ -69,7 +70,7 @@ class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<thumbnail
                     //pre > 0 : 이전 데이터가 사라진 경우
                     if(pre > 0) {
                         this.list.removeAt(thisIndex)
-                        notifyItemRemoved(thisIndex)
+                        MainHandler.post { notifyItemRemoved(thisIndex) }
                         //제자리에 머물러야함
                         continue
                     }
@@ -77,7 +78,7 @@ class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<thumbnail
                     else if(pre == 0) {
                         if(this.list[thisIndex].photo_id != pData.photo_id) {
                             this.list[thisIndex].photo_id = pData.photo_id
-                            notifyItemChanged(thisIndex)
+                            MainHandler.post{ notifyItemChanged(thisIndex) }
                         }
                         ++thisIndex
                         break
@@ -85,7 +86,7 @@ class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<thumbnail
                     //삽입
                     else {
                         this.list.add(thisIndex, pData)
-                        notifyItemInserted(thisIndex)
+                        MainHandler.post{ notifyItemInserted(thisIndex) }
                         ++thisIndex
                         break
                     }

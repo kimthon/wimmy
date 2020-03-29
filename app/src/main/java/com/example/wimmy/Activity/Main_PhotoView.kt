@@ -265,17 +265,15 @@ class Main_PhotoView: AppCompatActivity() {
             do {
                 val data = vm.getThumbnailDataByCursor(cursor!!)
                 recyclerAdapter.addThumbnailList(data)
-                MainHandler.post { recyclerAdapter.notifyItemInserted(recyclerAdapter.getSize()) }
             } while (cursor!!.moveToNext())
             cursor.close()
         }
     }
 
     private fun getOpenDirByIdList(vm : PhotoViewModel, idList : List<Long>) {
-        val list = vm.getThumbnailListByIdLIst(this, idList)
+        val list = vm.getThumbnailListByIdList(this, idList)
         recyclerAdapter.setThumbnailList(list)
         Main_PhotoView.list = list
-        MainHandler.post { recyclerAdapter.notifyDataSetChanged() }
     }
 }
 
