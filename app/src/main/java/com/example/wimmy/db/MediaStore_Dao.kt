@@ -178,15 +178,29 @@ object MediaStore_Dao {
         return context.contentResolver.query(uri, projection, selection, null, sortdate)
     }
 
-    fun getPathById(context: Context, id: Long) : String?{
-        val selection = MediaStore.Images.ImageColumns._ID + " = " + id
+    fun getDirByIdList(context: Context, idList : List<Long>) : ArrayList<thumbnailData> {
+        val list = ArrayList<thumbnailData>()
         val projection = arrayOf(
-            MediaStore.Images.ImageColumns.DATA
+            MediaStore.Images.ImageColumns._ID,
+            MediaStore.Images.ImageColumns.DISPLAY_NAME
         )
-        val cursor = context.contentResolver.query(uri, projection, selection, null, sortdate)
-        return if(cursorIsValid(cursor)) {
-            cursor!!.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA))
-        } else null
+        var selection = MediaStore.Images.ImageColumns._ID + " IN ("
+        for(id in idList) {
+            selection += "$id,"
+        }
+        selection = selection.substring(0, selection.length - 1)
+        selection += ")"
+        val sortOrder = MediaStore.Images.ImageColumns.DISPLAY_NAME
+
+        val cursor = context.contentResolver.query(uri, projection, selection, null, sortOrder)
+        if(!cursorIsValid(cursor)) return list
+        do {
+            val id = cursor!!.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
+            val name = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME))
+            list.add(thumbnailData(id, name))
+        } while (cursor!!.moveToNext())
+
+        return list
     }
 
     fun getNameById(context: Context, id: Long) : String? {
@@ -264,7 +278,7 @@ object MediaStore_Dao {
     }
 
     private fun getLatLngByCursor(cursor: Cursor) : LatLng {
-        val lat = cursor!!.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LATITUDE))
+        val lat = cursor.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LATITUDE))
         val lon = cursor.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LONGITUDE))
 
         return LatLng(lat, lon)
@@ -313,6 +327,7 @@ object MediaStore_Dao {
         cursor!!.moveToFirst()
 
         val orientation = cursor.getFloat(cursor.getColumnIndex(MediaStore.Images.ImageColumns.ORIENTATION))
+        cursor.close()
         return rotateBitmap(bitmap, orientation)
     }
 

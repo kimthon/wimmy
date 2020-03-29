@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.database.Cursor
 import android.provider.MediaStore
+import androidx.lifecycle.LiveData
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -30,6 +31,7 @@ class PhotoRepository(application: Application) {
 
       val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
       context.contentResolver.delete(uri, null, null)
+      context.contentResolver.notifyChange( MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null)
    }
 
    fun deleteTag(id: Long) {
@@ -42,18 +44,16 @@ class PhotoRepository(application: Application) {
       return photoDao.getDateInfo(list)
    }
 
-   fun getLocationDir() : ArrayList<thumbnailData> {
-      val list = photoDao.getLocationDir()
-      return ArrayList(list)
+   fun getLocationDir() : LiveData<List<thumbnailData>> {
+      return photoDao.getLocationDir()
    }
 
    fun getNameDir(context: Context) : ArrayList<thumbnailData>{
       return MediaStore_Dao.getNameDir(context)
    }
 
-    fun getTagDir(): ArrayList<thumbnailData>{
-       val list = photoDao.getTagDir()
-       return ArrayList(list)
+    fun getTagDir(): LiveData<List<thumbnailData>> {
+       return photoDao.getTagDir()
     }
 
    // 검색
@@ -80,7 +80,7 @@ class PhotoRepository(application: Application) {
        return MediaStore_Dao.getDateDir(context, cal)
    }
 
-   fun getOpenLocationDirIdCursor(loc: String) : Cursor? {
+   fun getOpenLocationDirIdList(loc: String) : LiveData<List<Long>> {
       return photoDao.getLocationDir(loc)
    }
 
@@ -88,11 +88,11 @@ class PhotoRepository(application: Application) {
       return MediaStore_Dao.getNameDir(context, path)
    }
 
-   fun getOpenTagDirIdCursor(tag : String) : Cursor?{
+   fun getOpenTagDirIdList(tag : String) : LiveData<List<Long>> {
       return photoDao.getTagDir(tag)
    }
 
-   fun getOpenFavoriteDirIdCursor(): Cursor? {
+   fun getOpenFavoriteDirIdList(): LiveData<List<Long>> {
       return photoDao.getFavoriteDir()
    }
 

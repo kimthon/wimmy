@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.database.Cursor
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import com.example.wimmy.DBThread
 import com.example.wimmy.DirectoryThread
 import com.google.android.gms.maps.model.LatLng
@@ -19,10 +20,6 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         repo.insert(tag)
     }
 
-    fun Insert(extraPhotoData: ExtraPhotoData) {
-        repo.insert(extraPhotoData)
-    }
-
     fun Delete(context: Context, id : Long) {
         repo.deleteById(context, id)
     }
@@ -35,17 +32,17 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         return repo.getCalendarTag(context, inputCalendar)
     }
 
-    fun getLocationDir() : ArrayList<thumbnailData>{
+    fun getLocationDir() : LiveData<List<thumbnailData>> {
         if(DirectoryThread.isTerminating) DirectoryThread.shutdownNow()
         return repo.getLocationDir()
     }
 
-    fun getNameDir(context: Context) : ArrayList<thumbnailData>{
+    fun getNameDir(context: Context) : ArrayList<thumbnailData> {
         if(DirectoryThread.isTerminating) DirectoryThread.shutdownNow()
         return repo.getNameDir(context)
     }
 
-    fun getTagDir() : ArrayList<thumbnailData>{
+    fun getTagDir() : LiveData<List<thumbnailData>> {
         if(DBThread.isTerminating) DBThread.shutdownNow()
         return repo.getTagDir()
     }
@@ -76,8 +73,8 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         return repo.getOpenDateDirCursor(context, cal)
     }
 
-    fun getOpenLocationDirIdCursor(loc: String) : Cursor? {
-        return repo.getOpenLocationDirIdCursor(loc)
+    fun getOpenLocationDirIdList(loc: String) : LiveData<List<Long>> {
+        return repo.getOpenLocationDirIdList(loc)
     }
 
     fun getOpenNameDirCursor(context: Context, path : String) : Cursor? {
@@ -88,12 +85,12 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         return repo.getOpenFileDirCursor(context , name)
     }
 
-    fun getOpenTagDirIdCursor(tag : String) : Cursor? {
-        return repo.getOpenTagDirIdCursor(tag)
+    fun getOpenTagDirIdList(tag : String) : LiveData<List<Long>> {
+        return repo.getOpenTagDirIdList(tag)
     }
 
-    fun getOpenFavoriteDirIdCursor() : Cursor? {
-        return repo.getOpenFavoriteDirIdCursor()
+    fun getOpenFavoriteDirIdList() : LiveData<List<Long>> {
+        return repo.getOpenFavoriteDirIdList()
     }
 
     // 기타 기능
@@ -142,8 +139,8 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
 
     fun getTags(id : Long) : String {
         val tagList = repo.getTagList(id)
-        var tags: String = ""
-        if(tagList.size != 0) {
+        var tags: String
+        if(tagList.isNotEmpty()) {
             tags = tagList.joinToString(", ")
             if (tags.length >= 30) {
                 tags = tags.substring(0, 29)
@@ -163,14 +160,8 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         return MediaStore_Dao.getThumbnailDataByCursor(cursor)
     }
 
-    fun getThumbnailDataByIdCursor(context: Context, idCursor : Cursor) : thumbnailData? {
-        val id = idCursor.getLong(idCursor.getColumnIndex("photo_id"))
-        val name = MediaStore_Dao.getNameById(context, id)
-        if(name == null) {
-            repo.deleteById(context, id)
-            return null
-        }
-        return thumbnailData(id, name)
+    fun getThumbnailListByIdList(context: Context, idList : List<Long>) : ArrayList<thumbnailData> {
+        return MediaStore_Dao.getDirByIdList(context, idList)
     }
 
     fun getThumbnailDataByIdCursor(context: Context, idCursor : Cursor, cal: Calendar) : thumbnailData? {
