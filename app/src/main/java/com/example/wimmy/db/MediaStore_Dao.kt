@@ -190,9 +190,32 @@ object MediaStore_Dao {
         }
         selection = selection.substring(0, selection.length - 1)
         selection += ")"
-        val sortOrder = MediaStore.Images.ImageColumns.DISPLAY_NAME
 
-        val cursor = context.contentResolver.query(uri, projection, selection, null, sortOrder)
+        val cursor = context.contentResolver.query(uri, projection, selection, null, sortdate)
+        if(!cursorIsValid(cursor)) return list
+        do {
+            val id = cursor!!.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
+            val name = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME))
+            list.add(thumbnailData(id, name))
+        } while (cursor!!.moveToNext())
+
+        return list
+    }
+
+    fun getSimilarByIdList(context: Context, idList : List<Long>, cal: Calendar) : ArrayList<thumbnailData> {
+        val list = ArrayList<thumbnailData>()
+        val projection = arrayOf(
+            MediaStore.Images.ImageColumns._ID,
+            MediaStore.Images.ImageColumns.DISPLAY_NAME
+        )
+        var selection = MediaStore.Images.ImageColumns._ID + " IN ("
+        for(id in idList) {
+            selection += "$id,"
+        }
+        selection = selection.substring(0, selection.length - 1)
+        selection += ")" + " AND " + MediaStore.Images.ImageColumns.DATE_TAKEN + " BETWEEN " + (cal.time.time - 30000) + " AND " + (cal.time.time + 30000)
+
+        val cursor = context.contentResolver.query(uri, projection, selection, null, sortdate)
         if(!cursorIsValid(cursor)) return list
         do {
             val id = cursor!!.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
@@ -205,22 +228,6 @@ object MediaStore_Dao {
 
     fun getNameById(context: Context, id: Long) : String? {
         val selection = MediaStore.Images.ImageColumns._ID + " = " + id
-        val projection = arrayOf(
-            MediaStore.Images.ImageColumns.DISPLAY_NAME
-        )
-        val cursor = context.contentResolver.query(uri, projection, selection, null, sortdate)
-        return if(cursorIsValid(cursor)) {
-            cursor!!.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DISPLAY_NAME))
-        } else null
-    }
-
-    fun getSimilarById(context: Context, id: Long, cal: Calendar) : String? {
-        /*val calMin = cal
-        val calMax = cal
-        calMin.add(Calendar.SECOND, -30)
-        calMax.add(Calendar.SECOND, 300)*/
-        val selection = MediaStore.Images.ImageColumns._ID + " = " + id + " AND " + MediaStore.Images.ImageColumns.DATE_TAKEN + " BETWEEN " + (cal.time.time - 30000) + " AND " + (cal.time.time + 30000)
-
         val projection = arrayOf(
             MediaStore.Images.ImageColumns.DISPLAY_NAME
         )

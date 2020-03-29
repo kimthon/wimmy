@@ -58,19 +58,6 @@ class NameFragment(v: AppBarLayout) : Fragment() {
         this.context!!.contentResolver.unregisterContentObserver(observer)
     }
 
-   /* override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                201 -> {
-                    if (data!!.getIntExtra("delete_check", 0) == 1) {
-                        setView(thisview)
-                    }
-                }
-            }
-        }
-    }*/
-
     private fun setView(view : View?) {
         val recyclerView = view?.findViewById<RecyclerView>(R.id.fragment_RecycleView)
         recyclerAdapter =
@@ -102,23 +89,6 @@ class NameFragment(v: AppBarLayout) : Fragment() {
     }
 }
 
-/*
-    inner class Scroll : RecyclerView.OnScrollListener() {
-        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int){
-            bottomNavigationView = view!!.findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-            if (dy > 0 && bottomNavigationView!!.isShown()) {
-                bottomNavigationView!!.setVisibility(View.GONE);
-            } else if (dy < 0 ) {
-                bottomNavigationView!!.setVisibility(View.VISIBLE);
-            }
-        }
-
-        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-            super.onScrollStateChanged(recyclerView, newState)
-        }
-    }
-}
- */
 
 
 

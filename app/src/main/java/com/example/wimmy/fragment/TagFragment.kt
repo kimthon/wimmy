@@ -60,21 +60,6 @@ class TagFragment(v: AppBarLayout) : Fragment() {
         super.onPause()
     }
 
-   /* override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                203 -> {
-                    if(data!!.getIntExtra("delete_check", 0) == 1) {
-                        val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-                        vm.setTagDir(recyclerAdapter!!)
-                        setView(thisview)
-                    }
-                }
-            }
-        }
-    } */
-
     private fun setView(view : View?) {
         val recyclerView = view?.findViewById<RecyclerView>(R.id.fragment_RecycleView)
         recyclerAdapter =

@@ -59,20 +59,6 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
         super.onPause()
     }
 
-   /* override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                202 -> {
-                   /* if(data!!.getIntExtra("delete_check", 0) == 1) {
-                        thumbnailList = MediaStore_Dao.getNameDir(thisview?.context!!)
-                        setView(thisview!!)
-                    }*/
-                }
-            }
-        }
-    }*/
-
     private fun setView(view : View?) {
         val recyclerView = view?.findViewById<RecyclerView>(R.id.fragment_RecycleView)
         recyclerAdapter =

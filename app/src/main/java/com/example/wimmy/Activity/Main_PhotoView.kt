@@ -6,7 +6,6 @@ import android.database.Cursor
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -18,11 +17,9 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import com.example.wimmy.DBThread
-import com.example.wimmy.MainHandler
 import com.example.wimmy.R
 import com.example.wimmy.db.*
 import kotlinx.android.synthetic.main.main_photoview.*
-import org.w3c.dom.ls.LSException
 import java.text.SimpleDateFormat
 import java.util.*
 import java.io.File
@@ -97,13 +94,6 @@ class Main_PhotoView: AppCompatActivity() {
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 100 -> {
-                    /*
-                    if(data!!.hasExtra("delete_check")) {
-                        setView(photo_recyclerView)
-                        setPhotoSize(3, 3)
-                        delete_check = 1
-                    }
-                     */
                     val doc = data!!.getIntExtra("index", 0)
                     recyclerView.scrollToPosition(doc)
                 }
