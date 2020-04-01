@@ -48,6 +48,7 @@ class ImageLoad(context: Context, imageView: ImageView, id : Long) : Runnable {
             handler.post { imageView.setImageBitmap(MediaStore_Dao.LoadThumbnailById(imageView.context, id)) }
 
             val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
+
             var image = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 val src = ImageDecoder.createSource(imageView.context.contentResolver, uri)
                 ImageDecoder.decodeBitmap(src)
