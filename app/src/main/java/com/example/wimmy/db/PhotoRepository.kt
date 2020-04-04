@@ -65,6 +65,7 @@ class PhotoRepository(application: Application) {
       return MediaStore_Dao.getDateDirSearch(context, cal)
    }
 
+   //TODO idlist가 길어지면 too many SQL variables 에러 발생
    fun getTagDirSearch(tag: String) : ArrayList<thumbnailData>{
       val list = photoDao.getTagDirSearch(tag)
       return ArrayList(list)

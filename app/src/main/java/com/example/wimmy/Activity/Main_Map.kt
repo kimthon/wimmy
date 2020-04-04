@@ -24,7 +24,6 @@ import com.example.wimmy.Activity.Main_PhotoView.Companion.list
 import com.example.wimmy.Activity.MarkerClusterRenderer.Companion.createDrawableFromView
 import com.example.wimmy.R
 import com.example.wimmy.db.LatLngData
-import com.example.wimmy.db.MediaStore_Dao
 import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.db.thumbnailData
 import com.google.android.gms.maps.*
@@ -231,7 +230,7 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
             val liveData = vm.getOpenLocationDirIdList(getname!!)
             liveData.observe(this, Observer { idList ->
                 loading_location_name.visibility = View.VISIBLE
-                if(DirectoryThread.isTerminating) DirectoryThread.shutdownNow()
+                DirectoryThread.queue.clear()
                 DirectoryThread.execute {
                     var i = 0
                     for (id in idList) {
@@ -246,9 +245,9 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
                             // pre < 0 : 이전 데이터가 사라진 경우
                             if (pre < 0) {
                                 mClusterManager.removeItem(latLngList[i])
-                                MainHandler.post{ mClusterManager.cluster() }
                                 if(selected_id == latLngList[i].id) MainHandler.post { card_view.visibility = View.GONE }
                                 latLngList.removeAt(i)
+                                MainHandler.post{ mClusterManager.cluster() }
                                 continue
                             }
                             //그대로 일 경우
@@ -263,13 +262,16 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
                                     val name = vm.getName(this.applicationContext, id)
                                     list.add(thumbnailData(id, name))
                                     addLatLNgData(id, latLng)
+                                    MainHandler.post{ mClusterManager.cluster() }
                                 }
                                 ++i
                                 break
                             }
                         } while (true)
                     }
-                    MainHandler.post { loading_location_name.visibility = View.GONE }
+                    MainHandler.post {
+                        loading_location_name.visibility = View.GONE
+                    }
                 }
             })
         }
@@ -346,5 +348,4 @@ class MarkerClusterRenderer(context: Context?, map: GoogleMap?, clusterManager: 
             return bitmap
         }
     }
-
 }

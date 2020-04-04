@@ -56,11 +56,11 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
         vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
         getExtra()
-        text_name = findViewById<AppCompatTextView>(R.id.imgView_text)
-        date_name = findViewById<AppCompatTextView>(R.id.imgView_date)
-        location_name = findViewById<AppCompatTextView>(R.id.imgView_location)
-        tag_name = findViewById<AppCompatTextView>(R.id.imgView_tag)
-        favorite = findViewById<ImageView>(R.id.favorite)
+        text_name = findViewById(R.id.imgView_text)
+        date_name = findViewById(R.id.imgView_date)
+        location_name = findViewById(R.id.imgView_location)
+        tag_name = findViewById(R.id.imgView_tag)
+        favorite = findViewById(R.id.favorite)
 
         bottom_photo_menu.setOnNavigationItemSelectedListener(this)
         try {
@@ -178,14 +178,14 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
     private fun similarImage() {
         val similarImageDialogView: View = layoutInflater.inflate(R.layout.similar_image_layout, null)
         val dlg = similarImageDialog(similarImageDialogView, vm, location_name.text.toString(), date_name.text.toString())
-        dlg.setCancelable(false)
+        dlg.isCancelable = false
         dlg.show(supportFragmentManager, "similarImageDialog")
     }
 
     private fun insertTag() {
         val popupInputDialogView: View = layoutInflater.inflate(R.layout.tag_diaglog, null)
         val dlg = tagInsertDialog(popupInputDialogView, vm, index, tag_name)
-        dlg.setCancelable(false)
+        dlg.isCancelable = false
         dlg.show(supportFragmentManager, "tagInsertDialog")
     }
 

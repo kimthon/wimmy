@@ -5,7 +5,6 @@ import android.content.Context
 import android.database.Cursor
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import com.example.wimmy.DBThread
 import com.example.wimmy.DirectoryThread
 import com.google.android.gms.maps.model.LatLng
 import java.text.SimpleDateFormat
@@ -33,38 +32,38 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun getLocationDir() : LiveData<List<thumbnailData>> {
-        if(DirectoryThread.isTerminating) DirectoryThread.shutdownNow()
+        DirectoryThread.queue.clear()
         return repo.getLocationDir()
     }
 
     fun getNameDir(context: Context) : ArrayList<thumbnailData> {
-        if(DirectoryThread.isTerminating) DirectoryThread.shutdownNow()
+        DirectoryThread.queue.clear()
         return repo.getNameDir(context)
     }
 
     fun getTagDir() : LiveData<List<thumbnailData>> {
-        if(DBThread.isTerminating) DBThread.shutdownNow()
+        DirectoryThread.queue.clear()
         return repo.getTagDir()
     }
 
     // 검색
     fun getNameDirSearch(context: Context, name: String) : ArrayList<thumbnailData>{
-        if(DBThread.isTerminating) DBThread.shutdownNow()
+        DirectoryThread.queue.clear()
         return repo.getNameDirSearch(context, name)
     }
 
     fun getLocationDirSearch(location: String) : ArrayList<thumbnailData>{
-        if(DBThread.isTerminating) DBThread.shutdownNow()
+        DirectoryThread.queue.clear()
         return repo.getLocationDirSearch(location)
     }
 
     fun getDateDirSearch(context: Context, cal: Calendar) : ArrayList<thumbnailData>{
-        if(DBThread.isTerminating) DBThread.shutdownNow()
+        DirectoryThread.queue.clear()
         return repo.getDateDirSearch(context, cal)
     }
 
     fun getTagDirSearch(tag: String) : ArrayList<thumbnailData>{
-        if(DBThread.isTerminating) DBThread.shutdownNow()
+        DirectoryThread.queue.clear()
         return repo.getTagDirSearch(tag)
     }
 
