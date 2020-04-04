@@ -10,6 +10,7 @@ import android.os.Looper
 import android.provider.MediaStore
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.wimmy.db.MediaStore_Dao
 import java.lang.Error
 import java.util.concurrent.SynchronousQueue
@@ -45,20 +46,15 @@ class ImageLoad(context: Context, imageView: ImageView, id : Long) : Runnable {
     @Suppress("DEPRECATION")
     override fun run() {
         try {
-            handler.post { imageView.setImageBitmap(MediaStore_Dao.LoadThumbnailById(imageView.context, id)) }
-
             val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
-
-            var image = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val src = ImageDecoder.createSource(imageView.context.contentResolver, uri)
-                ImageDecoder.decodeBitmap(src)
-            } else {
-                MediaStore.Images.Media.getBitmap(imageView.context.contentResolver, uri)
-            } ?: return
-            image = MediaStore_Dao.modifyOrientaionById(context, id, image)
-
             handler.post {
-                imageView.setImageBitmap(image)
+                Glide.with(context)
+                    .load(uri)
+                    //ToDo 왜 되는 지 확인할 것
+                    .placeholder(R.drawable.bubble_mask) //더미 이미지
+                    .error(R.drawable.ic_broken_image_black_24dp)
+                    .into(imageView)
+                //imageView.setImageBitmap(image)
             }
         } catch (e : Error) {
             e.printStackTrace()

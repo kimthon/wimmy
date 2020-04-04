@@ -39,6 +39,7 @@ class PhotoRepository(application: Application) {
    }
 
    // 폴더 생성
+   //TODO idlist가 길어지면 too many SQL variables 에러 발생
    fun getCalendarTag(context: Context, inputCalendar: Calendar) : List<String> {
       val list = MediaStore_Dao.getDateIdInfo(context, inputCalendar)
       return photoDao.getDateInfo(list)
@@ -65,7 +66,6 @@ class PhotoRepository(application: Application) {
       return MediaStore_Dao.getDateDirSearch(context, cal)
    }
 
-   //TODO idlist가 길어지면 too many SQL variables 에러 발생
    fun getTagDirSearch(tag: String) : ArrayList<thumbnailData>{
       val list = photoDao.getTagDirSearch(tag)
       return ArrayList(list)
