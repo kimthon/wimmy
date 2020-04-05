@@ -3,9 +3,7 @@ package com.example.wimmy.fragment
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.os.SystemClock
-import android.provider.MediaStore
 import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
@@ -15,12 +13,9 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
-import com.example.wimmy.DataBaseObserver
 import com.example.wimmy.Activity.MainActivity
 import com.example.wimmy.Activity.MainActivity.Companion.folder_type
 import com.example.wimmy.Activity.Main_PhotoView
-import com.example.wimmy.DirectoryThread
-import com.example.wimmy.MainHandler
 import com.example.wimmy.R
 import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.db.thumbnailData

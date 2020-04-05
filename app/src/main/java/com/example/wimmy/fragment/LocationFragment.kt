@@ -3,9 +3,7 @@ package com.example.wimmy.fragment
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.os.SystemClock
-import android.provider.MediaStore
 import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment

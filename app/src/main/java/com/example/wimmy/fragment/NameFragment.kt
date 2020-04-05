@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.SystemClock
 import android.provider.MediaStore
-import android.util.Log
 import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
