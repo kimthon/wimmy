@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.wimmy.Activity.MainActivity.Companion.folder_type
 import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.example.wimmy.DirectoryThread
 import com.example.wimmy.MainHandler
@@ -69,7 +70,7 @@ class SearchView: AppCompatActivity() {
             }
         recyclerView.adapter = recyclerAdapter
 
-        val lm = GridLayoutManager(MainActivity(), 3)
+        val lm = GridLayoutManager(MainActivity(), folder_type)
         recyclerView.layoutManager = lm
     }
 
@@ -187,7 +188,7 @@ class SearchView: AppCompatActivity() {
             Toast.makeText(this@SearchView, "결과가 없어요. 다시 검색해주세요" , Toast.LENGTH_SHORT).show()
         }
         else {
-            setPhotoSize(3, 10)
+            setPhotoSize(folder_type, 10)
             val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(searchview.windowToken, 0)
         }

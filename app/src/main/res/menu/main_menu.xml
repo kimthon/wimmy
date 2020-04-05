@@ -10,4 +10,12 @@
         android:id="@+id/location_type"
         android:title="@string/location_type"
         />
+    <item
+        android:id="@+id/folder_type"
+        android:title="@string/folder_type"
+        />
+    <item
+        android:id="@+id/photo_type"
+        android:title="@string/photo_type"
+        />
 </menu>

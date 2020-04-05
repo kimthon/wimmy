@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.*
 import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.example.wimmy.Activity.MainActivity
+import com.example.wimmy.Activity.MainActivity.Companion.folder_type
 import com.example.wimmy.Activity.Main_PhotoView
 import com.example.wimmy.db.PhotoViewModel
 import com.google.android.material.appbar.AppBarLayout
@@ -45,7 +46,7 @@ class NameFragment(v: AppBarLayout) : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        setPhotoSize(this.view!!,3, 10)
+        setPhotoSize(this.view!!,folder_type, 10)
         DirectoryThread.execute {
             val list = vm.getNameDir(this.context!!)
             MainHandler.post { recyclerAdapter.setThumbnailList(list) }
@@ -71,7 +72,7 @@ class NameFragment(v: AppBarLayout) : Fragment() {
                 mLastClickTime = SystemClock.elapsedRealtime()
             }
         recyclerView?.adapter = recyclerAdapter
-        val lm = GridLayoutManager(MainActivity(), 3)
+        val lm = GridLayoutManager(MainActivity(), folder_type)
         recyclerView!!.layoutManager = lm
     }
 
