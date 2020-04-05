@@ -43,6 +43,9 @@ import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.ThreadPoolExecutor
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
 
@@ -138,9 +141,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         }
         return super .onOptionsItemSelected(item)
     }
-
-
-
     override fun onContextItemSelected(item: MenuItem): Boolean {
         val bottomNavigationView = findViewById<View>(R.id.bottomNavigationView) as BottomNavigationView
         bottomNavigationView.setSelectedItemId(R.id.menu_tag)
@@ -300,7 +300,8 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     // 즉, 코드로 작성해야함.
 
     fun CheckChangeData() {
-        if(ChangeCheckThread.isTerminating) ChangeCheckThread.shutdownNow()
+        ChangeCheckThread.shutdownNow()
+        ChangeCheckThread = ThreadPoolExecutor(1, 3, 0L, TimeUnit.MILLISECONDS, LinkedBlockingQueue())
         ChangeCheckThread.execute {
             CheckAddedPhoto()
             CheckDeletedPhoto()
@@ -310,7 +311,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     private fun CheckAddedPhoto() {
         val pref = getSharedPreferences("pref", Context.MODE_PRIVATE)
         val editor = pref.edit()
-        var lastAddedDate = pref.getLong("lastAddedDate", Calendar.getInstance().time.time)
+        var lastAddedDate = pref.getLong("lastAddedDate", 0)
         val cursor = vm.getNewlySortedCursor(this, lastAddedDate)
 
         if (MediaStore_Dao.cursorIsValid(cursor)) {
@@ -402,6 +403,3 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             .addOnFailureListener { e -> e.stackTrace }
     }
 }
-
-
-

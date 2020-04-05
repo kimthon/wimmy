@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -17,12 +18,14 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import com.example.wimmy.DBThread
+import com.example.wimmy.MainHandler
 import com.example.wimmy.R
 import com.example.wimmy.db.*
 import kotlinx.android.synthetic.main.main_photoview.*
 import java.text.SimpleDateFormat
 import java.util.*
 import java.io.File
+import kotlin.collections.ArrayList
 
 class Main_PhotoView: AppCompatActivity() {
     private lateinit var recyclerAdapter : RecyclerAdapterPhoto
@@ -37,26 +40,18 @@ class Main_PhotoView: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_photoview)
-
-        val view: View = findViewById(R.id.photo_recyclerView)
-
         SetHeader()
-        setView(view)
+        recyclerView = findViewById<RecyclerView>(R.id.photo_recyclerView)
+        setView(arrayListOf())
         getExtra()
 
         updown_Listener(recyclerView)
         updownEvent()
     }
 
-    override fun onResume() {
-        super.onResume()
-        setPhotoSize(3, 3)
-    }
-
-    private fun setView(view : View) {
-        recyclerView = view.findViewById<RecyclerView>(R.id.photo_recyclerView)
+    private fun setView(lst: ArrayList<thumbnailData>) {
         recyclerAdapter =
-            RecyclerAdapterPhoto(this, arrayListOf()) {
+            RecyclerAdapterPhoto(this,lst) {
                     thumbnailData, num ->  if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
                 val intent = Intent(this, PhotoViewPager::class.java)
                 intent.putExtra("index", num)
@@ -68,6 +63,7 @@ class Main_PhotoView: AppCompatActivity() {
         recyclerView.adapter = recyclerAdapter
         list = recyclerAdapter.getThumbnailList()
         val lm = GridLayoutManager(Main_PhotoView(), 3)
+
 
         recyclerView.layoutManager = lm
     }
@@ -87,6 +83,11 @@ class Main_PhotoView: AppCompatActivity() {
         toolbar.bringToFront()
         setSupportActionBar(toolbar)
         supportActionBar?.title = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setPhotoSize(3, 3)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -256,6 +257,8 @@ class Main_PhotoView: AppCompatActivity() {
                 val data = vm.getThumbnailDataByCursor(cursor!!)
                 recyclerAdapter.addThumbnailList(data)
             } while (cursor!!.moveToNext())
+            MainHandler.post { setView(list)
+                setPhotoSize(3, 3)}
             cursor.close()
         }
     }

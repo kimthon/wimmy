@@ -270,8 +270,10 @@ object MediaStore_Dao {
             val cursor = context.contentResolver.query(uri, projection, selection, null, sortdate)
             if (!cursorIsValid(cursor)) return null
 
-            val loc= LatLng(cursor!!.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LATITUDE)),
+
+            val loc = LatLng(cursor!!.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LATITUDE)),
                 cursor.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LONGITUDE)))
+
             cursor.close()
             loc
         }
@@ -296,7 +298,7 @@ object MediaStore_Dao {
             MediaStore.Images.ImageColumns._ID,
             MediaStore.Images.ImageColumns.DATE_ADDED
         )
-        val selection = MediaStore.Images.ImageColumns.DATE_ADDED + " <= " + date
+        val selection = MediaStore.Images.ImageColumns.DATE_ADDED + " >= " + date
 
         return context.contentResolver.query(uri, projection, selection, null, sortdate)
     }

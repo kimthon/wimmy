@@ -3,7 +3,6 @@ package com.example.wimmy.dialog
 import android.app.Activity
 import android.app.Dialog
 import android.content.DialogInterface
-import android.database.Cursor
 import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
@@ -14,14 +13,12 @@ import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.*
-import com.example.wimmy.Activity.Main_PhotoView
 import com.example.wimmy.Activity.Main_PhotoView.Companion.list
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.db.thumbnailData
 import kotlinx.android.synthetic.main.similar_image_layout.view.*
 import kotlinx.android.synthetic.main.similar_image_select.view.*
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList

@@ -30,23 +30,25 @@ import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
 import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterManager
+import com.google.maps.android.clustering.algo.GridBasedAlgorithm
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import kotlinx.android.synthetic.main.main_map.*
 
 
 class Main_Map: AppCompatActivity(), OnMapReadyCallback {
-    private var index = 0
     private lateinit var vm : PhotoViewModel
     private lateinit var mClusterManager: ClusterManager<LatLngData>
     private lateinit var clusterRenderer: DefaultClusterRenderer<LatLngData>
     private val builder: LatLngBounds.Builder = LatLngBounds.builder()
     private val zoomLevel: Int = 12
-    private var sizeCheck: Int = 0
     private var mLastClickTime: Long = 0
+    private var selected_id : Long = 0
 
     private lateinit var marker_view: View
     private lateinit var tag_marker: TextView
     private lateinit var tag_marker_layout: ViewGroup.LayoutParams
+
+    private val latLngList = ArrayList<LatLngData>()
 
 
     companion object {
@@ -73,6 +75,7 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
         mMap.uiSettings.isZoomControlsEnabled = true
 
         mClusterManager = ClusterManager<LatLngData>(this, mMap)
+        mClusterManager.setAlgorithm(GridBasedAlgorithm())
         clusterRenderer = MarkerClusterRenderer(this, mMap, mClusterManager, marker_view, vm)
         getExtra()
         mClusterManager.setRenderer(clusterRenderer)
@@ -97,12 +100,6 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    fun cameraInit() {
-        if(sizeCheck < 100) {
-            boundmap()
-        }
-        loading_location_name.visibility = View.GONE
-    }
 
     private fun clusterClick(mMap: GoogleMap) {
         mClusterManager.setOnClusterClickListener { cluster ->
@@ -125,8 +122,9 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
         mClusterManager.setOnClusterItemClickListener { p0 ->
             // // 클러스터 아이템 클릭 리스너
             card_view.visibility = View.VISIBLE
+            selected_id = p0.id
             val center: CameraUpdate = CameraUpdateFactory.newLatLng(p0?.position)
-            mMap!!.animateCamera(center)
+            mMap.animateCamera(center)
             ImageLoder.execute(ImageLoad(this, map_image, p0.id))
             DBThread.execute {
                 val data = vm.getName(applicationContext, p0.id)
@@ -145,7 +143,11 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
 
             DBThread.execute {
                 val data = vm.getTags(p0.id)
-                MainHandler.post { map_tag.text = data }
+                MainHandler.post {
+                    map_tag.text = data
+                    clusterRenderer.getMarker(p0).title = data
+                    clusterRenderer.getMarker(p0).showInfoWindow()
+                }
             }
 
             DBThread.execute {
@@ -160,8 +162,9 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
 
             card_view.setOnClickListener {
                 if (SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
+                    val index = list.indexOfFirst { it.photo_id == p0.id }
                     val intent = Intent(this@Main_Map, PhotoViewPager::class.java)
-                    intent.putExtra("index", p0.index)
+                    intent.putExtra("index", index)
                     startActivityForResult(intent, 900)
                 }
                 mLastClickTime = SystemClock.elapsedRealtime()
@@ -192,10 +195,6 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
 
             if (clusterRenderer.getMarker(item) != null) {
                 tag_marker.setBackgroundResource(R.drawable.map_marker_checked)
-                DBThread.execute {
-                    val tags = vm.getTags(item.id)
-                    MainHandler.post { clusterRenderer.getMarker(item).title = tags }
-                }
 
                 markerScale(150)
                 clusterRenderer.getMarker(item).setIcon(
@@ -222,39 +221,74 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
     }
 
     fun getExtra(){
-        sizeCheck = 0
         if (intent.hasExtra("location_name")) {
+            list.clear()
             val getname = intent.getStringExtra("location_name")
             val title: TextView = findViewById(R.id.title_location_name)
             title.text = getname
 
             val liveData = vm.getOpenLocationDirIdList(getname!!)
             liveData.observe(this, Observer { idList ->
+                loading_location_name.visibility = View.VISIBLE
+                DirectoryThread.queue.clear()
                 DirectoryThread.execute {
-                    list.clear()
+                    var i = 0
                     for (id in idList) {
-                        val latLng = vm.getLatLngById(this.applicationContext, id)
-                        if (latLng != null) {
-                            val name = vm.getName(this.applicationContext, id)
-                            list.add(thumbnailData(id, name))
-                            addLatLNgData(id, latLng)
-                        }
+                        do {
+                            val pre = if (i < latLngList.size) {
+                                (latLngList[i].id - id).toInt()
+                            } else {
+                                Int.MAX_VALUE
+                            }
+
+                            // 오름차 순 정렬
+                            // pre < 0 : 이전 데이터가 사라진 경우
+                            if (pre < 0) {
+                                mClusterManager.removeItem(latLngList[i])
+                                if(selected_id == latLngList[i].id) MainHandler.post { card_view.visibility = View.GONE }
+                                latLngList.removeAt(i)
+                                MainHandler.post{ mClusterManager.cluster() }
+                                continue
+                            }
+                            //그대로 일 경우
+                            else if (pre == 0) {
+                                ++i
+                                break
+                            }
+                            //삽입
+                            else {
+                                val latLng = vm.getLatLngById(this.applicationContext, id)
+                                if (latLng != null) {
+                                    val name = vm.getName(this.applicationContext, id)
+                                    list.add(thumbnailData(id, name))
+                                    addLatLNgData(id, latLng)
+                                    MainHandler.post{ mClusterManager.cluster() }
+                                }
+                                ++i
+                                break
+                            }
+                        } while (true)
                     }
-                    MainHandler.post { cameraInit() }
+                    MainHandler.post {
+                        loading_location_name.visibility = View.GONE
+                    }
                 }
             })
         }
     }
 
     fun addLatLNgData(id : Long, latlng : LatLng) {
-        val data = LatLngData(index++, id, latlng)
-        if(sizeCheck == 0) {
-            Handler(Looper.getMainLooper()).post { mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(data.latlng, 12F)) }
+        val data = LatLngData(id, latlng)
+        if(latLngList.size == 0) {
+            Handler(Looper.getMainLooper()).post {
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(data.latlng, 12F))
+            }
         }
         mClusterManager.addItem(data)
+        latLngList.add(data)
         builder.include(data.latlng)
-        sizeCheck++
-        if(sizeCheck == 100) {
+
+        if(latLngList.size == 100) {
             Handler(Looper.getMainLooper()).post {boundmap()}
         }
     }
@@ -314,5 +348,4 @@ class MarkerClusterRenderer(context: Context?, map: GoogleMap?, clusterManager: 
             return bitmap
         }
     }
-
 }
