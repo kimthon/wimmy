@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     private var init : Boolean = false
     lateinit var mCurrentPhotoPath: String
     private val REQUEST_TAKE_PHOTO = 200
-    private var FINISH_INTERVAL_TIME: Long = 2000
+    private var FINISH_INTERVAL_TIME: Long = 1500
     private var backPressedTime: Long = 0
 
     companion object {
@@ -171,6 +171,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                                 transaction.addToBackStack(tag)
                                 transaction.commit()
                                 transaction.isAddToBackStackAllowed
+                                break
                             }
                         }
 
