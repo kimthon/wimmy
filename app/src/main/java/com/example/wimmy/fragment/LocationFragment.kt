@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.*
 import com.example.wimmy.Activity.MainActivity
+import com.example.wimmy.Activity.MainActivity.Companion.folder_type
 import com.example.wimmy.Activity.Main_Map
 import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.example.wimmy.Activity.MainActivity.Companion.location_type
@@ -52,7 +53,7 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        setPhotoSize(this.view!!,3, 10)
+        setPhotoSize(this.view!!,folder_type, 10)
     }
 
     override fun onPause() {
@@ -80,7 +81,7 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
             }
         recyclerView?.adapter = recyclerAdapter
 
-        val lm = GridLayoutManager(MainActivity(), 3)
+        val lm = GridLayoutManager(MainActivity(), folder_type)
         recyclerView?.layoutManager = lm
     }
 

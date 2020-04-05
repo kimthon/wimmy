@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.Adapter.RecyclerAdapterForder
 import com.example.wimmy.DataBaseObserver
 import com.example.wimmy.Activity.MainActivity
+import com.example.wimmy.Activity.MainActivity.Companion.folder_type
 import com.example.wimmy.Activity.Main_PhotoView
 import com.example.wimmy.DirectoryThread
 import com.example.wimmy.MainHandler
@@ -53,11 +54,7 @@ class TagFragment(v: AppBarLayout) : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        setPhotoSize(this.view!!,3, 10)
-    }
-
-    override fun onPause() {
-        super.onPause()
+        setPhotoSize(this.view!!,folder_type, 10)
     }
 
     private fun setView(view : View?) {
@@ -74,7 +71,7 @@ class TagFragment(v: AppBarLayout) : Fragment() {
             }
         recyclerView?.adapter = recyclerAdapter
 
-        val lm = GridLayoutManager(MainActivity(), 3)
+        val lm = GridLayoutManager(MainActivity(), folder_type)
         recyclerView?.layoutManager = lm
     }
 

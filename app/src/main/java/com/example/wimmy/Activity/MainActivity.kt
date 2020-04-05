@@ -59,6 +59,8 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     companion object {
         var location_type: Int = 0
+        var folder_type: Int = 3
+        var photo_type: Int = 3
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -105,47 +107,106 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
-            R.id.location_type -> {
-                val selectitem = arrayOf<String>("맵으로 보기", "목록으로 보기")
-
-                val dlg: AlertDialog.Builder = AlertDialog.Builder(this,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
-                dlg.setTitle("원하는 형태를 선택하세요.")
-                dlg.setSingleChoiceItems(selectitem, location_type) { dialog, i ->
-                    when(i) {
-                        0 -> location_type = 0
-                        1 -> location_type = 1
-                    }
-                }
-                dlg.setIcon(R.drawable.ic_tag)
-                dlg.setPositiveButton("확인") { _, _ ->
-                    Toast.makeText(this, "완료 되었습니다.", Toast.LENGTH_SHORT).show()
-                }
-                dlg.setNegativeButton("취소") { _, _ -> }
-                dlg.show()
-            }
             R.id.favorite -> {
                 val intent = Intent(this, Main_PhotoView::class.java)
                 intent.putExtra("favorite", "favorite")
                 startActivityForResult(intent, 300)
             }
+            R.id.location_type -> {
+                val selectitem = arrayOf<String>("맵으로 보기", "목록으로 보기")
+                var select = location_type
+                val dlg: AlertDialog.Builder = AlertDialog.Builder(this,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+                dlg.setTitle("위치별 사진 설정")
+                dlg.setSingleChoiceItems(selectitem, location_type) { dialog, i ->
+                    when(i) {
+                        0 -> select = 0
+                        1 -> select = 1
+                    }
+                }
+                dlg.setIcon(R.drawable.ic_tag)
+                dlg.setPositiveButton("확인") { _, _ ->
+                    Toast.makeText(this, "완료 되었습니다.", Toast.LENGTH_SHORT).show()
+                    if(location_type != select) {
+                        location_type = select
+                    }
+                }
+                dlg.setNegativeButton("취소") { _, _ -> }
+                dlg.show()
+            }
+            R.id.folder_type -> {
+                val selectitem = arrayOf<String>("2개씩 보기", "3개씩 보기", "4개씩 보기")
+                var select = folder_type
+                val dlg: AlertDialog.Builder = AlertDialog.Builder(this,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+                dlg.setTitle("폴더 목록 설정")
+                dlg.setSingleChoiceItems(selectitem, folder_type - 2) { dialog, i ->
+                    when(i) {
+                        0 -> select = 2
+                        1 -> select = 3
+                        2 -> select = 4
+                    }
+                }
+                dlg.setIcon(R.drawable.ic_folder)
+                dlg.setPositiveButton("확인") { _, _ ->
+                    Toast.makeText(this, "완료 되었습니다.", Toast.LENGTH_SHORT).show()
+                    if(folder_type != select) {
+                        folder_type = select
+                        for(fragment: Fragment in supportFragmentManager.fragments) {
+                            if (fragment.isVisible) {
+                                val tag = fragment.tag
+                                lateinit var frag: Fragment
+                                val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
+                                supportFragmentManager.popBackStackImmediate(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                                when(tag) {
+                                    "name" -> {
+                                        frag = NameFragment(appbar)
+                                    }
+                                    "tag" -> {
+                                        frag = TagFragment(appbar)
+                                    }
+                                    "location" -> {
+                                        frag = LocationFragment(appbar)
+                                    }
+                                }
+                                transaction.replace(R.id.frame_layout, frag, tag)
+                                transaction.addToBackStack(tag)
+                                transaction.commit()
+                                transaction.isAddToBackStackAllowed
+                            }
+                        }
+
+                    }
+                }
+                dlg.setNegativeButton("취소") { _, _ -> }
+                dlg.show()
+            }
+            R.id.photo_type -> {
+                val selectitem = arrayOf<String>("2개씩 보기", "3개씩 보기", "4개씩 보기", "5개씩 보기", "6개씩 보기")
+                var select = photo_type
+                val dlg: AlertDialog.Builder = AlertDialog.Builder(this,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+                dlg.setTitle("사진 목록 설정")
+                dlg.setSingleChoiceItems(selectitem, photo_type - 2) { dialog, i ->
+                    when(i) {
+                        0 -> select = 2
+                        1 -> select = 3
+                        2 -> select = 4
+                        3 -> select = 5
+                        4 -> select = 6
+                    }
+                }
+                dlg.setIcon(R.drawable.ic_image)
+                dlg.setPositiveButton("확인") { _, _ ->
+                    Toast.makeText(this, "완료 되었습니다.", Toast.LENGTH_SHORT).show()
+                    if (photo_type != select) {
+                        photo_type = select
+                    }
+                }
+                dlg.setNegativeButton("취소") { _, _ -> }
+                dlg.show()
+            }
         }
 
         return super.onOptionsItemSelected(item)
     }
-
-    /*
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item?.itemId) {
-            //R.id.favorate_menu =>
-            //
-        }
-        return super .onOptionsItemSelected(item)
-    }
-    override fun onContextItemSelected(item: MenuItem): Boolean {
-        val bottomNavigationView = findViewById<View>(R.id.bottomNavigationView) as BottomNavigationView
-        bottomNavigationView.setSelectedItemId(R.id.menu_tag)
-        return true
-    }*/
 
     override fun onNavigationItemSelected(p0: MenuItem): Boolean {
         val fm = supportFragmentManager
@@ -153,32 +214,31 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
         when(p0.itemId){
             R.id.menu_name -> {
-                fm.popBackStack("name", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                fm.popBackStackImmediate("name", FragmentManager.POP_BACK_STACK_INCLUSIVE)
                 val fragmentA = NameFragment(appbar)
                 transaction.replace(R.id.frame_layout,fragmentA, "name")
                 transaction.addToBackStack("name")
             }
             R.id.menu_tag -> {
-                fm.popBackStack("tag", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                fm.popBackStackImmediate("tag", FragmentManager.POP_BACK_STACK_INCLUSIVE)
                 val fragmentB = TagFragment(appbar)
                 transaction.replace(R.id.frame_layout,fragmentB, "tag")
                 transaction.addToBackStack("tag")
             }
             R.id.menu_cal -> {
-                fm.popBackStack("cal", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                fm.popBackStackImmediate("cal", FragmentManager.POP_BACK_STACK_INCLUSIVE)
                 val fragmentC = DateFragment(appbar)
                 transaction.replace(R.id.frame_layout,fragmentC, "cal")
                 transaction.addToBackStack("cal")
             }
             R.id.menu_location -> {
-                fm.popBackStack("location", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                fm.popBackStackImmediate("location", FragmentManager.POP_BACK_STACK_INCLUSIVE)
                 val fragmentD = LocationFragment(appbar)
                 transaction.replace(R.id.frame_layout,fragmentD, "location")
                 transaction.addToBackStack("location")
             }
         }
-
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+        //transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
         transaction.commit()
         transaction.isAddToBackStackAllowed
         return true
