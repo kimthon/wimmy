@@ -125,7 +125,7 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
             selected_id = p0.id
             val center: CameraUpdate = CameraUpdateFactory.newLatLng(p0?.position)
             mMap.animateCamera(center)
-            ImageLoder.execute(ImageLoad(this, map_image, p0.id))
+            ImageLoder.execute(ImageLoad(this, map_image, p0.id, 1))
             DBThread.execute {
                 val data = vm.getName(applicationContext, p0.id)
                 MainHandler.post { map_name.text = data }

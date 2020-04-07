@@ -7,6 +7,7 @@ import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.DialogFragment
@@ -117,7 +118,7 @@ class similarImageDialog(v: View, vm: PhotoViewModel, location: String, date: St
         recyclerAdapter =
             RecyclerAdapterPhoto(activity, list) { thumbnailData, num ->
                 val similarImageSelectView: View = layoutInflater.inflate(R.layout.similar_image_select, null)
-                ImageLoder.execute(ImageLoad(context!!, similarImageSelectView.select_photo, thumbnailData.photo_id))
+                ImageLoder.execute(ImageLoad(context!!, similarImageSelectView.select_photo, thumbnailData.photo_id, 1))
                 val dlgBuilder: androidx.appcompat.app.AlertDialog.Builder = androidx.appcompat.app.AlertDialog.Builder(    // 확인 다이얼로그
                     context!!,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
                 dlgBuilder.setCancelable(false)
@@ -146,12 +147,15 @@ class similarImageDialog(v: View, vm: PhotoViewModel, location: String, date: St
     }
 
     private fun setPhotoSize(row : Int, padding : Int) {
-        val display = activity!!.windowManager.defaultDisplay
-        val deviceSize = Point()
-        display.getSize(deviceSize)
-        val width = deviceSize.x * 871/1000
-        val size = width!! / row - 2*padding
-        recyclerAdapter.setPhotoSize(size, padding)
+        recyclerView.viewTreeObserver.addOnGlobalLayoutListener( object : ViewTreeObserver.OnGlobalLayoutListener {
+            @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
+            override fun onGlobalLayout() {
+                val width = recyclerView.width
+                val size = width / row - 2 * padding
+                recyclerAdapter.setPhotoSize(size, padding)
+                recyclerView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+            }
+        })
     }
 
 }

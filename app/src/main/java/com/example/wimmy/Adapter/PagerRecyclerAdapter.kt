@@ -30,7 +30,7 @@ class PagerRecyclerAdapter(private val context: Context, var list: ArrayList<thu
         val image = v.findViewById<View>(R.id.imgView) as ImageView
         val vp = container as ViewPager
         vp.addView(v, 0)
-        ImageLoder.execute(ImageLoad(context, image, list[position].photo_id))
+        ImageLoder.execute(ImageLoad(context, image, list[position].photo_id, 0))
         image.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
                 if(check == false) {
