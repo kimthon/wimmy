@@ -1,3 +1,29 @@
 <resources>
-    <string name="app_name">wimmy</string>
+    <string name="main">Main</string>
+    <string name="tag">Tag</string>
+    <string name="like">Like</string>
+    <string name="when">When</string>
+    <string name="where">Where</string>
+    <string name="map">Map</string>
+    <string name="app_name">Wimmy</string>
+    <string name="favorite">즐겨 찾기</string>
+    <string name="search_bar">검색</string>
+    <string name="setting">설정</string>
+    <string name="location_type">위치별 사진 설정</string>
+    <string name="folder_type">폴더 목록 설정</string>
+    <string name="photo_type">사진 목록 설정</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="appbar_scrolling_view_behavior" translatable="false">
+        com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior
+    </string>
+
+    <string name="sunday">일</string>
+    <string name="monday">월</string>
+    <string name="tuesday">화</string>
+    <string name="wednesday">수</string>
+    <string name="thursday">목</string>
+    <string name="friday">금</string>
+    <string name="saturday">토</string>
+    location_type
 </resources>

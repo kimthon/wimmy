@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- 프레임 -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/photo_recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+
+    <!-- 상단바 -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/photo_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/top_size"
+            android:background="@color/bar"
+            android:minHeight="@dimen/top_size"
+            android:theme="@style/AppTheme"
+            app:contentInsetStart="0dp"
+            app:layout_scrollFlags="scroll|enterAlways">
+
+            <ImageView
+                android:id="@+id/title_type"
+                android:layout_width="@dimen/top_size"
+                android:layout_height="@dimen/top_size"
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="5dp"
+                android:padding="5dp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/title_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="22dp" />
+
+
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+
+    <ImageView
+        android:id="@+id/up_button"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="start|bottom"
+        android:src="@drawable/ic_up"
+        android:layout_margin="10dp"
+        android:alpha="0.25" />
+
+    <ImageView
+        android:id="@+id/down_button"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="end|bottom"
+        android:src="@drawable/ic_down"
+        android:layout_margin="10dp"
+        android:alpha="0.25" />
+
+
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

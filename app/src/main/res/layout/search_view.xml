@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- 프레임 -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/search_recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <!-- 상단바 -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/search_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/top_size"
+            android:minHeight="@dimen/top_size"
+            android:background="@color/bar"
+            android:theme="@style/AppTheme"
+            app:contentInsetStart="3dp"
+            app:layout_scrollFlags="scroll|enterAlways">
+
+            <!-- 뒤로가기 버튼>
+            <ImageView
+                android:id="@+id/search_back"
+                android:layout_width="@dimen/top_photoview"
+                android:layout_height="@dimen/top_photoview"
+                android:src="@drawable/ic_arrow_back"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="3dp"/>
+            <!-->
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/searchview_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:entries="@array/search_option_array"/>
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/searchview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="5dp"
+                android:background="@color/cardview_light_background"
+                app:searchHintIcon="@null"
+                tools:ignore="PrivateResource" />
+
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

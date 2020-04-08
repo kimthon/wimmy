@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="DateFragment"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="0dp"
+        android:layout_margin="0dp"
+        android:orientation="vertical"
+        android:id="@+id/calendar_view">
+
+    <LinearLayout
+        android:id="@+id/calendar_allheader"
+        android:layout_width="match_parent"
+        android:layout_height="69dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/calendar_header"
+            android:theme="@style/AppTheme"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            >
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/cal_month_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:background="@color/white"
+                android:src="@drawable/cal_left_button"
+                />
+            <TextView
+                android:id="@+id/cal_month_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily=""
+                android:gravity="center"
+                android:textSize="13pt"
+                />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/cal_month_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:background="@color/white"
+                android:src="@drawable/cal_right_button"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/calendar_week"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:background="#f8b5df">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="9pt"
+                android:gravity="center"
+                android:text="@string/sunday"
+                android:textColor="#ff0000"
+                />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="9pt"
+                android:gravity="center"
+                android:text="@string/monday"
+                android:textColor="#FFFFFF"
+                />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="9pt"
+                android:gravity="center"
+                android:text="@string/tuesday"
+                android:textColor="#FFFFFF"
+                />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="9pt"
+                android:gravity="center"
+                android:text="@string/wednesday"
+                android:textColor="#FFFFFF"
+                />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="9pt"
+                android:gravity="center"
+                android:text="@string/thursday"
+                android:textColor="#FFFFFF"
+                />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="9pt"
+                android:gravity="center"
+                android:text="@string/friday"
+                android:textColor="#FFFFFF"
+                />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="9pt"
+                android:gravity="center"
+                android:text="@string/saturday"
+                android:textColor="#0000FF"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
+        <LinearLayout
+            android:id="@+id/cal_grid_wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+
+            android:background="#f8b5df"
+            android:padding="1dp">
+
+            <GridView
+                android:id="@+id/cal_grid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="0dp"
+                android:layout_margin="0dp"
+
+                android:gravity="center"
+                android:layout_marginBottom="3dp"
+                android:verticalSpacing="1dp"
+                android:horizontalSpacing="1dp"
+                android:numColumns="7" />
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>
+
+

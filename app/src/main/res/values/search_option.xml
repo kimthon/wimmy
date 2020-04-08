@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="search_option_array">
+        <item>태그</item>
+        <item>위치</item>
+        <item>이름</item>
+        <item>날짜</item>
+    </string-array>
+</resources>

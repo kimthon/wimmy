@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/menu_bottom">
+
+    <item
+        android:id="@+id/menu_name"
+        android:icon="@drawable/ic_folder"
+        android:title="폴더" />
+
+    <item
+        android:id="@+id/menu_tag"
+        android:icon="@drawable/ic_tag"
+        android:title="특징" />
+
+    <item
+        android:id="@+id/menu_cal"
+        android:icon="@drawable/ic_cal"
+        android:title="날짜" />
+
+    <item
+        android:id="@+id/menu_location"
+        android:icon="@drawable/ic_location"
+        android:title="위치" />
+
+</menu>
+
+
