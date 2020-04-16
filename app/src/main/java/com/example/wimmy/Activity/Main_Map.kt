@@ -11,6 +11,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,6 +44,9 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
     private val zoomLevel: Int = 12
     private var mLastClickTime: Long = 0
     private var selected_id : Long = 0
+    private var exitck: Boolean = false
+    private var templist = listOf<Long>()
+    private var tempck: Boolean = false
 
     private lateinit var marker_view: View
     private lateinit var tag_marker: TextView
@@ -173,7 +177,6 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
             true
         }
     }
-
     fun boundmap() {
         val bounds: LatLngBounds = builder.build()
         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, zoomLevel))
@@ -229,48 +232,59 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
 
             val liveData = vm.getOpenLocationDirIdList(getname!!)
             liveData.observe(this, Observer { idList ->
-                loading_location_name.visibility = View.VISIBLE
-                DirectoryThread.queue.clear()
-                DirectoryThread.execute {
+                if (templist != idList && tempck == false) {
+                    tempck = true
+                    templist = idList
+                    DirectoryThread.queue.clear()
+                    DirectoryThread.execute {
                     var i = 0
-                    for (id in idList) {
-                        do {
-                            val pre = if (i < latLngList.size) {
-                                (latLngList[i].id - id).toInt()
-                            } else {
-                                Int.MAX_VALUE
-                            }
-
-                            // 오름차 순 정렬
-                            // pre < 0 : 이전 데이터가 사라진 경우
-                            if (pre < 0) {
-                                mClusterManager.removeItem(latLngList[i])
-                                if(selected_id == latLngList[i].id) MainHandler.post { card_view.visibility = View.GONE }
-                                latLngList.removeAt(i)
-                                MainHandler.post{ mClusterManager.cluster() }
-                                continue
-                            }
-                            //그대로 일 경우
-                            else if (pre == 0) {
-                                ++i
+                    MainHandler.post { loading_location_name.visibility = View.VISIBLE }
+                        for (id in idList) {
+                            if (exitck == true)
                                 break
-                            }
-                            //삽입
-                            else {
-                                val latLng = vm.getLatLngById(this.applicationContext, id)
-                                if (latLng != null) {
-                                    val name = vm.getName(this.applicationContext, id)
-                                    list.add(thumbnailData(id, name))
-                                    addLatLNgData(id, latLng)
-                                    MainHandler.post{ mClusterManager.cluster() }
+                            do {
+                                val pre = if (i < latLngList.size) {
+                                    (latLngList[i].id - id).toInt()
+                                } else {
+                                    Int.MAX_VALUE
                                 }
-                                ++i
-                                break
-                            }
-                        } while (true)
-                    }
-                    MainHandler.post {
-                        loading_location_name.visibility = View.GONE
+
+                                Log.d("사이즈", i.toString() + "  " + idList.size)
+
+                                // 오름차 순 정렬
+                                // pre < 0 : 이전 데이터가 사라진 경우
+                                if (pre < 0) {
+                                    mClusterManager.removeItem(latLngList[i])
+                                    if (selected_id == latLngList[i].id) MainHandler.post {
+                                        card_view.visibility = View.GONE
+                                    }
+                                    latLngList.removeAt(i)
+                                    list.removeAt(i)
+                                    MainHandler.post { mClusterManager.cluster() }
+                                    continue
+                                }
+                                //그대로 일 경우
+                                else if (pre == 0) {
+                                    ++i
+                                    break
+                                }
+
+                                //삽입
+                                else {
+                                    val latLng = vm.getLatLngById(this.applicationContext, id)
+                                    if (latLng != null) {
+                                        val name = vm.getName(this.applicationContext, id)
+                                        list.add(thumbnailData(id, name))
+                                        addLatLNgData(id, latLng)
+                                        MainHandler.post { mClusterManager.cluster() }
+                                    }
+                                    ++i
+                                    break
+                                }
+                            } while (true)
+                        }
+                        tempck = false
+                        MainHandler.post { loading_location_name.visibility = View.GONE }
                     }
                 }
             })
@@ -295,6 +309,8 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
 
     override fun onBackPressed() {
         super.onBackPressed()
+        DBThread.queue.clear()
+        exitck = true
         finish()
     }
 
@@ -315,7 +331,7 @@ class MarkerClusterRenderer(context: Context?, map: GoogleMap?, clusterManager: 
 
     override fun shouldRenderAsCluster(cluster: Cluster<LatLngData>?): Boolean {
         super.shouldRenderAsCluster(cluster)
-        return cluster != null && cluster.size >= 3
+        return cluster != null && cluster.size >= 5
     }
 
     override fun onClustersChanged(clusters: MutableSet<out Cluster<LatLngData>>?) {
