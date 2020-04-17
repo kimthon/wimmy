@@ -245,6 +245,7 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
                             if (pre < 0) {
                                 mClusterManager.removeItem(latLngList[i])
                                 if(selected_id == latLngList[i].id) MainHandler.post { card_view.visibility = View.GONE }
+                                if(list[i].photo_id == latLngList[i].id) list.removeAt(i)
                                 latLngList.removeAt(i)
                                 MainHandler.post{ mClusterManager.cluster() }
                                 continue
@@ -259,8 +260,8 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
                                 val latLng = vm.getLatLngById(this.applicationContext, id)
                                 if (latLng != null) {
                                     val name = vm.getName(this.applicationContext, id)
-                                    list.add(thumbnailData(id, name))
-                                    addLatLNgData(id, latLng)
+                                    list.add(i, thumbnailData(id, name))
+                                    addLatLNgData(i, id, latLng)
                                     MainHandler.post{ mClusterManager.cluster() }
                                 }
                                 ++i
@@ -276,7 +277,7 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    fun addLatLNgData(id : Long, latlng : LatLng) {
+    fun addLatLNgData(i : Int, id : Long, latlng : LatLng) {
         val data = LatLngData(id, latlng)
         if(latLngList.size == 0) {
             Handler(Looper.getMainLooper()).post {
@@ -284,7 +285,7 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
             }
         }
         mClusterManager.addItem(data)
-        latLngList.add(data)
+        latLngList.add(i, data)
         builder.include(data.latlng)
 
         if(latLngList.size == 100) {
