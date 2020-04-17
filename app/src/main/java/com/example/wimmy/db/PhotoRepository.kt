@@ -35,7 +35,7 @@ class PhotoRepository(application: Application) {
    }
 
    fun deleteTag(id: Long) {
-         photoDao.deleteTagById(id)
+      photoDao.deleteTagById(id)
    }
 
    // 폴더 생성
@@ -53,9 +53,9 @@ class PhotoRepository(application: Application) {
       return MediaStore_Dao.getNameDir(context)
    }
 
-    fun getTagDir(): LiveData<List<thumbnailData>> {
-       return photoDao.getTagDir()
-    }
+   fun getTagDir(): LiveData<List<thumbnailData>> {
+      return photoDao.getTagDir()
+   }
 
    // 검색
    fun getNameDirSearch(context: Context, name: String) : ArrayList<thumbnailData>{
@@ -72,13 +72,13 @@ class PhotoRepository(application: Application) {
    }
 
    fun getLocationDirSearch(name: String) : ArrayList<thumbnailData>{
-         val list = photoDao.getLocationDirSearch(name)
-         return ArrayList(list)
+      val list = photoDao.getLocationDirSearch(name)
+      return ArrayList(list)
    }
 
    //폴더 내용 생성
    fun getOpenDateDirCursor(context: Context, cal : Calendar) : Cursor? {
-       return MediaStore_Dao.getDateDir(context, cal)
+      return MediaStore_Dao.getDateDir(context, cal)
    }
 
    fun getOpenLocationDirIdList(loc: String) : LiveData<List<Long>> {

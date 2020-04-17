@@ -4,6 +4,7 @@ import android.content.ContentUris
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -30,28 +31,33 @@ class ThumbnailLoad(holder: RecyclerView.ViewHolder, imageView: ImageView, id : 
         if(holder.adapterPosition == holderPosition) {
             val image = MediaStore_Dao.LoadThumbnailById(imageView.context, id)
             handler.post {
-               if(holder.adapterPosition == holderPosition) {
-                   imageView.setImageBitmap(image)
-               }
+                if(holder.adapterPosition == holderPosition) {
+                    imageView.setImageBitmap(image)
+                }
             }
         }
     }
 }
 
-class ImageLoad(context: Context, imageView: ImageView, id : Long) : Runnable {
+class ImageLoad(context: Context, imageView: ImageView, id : Long, type: Int) : Runnable {
     private val imageView = imageView
     private val id = id
     private val context = context
+    private val type = type
 
     @Suppress("DEPRECATION")
     override fun run() {
         try {
             val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
+            lateinit var img: Drawable
+            if(type == 0) { img = context.resources.getDrawable(R.drawable.dummy_image) }   // 뷰페이저
+            else { img = context.resources.getDrawable(R.drawable.dummy_image_white) }  // 맵, 유사이미지
+
             handler.post {
                 Glide.with(context)
                     .load(uri)
                     //ToDo 왜 되는 지 확인할 것
-                    .placeholder(R.drawable.bubble_mask) //더미 이미지
+                    .placeholder(img) //더미 이미지
                     .error(R.drawable.ic_broken_image_black_24dp)
                     .into(imageView)
                 //imageView.setImageBitmap(image)

@@ -270,8 +270,10 @@ object MediaStore_Dao {
             val cursor = context.contentResolver.query(uri, projection, selection, null, sortdate)
             if (!cursorIsValid(cursor)) return null
 
-            val loc= LatLng(cursor!!.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LATITUDE)),
+
+            val loc = LatLng(cursor!!.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LATITUDE)),
                 cursor.getDouble(cursor.getColumnIndex(MediaStore.Images.ImageColumns.LONGITUDE)))
+
             cursor.close()
             loc
         }

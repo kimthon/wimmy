@@ -100,7 +100,6 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-
     private fun clusterClick(mMap: GoogleMap) {
         mClusterManager.setOnClusterClickListener { cluster ->
             // 클러스터 클릭 리스너
@@ -125,7 +124,7 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
             selected_id = p0.id
             val center: CameraUpdate = CameraUpdateFactory.newLatLng(p0?.position)
             mMap.animateCamera(center)
-            ImageLoder.execute(ImageLoad(this, map_image, p0.id))
+            ImageLoder.execute(ImageLoad(this, map_image, p0.id, 1))
             DBThread.execute {
                 val data = vm.getName(applicationContext, p0.id)
                 MainHandler.post { map_name.text = data }
@@ -143,7 +142,11 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
 
             DBThread.execute {
                 val data = vm.getTags(p0.id)
-                MainHandler.post { map_tag.text = data }
+                MainHandler.post {
+                    map_tag.text = data
+                    clusterRenderer.getMarker(p0).title = data
+                    clusterRenderer.getMarker(p0).showInfoWindow()
+                }
             }
 
             DBThread.execute {
@@ -191,10 +194,6 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
 
             if (clusterRenderer.getMarker(item) != null) {
                 tag_marker.setBackgroundResource(R.drawable.map_marker_checked)
-                DBThread.execute {
-                    val tags = vm.getTags(item.id)
-                    MainHandler.post { clusterRenderer.getMarker(item).title = tags }
-                }
 
                 markerScale(150)
                 clusterRenderer.getMarker(item).setIcon(

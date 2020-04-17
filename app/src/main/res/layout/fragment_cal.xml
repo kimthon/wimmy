@@ -34,6 +34,7 @@
                 android:id="@+id/cal_month_left"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
                 android:background="@color/white"
                 android:src="@drawable/cal_left_button"
                 />
@@ -50,6 +51,7 @@
                 android:id="@+id/cal_month_right"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
                 android:background="@color/white"
                 android:src="@drawable/cal_right_button"
                 />

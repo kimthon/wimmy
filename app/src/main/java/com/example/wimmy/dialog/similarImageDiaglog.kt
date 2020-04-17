@@ -3,25 +3,23 @@ package com.example.wimmy.dialog
 import android.app.Activity
 import android.app.Dialog
 import android.content.DialogInterface
-import android.database.Cursor
 import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.*
-import com.example.wimmy.Activity.Main_PhotoView
 import com.example.wimmy.Activity.Main_PhotoView.Companion.list
 import com.example.wimmy.Adapter.RecyclerAdapterPhoto
 import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.db.thumbnailData
 import kotlinx.android.synthetic.main.similar_image_layout.view.*
 import kotlinx.android.synthetic.main.similar_image_select.view.*
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -113,14 +111,14 @@ class similarImageDialog(v: View, vm: PhotoViewModel, location: String, date: St
 
     override fun onResume() {
         super.onResume()
-        setPhotoSize(2, 5)
+        setPhotoSize(2, 2)
     }
 
     private fun setView(list: ArrayList<thumbnailData>) {
         recyclerAdapter =
             RecyclerAdapterPhoto(activity, list) { thumbnailData, num ->
                 val similarImageSelectView: View = layoutInflater.inflate(R.layout.similar_image_select, null)
-                ImageLoder.execute(ImageLoad(context!!, similarImageSelectView.select_photo, thumbnailData.photo_id))
+                ImageLoder.execute(ImageLoad(context!!, similarImageSelectView.select_photo, thumbnailData.photo_id, 1))
                 val dlgBuilder: androidx.appcompat.app.AlertDialog.Builder = androidx.appcompat.app.AlertDialog.Builder(    // 확인 다이얼로그
                     context!!,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
                 dlgBuilder.setCancelable(false)
@@ -136,7 +134,7 @@ class similarImageDialog(v: View, vm: PhotoViewModel, location: String, date: St
                 similarImageSelectView.select_ok.setOnClickListener{
                     similarList.removeAt(num)
                     setView(similarList)
-                    setPhotoSize(2, 5)
+                    setPhotoSize(2, 2)
                     selectnum++
                     dlgselect.cancel()
                     Toast.makeText(context!!, "입력 완료 되었습니다. \n저장을 누르시면 입력된 사진들만 저장됩니다.", Toast.LENGTH_SHORT).show()
@@ -149,12 +147,15 @@ class similarImageDialog(v: View, vm: PhotoViewModel, location: String, date: St
     }
 
     private fun setPhotoSize(row : Int, padding : Int) {
-        val display = activity!!.windowManager.defaultDisplay
-        val deviceSize = Point()
-        display.getSize(deviceSize)
-        val width = deviceSize.x * 88/100
-        val size = width!! / row - 2*padding
-        recyclerAdapter.setPhotoSize(size, padding)
+        recyclerView.viewTreeObserver.addOnGlobalLayoutListener( object : ViewTreeObserver.OnGlobalLayoutListener {
+            @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
+            override fun onGlobalLayout() {
+                val width = recyclerView.width
+                val size = width / row - 2 * padding
+                recyclerAdapter.setPhotoSize(size, padding)
+                recyclerView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+            }
+        })
     }
 
 }

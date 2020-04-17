@@ -31,4 +31,3 @@ class TagData(
 data class thumbnailData( var photo_id : Long,
                           var data : String)
 
-
