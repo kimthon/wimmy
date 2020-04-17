@@ -306,7 +306,6 @@ class MarkerClusterRenderer(context: Context?, map: GoogleMap?, clusterManager: 
     private lateinit var tag_marker: TextView
     private var vm = vm
 
-
     override fun onBeforeClusterItemRendered(item: LatLngData, markerOptions: MarkerOptions) { // 5
         tag_marker = marker_view.findViewById(R.id.tag_marker) as TextView
         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(context, marker_view)))
