@@ -58,6 +58,7 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
         tagView.text = ""
         DBThread.execute {
             val textList = vm.getCalendarTags(this.context, calendar)
+
             if(textList.isNullOrEmpty()) return@execute
             else {
                 var text = ""
@@ -78,6 +79,8 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
 
     fun Update(cells : ArrayList<Date>, month : Int) {
         clear()
+        DBThread.queue.clear()
+        MainHandler.removeMessages(0)
         addAll(cells)
         this.inputMonth = month
         notifyDataSetChanged()
