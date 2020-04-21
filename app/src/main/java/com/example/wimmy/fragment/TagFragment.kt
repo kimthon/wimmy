@@ -57,7 +57,7 @@ class TagFragment(v: AppBarLayout) : Fragment() {
         recyclerAdapter =
             RecyclerAdapterForder(activity, ArrayList())
             {thumbnailData ->
-                if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
+                if(SystemClock.elapsedRealtime() - mLastClickTime > 300) {
                     val intent = Intent(activity, Main_PhotoView::class.java)
                     intent.putExtra("tag_name", thumbnailData.data)
                     startActivityForResult(intent, 203)

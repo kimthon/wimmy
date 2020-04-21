@@ -3,6 +3,7 @@ package com.example.wimmy.Activity
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -75,7 +76,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
         DBThread.execute {
-            vm.Drop(this)
+            //vm.Drop(this)
             CheckChangeData()
         }
 
@@ -92,6 +93,18 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         go_camera.setOnClickListener {
             captureCamera()
         }
+    }
+
+    fun CheckAppFirstExecute():Boolean {
+        val pref = getSharedPreferences("IsFirst", Activity.MODE_PRIVATE)
+        val isFirst = pref.getBoolean("isFirst", false)
+        if (!isFirst)
+        { //최초 실행시 true 저장
+            val editor = pref.edit()
+            editor.putBoolean("isFirst", true)
+            editor.apply()
+        }
+        return !isFirst
     }
 
     private fun SetHeader() {
@@ -285,6 +298,16 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             transaction.commit()
             init = true
         }
+
+        if (CheckAppFirstExecute() == true) {
+            val dlg: AlertDialog.Builder = AlertDialog.Builder(this,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+            dlg.setTitle("안녕하세요") //제목
+            dlg.setMessage("Wimmy가 처음이신가요?\n특징, 위치 추출을 위해 데이터를 연결하세요.\n맵의 경우, 초기 값 설정 과정에서 원활하게 동작하지 않을 수 있습니다.") // 메시지
+            dlg.setCancelable(false)
+            dlg.setPositiveButton("확인", DialogInterface.OnClickListener { dialog, which ->
+            })
+            dlg.show()
+        }
         return true
     }
 
@@ -372,11 +395,12 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     private fun CheckAddedPhoto() {
         val pref = getSharedPreferences("pref", Context.MODE_PRIVATE)
         val editor = pref.edit()
-        var lastAddedDate = pref.getLong("lastAddedDate", 0)
+        var lastAddedDate = pref.getLong("lastAddedDate", Long.MAX_VALUE)
         val cursor = vm.getNewlySortedCursor(this, lastAddedDate)
 
         if (MediaStore_Dao.cursorIsValid(cursor)) {
             do {
+
                 val id = cursor!!.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
                 // 인터넷이 끊길 시 스톱
                 if (!NetworkIsValid(this)) break

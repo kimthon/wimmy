@@ -3,6 +3,7 @@ package com.example.wimmy.Adapter
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.SystemClock
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +15,10 @@ import com.example.wimmy.DBThread
 import com.example.wimmy.MainHandler
 import com.example.wimmy.R
 import com.example.wimmy.db.PhotoViewModel
+import kotlinx.coroutines.asCoroutineDispatcher
+import java.lang.Thread.sleep
 import java.util.*
+import java.util.concurrent.SynchronousQueue
 
 class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : ArrayList<Date>, inputMonth : Int , val itemClick: (Date) -> Unit) :
     ArrayAdapter<Date>(context, R.layout.fragment_cal, days) {
@@ -23,6 +27,7 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
     private var inputMonth : Int = inputMonth
     private var size : Pair<Int, Int>? = size
     private var mLastClickTime: Long = 0
+    private var inputCheck : Int = 0
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var view = convertView
@@ -56,16 +61,21 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
 
         textView.text = calendar.get(Calendar.DATE).toString()
         tagView.text = ""
+        val ckNum = inputCheck
         DBThread.execute {
             val textList = vm.getCalendarTags(this.context, calendar)
-
             if(textList.isNullOrEmpty()) return@execute
+
             else {
                 var text = ""
                 for (i in textList) {
+                    if (ckNum != inputCheck) {
+                        break
+                    }
                     text += i + '\n'
                 }
-                MainHandler.post{ tagView.text = text }
+                if (ckNum == inputCheck)
+                    MainHandler.post{ tagView.text = text }
             }
         }
 
@@ -78,8 +88,8 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
     }
 
     fun Update(cells : ArrayList<Date>, month : Int) {
+        inputCheck++
         clear()
-        DBThread.queue.clear()
         MainHandler.removeMessages(0)
         addAll(cells)
         this.inputMonth = month
