@@ -16,6 +16,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -45,8 +46,6 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
     private var mLastClickTime: Long = 0
     private var selected_id : Long = 0
     private var exitck: Boolean = false
-    private var templist = listOf<Long>()
-    private var tempck: Boolean = false
 
     private lateinit var marker_view: View
     private lateinit var tag_marker: TextView
@@ -165,11 +164,16 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
             changeRenderer(p0)
 
             card_view.setOnClickListener {
-                if (SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
-                    val index = list.indexOfFirst { it.photo_id == p0.id }
-                    val intent = Intent(this@Main_Map, PhotoViewPager::class.java)
-                    intent.putExtra("index", index)
-                    startActivityForResult(intent, 900)
+                if (SystemClock.elapsedRealtime() - mLastClickTime > 300) {
+                    if(DirectoryThread.activeCount > 0)
+                        Toast.makeText(this, "데이터 로딩중 잠시만 기다려 주세요", Toast.LENGTH_SHORT)
+                            .show()
+                    else {
+                        val index = list.indexOfFirst { it.photo_id == p0.id }
+                        val intent = Intent(this@Main_Map, PhotoViewPager::class.java)
+                        intent.putExtra("index", index)
+                        startActivityForResult(intent, 900)
+                    }
                 }
                 mLastClickTime = SystemClock.elapsedRealtime()
             }
@@ -226,72 +230,68 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
     fun getExtra(){
         if (intent.hasExtra("location_name")) {
             list.clear()
+            latLngList.clear()
             val getname = intent.getStringExtra("location_name")
             val title: TextView = findViewById(R.id.title_location_name)
             title.text = getname
 
             val liveData = vm.getOpenLocationDirIdList(getname!!)
             liveData.observe(this, Observer { idList ->
-                if (templist != idList && tempck == false) {
-                    tempck = true
-                    templist = idList
-                    DirectoryThread.queue.clear()
-                    DirectoryThread.execute {
+                loading_location_name.visibility = View.VISIBLE
+                DirectoryThread.queue.clear()
+                DirectoryThread.execute {
                     var i = 0
-                    MainHandler.post { loading_location_name.visibility = View.VISIBLE }
-                        for (id in idList) {
-                            if (exitck == true)
+                    for (id in idList) {
+                        do {
+                            val pre = if (i < latLngList.size) {
+                                (latLngList[i].id - id).toInt()
+                            } else {
+                                Int.MAX_VALUE
+                            }
+
+                            // 오름차 순 정렬
+                            // pre < 0 : 이전 데이터가 사라진 경우
+                            if (pre < 0) {
+                                mClusterManager.removeItem(latLngList[i])
+                                if(selected_id == latLngList[i].id) MainHandler.post { card_view.visibility = View.GONE }
+                                list.removeAt(i)
+                                latLngList.removeAt(i)
+                                MainHandler.post{ mClusterManager.cluster() }
+                                continue
+                            }
+                            //그대로 일 경우
+                            else if (pre == 0) {
+                                if(latLngList[i].id != id) {
+                                    latLngList[i].id = id
+                                    list[i].photo_id = id
+                                    MainHandler.post{ mClusterManager.cluster() }
+                                }
+                                ++i
                                 break
-                            do {
-                                val pre = if (i < latLngList.size) {
-                                    (latLngList[i].id - id).toInt()
-                                } else {
-                                    Int.MAX_VALUE
+                            }
+                            //삽입
+                            else {
+                                val latLng = vm.getLatLngById(this.applicationContext, id)
+                                if (latLng != null) {
+                                    val name = vm.getName(this.applicationContext, id)
+                                    list.add(i, thumbnailData(id, name))
+                                    addLatLNgData(i, id, latLng)
+                                    MainHandler.post{ mClusterManager.cluster() }
                                 }
-
-                                Log.d("사이즈", i.toString() + "  " + idList.size)
-
-                                // 오름차 순 정렬
-                                // pre < 0 : 이전 데이터가 사라진 경우
-                                if (pre < 0) {
-                                    mClusterManager.removeItem(latLngList[i])
-                                    if (selected_id == latLngList[i].id) MainHandler.post {
-                                        card_view.visibility = View.GONE
-                                    }
-                                    latLngList.removeAt(i)
-                                    list.removeAt(i)
-                                    MainHandler.post { mClusterManager.cluster() }
-                                    continue
-                                }
-                                //그대로 일 경우
-                                else if (pre == 0) {
-                                    ++i
-                                    break
-                                }
-
-                                //삽입
-                                else {
-                                    val latLng = vm.getLatLngById(this.applicationContext, id)
-                                    if (latLng != null) {
-                                        val name = vm.getName(this.applicationContext, id)
-                                        list.add(thumbnailData(id, name))
-                                        addLatLNgData(id, latLng)
-                                        MainHandler.post { mClusterManager.cluster() }
-                                    }
-                                    ++i
-                                    break
-                                }
-                            } while (true)
-                        }
-                        tempck = false
-                        MainHandler.post { loading_location_name.visibility = View.GONE }
+                                ++i
+                                break
+                            }
+                        } while (exitck == false)
+                        if(exitck == true)
+                            break
                     }
+                    MainHandler.post { loading_location_name.visibility = View.GONE }
                 }
             })
         }
     }
 
-    fun addLatLNgData(id : Long, latlng : LatLng) {
+    fun addLatLNgData(i : Int, id : Long, latlng : LatLng) {
         val data = LatLngData(id, latlng)
         if(latLngList.size == 0) {
             Handler(Looper.getMainLooper()).post {
@@ -299,18 +299,18 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
             }
         }
         mClusterManager.addItem(data)
-        latLngList.add(data)
+        latLngList.add(i, data)
         builder.include(data.latlng)
 
-        if(latLngList.size == 100) {
+        if(latLngList.size == 10) {
             Handler(Looper.getMainLooper()).post {boundmap()}
         }
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
-        DBThread.queue.clear()
         exitck = true
+        DBThread.queue.clear()
         finish()
     }
 

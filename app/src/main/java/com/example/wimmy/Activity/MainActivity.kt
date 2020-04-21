@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
         DBThread.execute {
-            vm.Drop(this)
+            //vm.Drop(this)
             CheckChangeData()
         }
 
@@ -102,7 +102,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         { //최초 실행시 true 저장
             val editor = pref.edit()
             editor.putBoolean("isFirst", true)
-            editor.commit()
+            editor.apply()
         }
         return !isFirst
     }
@@ -395,7 +395,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     private fun CheckAddedPhoto() {
         val pref = getSharedPreferences("pref", Context.MODE_PRIVATE)
         val editor = pref.edit()
-        var lastAddedDate = pref.getLong("lastAddedDate", 0)
+        var lastAddedDate = pref.getLong("lastAddedDate", Long.MAX_VALUE)
         val cursor = vm.getNewlySortedCursor(this, lastAddedDate)
 
         if (MediaStore_Dao.cursorIsValid(cursor)) {

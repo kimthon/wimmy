@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -55,6 +56,7 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
         val view: View = findViewById(R.id.imgViewPager)
         vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
+
         getExtra()
         text_name = findViewById(R.id.imgView_text)
         date_name = findViewById(R.id.imgView_date)
@@ -97,8 +99,8 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
         recyclerAdapter = PagerRecyclerAdapter( this, list, toolbar, bottombar )
 
         viewPager.adapter = recyclerAdapter
+        viewPager.adapter!!.notifyDataSetChanged()
         viewPager.setCurrentItem(index, false)
-
     }
 
     override fun onBackPressed() {
