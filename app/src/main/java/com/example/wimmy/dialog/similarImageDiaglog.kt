@@ -91,11 +91,11 @@ class similarImageDialog(v: View, vm: PhotoViewModel, location: String, date: St
                             DBThread.execute { vm.Delete(context!!, ckbox) }
                             val index = list.indexOfFirst { it.photo_id == ckbox }
                             if (index >= 0) {
-                                list.removeAt(index)
-                                if(latLngList.isNotEmpty()) {
+                                if(latLngList.isNotEmpty() && latLngList[index].id == list[index].photo_id) {
                                     removelist.add(latLngList[index])
                                     latLngList.removeAt(index)
                                 }
+                                list.removeAt(index)
                             }
                             removenum++
                         }
