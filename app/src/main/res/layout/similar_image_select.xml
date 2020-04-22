@@ -10,8 +10,7 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginRight="0.8dp"
-        android:layout_marginLeft="0.8dp">
+        android:layout_margin = "0.8dp">
 
         <com.ortiz.touchview.TouchImageView
           android:id="@+id/select_photo"
