@@ -259,7 +259,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }
 
     override fun onBackPressed() {
-        if(supportFragmentManager.backStackEntryCount == 0) {
+        if(supportFragmentManager.backStackEntryCount == 1 && supportFragmentManager.findFragmentByTag("name")!!.isVisible) {
             val tempTime = System.currentTimeMillis()
             val intervalTime = tempTime - backPressedTime
             if (!(0 > intervalTime || FINISH_INTERVAL_TIME < intervalTime)) {
@@ -295,7 +295,9 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
             val fragmentA = NameFragment(appbar)
             transaction.replace(R.id.frame_layout, fragmentA, "name")
+            transaction.addToBackStack("name")
             transaction.commit()
+            transaction.isAddToBackStackAllowed
             init = true
         }
 

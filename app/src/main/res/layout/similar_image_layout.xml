@@ -45,7 +45,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:text="가장 괜찮은 사진을 선택해주세요."
+            android:text="삭제할 사진을 체크하세요"
             android:textAllCaps="false"
             android:textSize="18dp" />
     </LinearLayout>
