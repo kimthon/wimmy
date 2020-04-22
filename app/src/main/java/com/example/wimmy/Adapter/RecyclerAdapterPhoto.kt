@@ -98,7 +98,6 @@ class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<thumbnail
 
     fun addThumbnailList(data : thumbnailData) {
         list.add(data)
-
     }
 
     fun getSize() : Int {

@@ -257,9 +257,9 @@ class Main_PhotoView: AppCompatActivity() {
                 val data = vm.getThumbnailDataByCursor(cursor!!)
                 recyclerAdapter.addThumbnailList(data)
             } while (cursor!!.moveToNext())
+            cursor.close()
             MainHandler.post { setView(list)
                 setPhotoSize(photo_type, 2)}
-            cursor.close()
         }
     }
 
