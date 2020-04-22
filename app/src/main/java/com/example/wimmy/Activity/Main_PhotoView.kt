@@ -52,7 +52,7 @@ class Main_PhotoView: AppCompatActivity() {
     private fun setView(lst: ArrayList<thumbnailData>) {
         recyclerAdapter =
             RecyclerAdapterPhoto(this,lst) {
-                    thumbnailData, num ->  if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
+                    thumbnailData, num ->  if(SystemClock.elapsedRealtime() - mLastClickTime > 300) {
                 val intent = Intent(this, PhotoViewPager::class.java)
                 intent.putExtra("index", num)
 
@@ -257,9 +257,9 @@ class Main_PhotoView: AppCompatActivity() {
                 val data = vm.getThumbnailDataByCursor(cursor!!)
                 recyclerAdapter.addThumbnailList(data)
             } while (cursor!!.moveToNext())
+            cursor.close()
             MainHandler.post { setView(list)
                 setPhotoSize(photo_type, 2)}
-            cursor.close()
         }
     }
 

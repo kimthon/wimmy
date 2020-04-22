@@ -6,8 +6,13 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.view.*
-import android.widget.*
+import android.view.GestureDetector
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.GridView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.Fragment
@@ -21,7 +26,7 @@ import kotlinx.android.synthetic.main.main_activity.view.*
 import java.util.*
 import kotlin.collections.ArrayList
 
-class DateFragment(v: AppBarLayout) : Fragment() {
+class DateFragment(val v: AppBarLayout) : Fragment() {
     private lateinit var gridView : GridView
     private lateinit var vm : PhotoViewModel
     private var size : Pair<Int, Int>? = null

@@ -21,6 +21,8 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
 import com.example.wimmy.*
+import com.example.wimmy.Activity.Main_Map.Companion.latLngList
+import com.example.wimmy.Activity.Main_Map.Companion.removelist
 import com.example.wimmy.Adapter.PagerRecyclerAdapter
 import com.example.wimmy.Activity.Main_PhotoView.Companion.list
 import com.example.wimmy.db.MediaStore_Dao
@@ -54,6 +56,7 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
         setContentView(R.layout.photoview_frame)
         val view: View = findViewById(R.id.imgViewPager)
         vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+
 
         getExtra()
         text_name = findViewById(R.id.imgView_text)
@@ -97,8 +100,8 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
         recyclerAdapter = PagerRecyclerAdapter( this, list, toolbar, bottombar )
 
         viewPager.adapter = recyclerAdapter
+        viewPager.adapter!!.notifyDataSetChanged()
         viewPager.setCurrentItem(index, false)
-
     }
 
     override fun onBackPressed() {
@@ -227,6 +230,10 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
             DBThread.execute { vm.Delete(this, id) }
 
             list.removeAt(index)
+            if(latLngList.isNotEmpty()) {
+                removelist.add(latLngList[index])
+                latLngList.removeAt(index)
+            }
             Toast.makeText(this, "삭제 완료 되었습니다.", Toast.LENGTH_SHORT).show()
             if(list.size == 0) {
                 finishActivity()

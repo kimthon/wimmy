@@ -24,7 +24,7 @@ import kotlinx.android.synthetic.main.main_activity.view.*
 import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.db.thumbnailData
 
-class LocationFragment(v: AppBarLayout) : Fragment() {
+class LocationFragment(val v: AppBarLayout) : Fragment() {
     private var thisview: View? = null
     private lateinit var recyclerAdapter : RecyclerAdapterForder
     private lateinit var liveData : LiveData<List<thumbnailData>>
@@ -63,7 +63,7 @@ class LocationFragment(v: AppBarLayout) : Fragment() {
         recyclerAdapter =
             RecyclerAdapterForder(activity, ArrayList())
             {thumbnailData ->
-                if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
+                if(SystemClock.elapsedRealtime() - mLastClickTime > 300) {
                     if(location_type == 1) {
                         val intent = Intent(activity, Main_PhotoView::class.java)
                         intent.putExtra("location_name", thumbnailData.data)

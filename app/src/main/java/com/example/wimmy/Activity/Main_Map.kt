@@ -43,16 +43,18 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
     private val zoomLevel: Int = 12
     private var mLastClickTime: Long = 0
     private var selected_id : Long = 0
+    private var templist = listOf<Long>()
 
     private lateinit var marker_view: View
     private lateinit var tag_marker: TextView
     private lateinit var tag_marker_layout: ViewGroup.LayoutParams
 
-    private val latLngList = ArrayList<LatLngData>()
-
-
     companion object {
+        val latLngList = ArrayList<LatLngData>()
         var selectedMarker: Marker? = null
+        val removelist = arrayListOf<LatLngData>()
+        var exitck: Boolean = false
+        var inputck: Boolean = false
     }
     private lateinit var mMap: GoogleMap
 
@@ -161,7 +163,8 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
             changeRenderer(p0)
 
             card_view.setOnClickListener {
-                if (SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
+                inputck = false
+                if (SystemClock.elapsedRealtime() - mLastClickTime > 300) {
                     val index = list.indexOfFirst { it.photo_id == p0.id }
                     val intent = Intent(this@Main_Map, PhotoViewPager::class.java)
                     intent.putExtra("index", index)
@@ -173,7 +176,6 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
             true
         }
     }
-
     fun boundmap() {
         val bounds: LatLngBounds = builder.build()
         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, zoomLevel))
@@ -223,18 +225,27 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
     fun getExtra(){
         if (intent.hasExtra("location_name")) {
             list.clear()
+            latLngList.clear()
             val getname = intent.getStringExtra("location_name")
             val title: TextView = findViewById(R.id.title_location_name)
             title.text = getname
+            getList(getname)
+        }
+    }
 
-            val liveData = vm.getOpenLocationDirIdList(getname!!)
-            liveData.observe(this, Observer { idList ->
+    fun getList(getname: String) {
+        val liveData = vm.getOpenLocationDirIdList(getname!!)
+        liveData.observe(this, Observer { idList ->
+            if(idList != templist) {
+                templist = idList
                 loading_location_name.visibility = View.VISIBLE
                 DirectoryThread.queue.clear()
                 DirectoryThread.execute {
                     var i = 0
                     for (id in idList) {
                         do {
+                            while (!inputck) {
+                            }
                             val pre = if (i < latLngList.size) {
                                 (latLngList[i].id - id).toInt()
                             } else {
@@ -245,13 +256,22 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
                             // pre < 0 : 이전 데이터가 사라진 경우
                             if (pre < 0) {
                                 mClusterManager.removeItem(latLngList[i])
-                                if(selected_id == latLngList[i].id) MainHandler.post { card_view.visibility = View.GONE }
+                                if (selected_id == latLngList[i].id) MainHandler.post {
+                                    card_view.visibility = View.GONE
+                                }
+                                if (list[i].photo_id == latLngList[i].id)
+                                    list.removeAt(i)
                                 latLngList.removeAt(i)
-                                MainHandler.post{ mClusterManager.cluster() }
+                                MainHandler.post { mClusterManager.cluster() }
                                 continue
                             }
                             //그대로 일 경우
                             else if (pre == 0) {
+                                if (latLngList[i].id != id) {
+                                    latLngList[i].id = id
+                                    list[i].photo_id = id
+                                    MainHandler.post { mClusterManager.cluster() }
+                                }
                                 ++i
                                 break
                             }
@@ -260,24 +280,49 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
                                 val latLng = vm.getLatLngById(this.applicationContext, id)
                                 if (latLng != null) {
                                     val name = vm.getName(this.applicationContext, id)
-                                    list.add(thumbnailData(id, name))
-                                    addLatLNgData(id, latLng)
-                                    MainHandler.post{ mClusterManager.cluster() }
+                                    list.add(i, thumbnailData(id, name))
+                                    addLatLNgData(i, id, latLng)
+                                    MainHandler.post { mClusterManager.cluster() }
                                 }
                                 ++i
                                 break
                             }
-                        } while (true)
+                        } while (exitck == false)
+                        if (exitck == true)
+                            break
                     }
-                    MainHandler.post {
-                        loading_location_name.visibility = View.GONE
+                    MainHandler.post { loading_location_name.visibility = View.GONE }
+                    inputck = true
+                }
+            }
+        })
+    }
+    override fun onResume() {
+        super.onResume()
+        if(removelist.size > 0) {
+            DBThread.execute {
+                for (data in removelist) {
+                    mClusterManager.removeItem(data)
+                    if (selected_id == data.id) MainHandler.post {
+                        card_view.visibility = View.GONE
+                        mClusterManager.cluster()
                     }
                 }
-            })
+                removelist.clear()
+            }
         }
+        exitck = false
+        inputck = true
     }
 
-    fun addLatLNgData(id : Long, latlng : LatLng) {
+    override fun onDestroy() {
+        super.onDestroy()
+        exitck = true
+        latLngList.clear()
+        list.clear()
+    }
+
+    fun addLatLNgData(i : Int, id : Long, latlng : LatLng) {
         val data = LatLngData(id, latlng)
         if(latLngList.size == 0) {
             Handler(Looper.getMainLooper()).post {
@@ -285,10 +330,10 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
             }
         }
         mClusterManager.addItem(data)
-        latLngList.add(data)
+        latLngList.add(i, data)
         builder.include(data.latlng)
 
-        if(latLngList.size == 100) {
+        if(latLngList.size == 10) {
             Handler(Looper.getMainLooper()).post {boundmap()}
         }
     }
@@ -315,7 +360,7 @@ class MarkerClusterRenderer(context: Context?, map: GoogleMap?, clusterManager: 
 
     override fun shouldRenderAsCluster(cluster: Cluster<LatLngData>?): Boolean {
         super.shouldRenderAsCluster(cluster)
-        return cluster != null && cluster.size >= 3
+        return cluster != null && cluster.size >= 5
     }
 
     override fun onClustersChanged(clusters: MutableSet<out Cluster<LatLngData>>?) {

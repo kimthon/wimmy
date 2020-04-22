@@ -1,9 +1,11 @@
 package com.example.wimmy.Adapter
 
 import android.app.Activity
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wimmy.ImageLoder
@@ -11,17 +13,21 @@ import com.example.wimmy.MainHandler
 import com.example.wimmy.R
 import com.example.wimmy.ThumbnailLoad
 import com.example.wimmy.db.thumbnailData
+import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 
-class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<thumbnailData>, val itemClick: (thumbnailData, Int) -> Unit) :
-    RecyclerView.Adapter<RecyclerAdapterPhoto.Holder>()
+class RecyclerAdapterDialog(val context: Activity?, var list: ArrayList<thumbnailData>, val itemClick: (thumbnailData) -> Unit) :
+    RecyclerView.Adapter<RecyclerAdapterDialog.Holder>()
 {
     private var size : Int = 200
     private var padding_size = 200
+    private val checkboxSet: HashSet<Long> = hashSetOf()
 
     inner class Holder(itemView: View?) : RecyclerView.ViewHolder(itemView!!) {
-        var thumbnail: ImageView = itemView!!.findViewById<ImageView>(R.id.thumbnail_img)
+        var thumbnail: ImageView = itemView!!.findViewById<ImageView>(R.id.thumbnail_similarimg)
+        var checkbox: CheckBox = itemView!!.findViewById<CheckBox>(R.id.checkbox)
 
-        fun bind(data : thumbnailData, num: Int) {
+        fun bind(data : thumbnailData) {
             val layoutParam = thumbnail.layoutParams as ViewGroup.MarginLayoutParams
             thumbnail.layoutParams.width = size
             thumbnail.layoutParams.height = size
@@ -30,12 +36,21 @@ class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<thumbnail
             thumbnail.setImageResource(0)
             ImageLoder.execute(ThumbnailLoad(this, thumbnail, data.photo_id))
 
-            itemView.setOnClickListener { itemClick(data, num) }
+            itemView.setOnClickListener { itemClick(data) }
+            checkbox.setOnClickListener {
+                if(checkbox.isChecked) {
+                    checkboxSet.add(data.photo_id)
+                }
+                else {
+                    checkboxSet.remove(data.photo_id)
+                }
+                Log.d("리스트", checkboxSet.size.toString())
+            }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
-        val view = LayoutInflater.from(context).inflate(R.layout.thumbnail_imgview, parent, false)
+        val view = LayoutInflater.from(context).inflate(R.layout.thumbnail_similarview, parent, false)
         return Holder(view)
     }
 
@@ -44,7 +59,7 @@ class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<thumbnail
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        holder.bind(list[position], position)
+        holder.bind(list[position])
     }
 
     fun setPhotoSize(size : Int, padding_size : Int) {
@@ -53,7 +68,7 @@ class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<thumbnail
         notifyDataSetChanged()
     }
 
-    fun setThumbnailList(list : ArrayList<thumbnailData>?) {
+    fun setThumbnailList(list : ArrayList<thumbnailData>?): HashSet<Long> {
         if(list.isNullOrEmpty()) this.list = arrayListOf()
         else {
             var thisIndex = 0
@@ -90,6 +105,7 @@ class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<thumbnail
                 } while(true)
             }
         }
+        return checkboxSet
     }
 
     fun getThumbnailList() : ArrayList<thumbnailData> {
@@ -98,6 +114,7 @@ class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<thumbnail
 
     fun addThumbnailList(data : thumbnailData) {
         list.add(data)
+
     }
 
     fun getSize() : Int {

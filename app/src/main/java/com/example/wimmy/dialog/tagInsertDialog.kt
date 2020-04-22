@@ -87,21 +87,20 @@ class tagInsertDialog(v: View, vm: PhotoViewModel, index: Int, tag_name : AppCom
                 withContext(CoroutineScope(Dispatchers.IO).coroutineContext) {
                     vm.DeleteTag(Main_PhotoView.list[index].photo_id)
                 }
-                var inserted = false
+                var tags: String = ""
                 for(i in 0..4) {
                     if (editlist[i].text.toString().trim() != "") {
                         DBThread.execute {
                             vm.Insert( TagData( Main_PhotoView.list[index].photo_id, editlist[i].text.toString() ) )
                         }
-                        inserted = true
+                        tags += editlist[i].text.toString() + ", "
                     }
                 }
-
-                if(inserted) {
-                    DBThread.execute {
-                        val tags = vm.getTags(Main_PhotoView.list[index].photo_id)
-                        MainHandler.post { tag_name.text = tags }
-                    }
+                if(tags.length == 0)
+                    MainHandler.post { tag_name.text = "태그 정보 없음" }
+                else {
+                    tags = tags.substring(0, tags.length -2)
+                    MainHandler.post { tag_name.text = tags }
                 }
 
                 Toast.makeText(context!!, "입력 완료 되었습니다.", Toast.LENGTH_SHORT).show()
