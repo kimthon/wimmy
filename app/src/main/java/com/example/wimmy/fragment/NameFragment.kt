@@ -21,7 +21,7 @@ import com.example.wimmy.db.PhotoViewModel
 import com.google.android.material.appbar.AppBarLayout
 import kotlinx.android.synthetic.main.main_activity.view.*
 
-class NameFragment(v: AppBarLayout) : Fragment() {
+class NameFragment(val v: AppBarLayout) : Fragment() {
     private lateinit var thisview: View
     private lateinit var recyclerView : RecyclerView
     private lateinit var recyclerAdapter : RecyclerAdapterForder

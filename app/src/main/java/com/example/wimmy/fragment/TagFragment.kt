@@ -22,7 +22,7 @@ import com.example.wimmy.db.thumbnailData
 import com.google.android.material.appbar.AppBarLayout
 import kotlinx.android.synthetic.main.main_activity.view.*
 
-class TagFragment(v: AppBarLayout) : Fragment() {
+class TagFragment(val v: AppBarLayout) : Fragment() {
     private lateinit var thisview: View
     private lateinit var recyclerAdapter : RecyclerAdapterForder
     private lateinit var liveData : LiveData<List<thumbnailData>>

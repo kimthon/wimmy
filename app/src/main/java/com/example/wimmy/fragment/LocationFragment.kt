@@ -24,7 +24,7 @@ import kotlinx.android.synthetic.main.main_activity.view.*
 import com.example.wimmy.db.PhotoViewModel
 import com.example.wimmy.db.thumbnailData
 
-class LocationFragment(v: AppBarLayout) : Fragment() {
+class LocationFragment(val v: AppBarLayout) : Fragment() {
     private var thisview: View? = null
     private lateinit var recyclerAdapter : RecyclerAdapterForder
     private lateinit var liveData : LiveData<List<thumbnailData>>

@@ -9,7 +9,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -22,6 +21,8 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
 import com.example.wimmy.*
+import com.example.wimmy.Activity.Main_Map.Companion.latLngList
+import com.example.wimmy.Activity.Main_Map.Companion.removelist
 import com.example.wimmy.Adapter.PagerRecyclerAdapter
 import com.example.wimmy.Activity.Main_PhotoView.Companion.list
 import com.example.wimmy.db.MediaStore_Dao
@@ -229,6 +230,10 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
             DBThread.execute { vm.Delete(this, id) }
 
             list.removeAt(index)
+            if(latLngList.isNotEmpty()) {
+                removelist.add(latLngList[index])
+                latLngList.removeAt(index)
+            }
             Toast.makeText(this, "삭제 완료 되었습니다.", Toast.LENGTH_SHORT).show()
             if(list.size == 0) {
                 finishActivity()

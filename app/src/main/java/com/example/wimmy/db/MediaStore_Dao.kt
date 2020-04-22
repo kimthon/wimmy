@@ -213,7 +213,7 @@ object MediaStore_Dao {
             selection += "$id,"
         }
         selection = selection.substring(0, selection.length - 1)
-        selection += ")" + " AND " + MediaStore.Images.ImageColumns.DATE_TAKEN + " BETWEEN " + (cal.time.time - 30000) + " AND " + (cal.time.time + 30000)
+        selection += ")" + " AND " + MediaStore.Images.ImageColumns.DATE_TAKEN + " BETWEEN " + (cal.time.time - 60000) + " AND " + (cal.time.time + 60000)
 
         val cursor = context.contentResolver.query(uri, projection, selection, null, sortdate)
         if(!cursorIsValid(cursor)) return list
