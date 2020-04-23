@@ -17,6 +17,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -63,6 +64,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     private var init : Boolean = false
     lateinit var mCurrentPhotoPath: String
     private val REQUEST_TAKE_PHOTO = 200
+    private lateinit var exitView: View
 
     private var adLoader: AdLoader? = null
 
@@ -77,11 +79,11 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         setContentView(R.layout.main_activity)
         val bnv = findViewById<View>(R.id.bottomNavigationView) as BottomNavigationView
         bnv.setOnNavigationItemSelectedListener(this)
-
+        exitView = layoutInflater.inflate(R.layout.exit_layout, null)
         SetHeader()
         init()
-        MobileAds.initialize(this)
         createAd()
+
         vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
         DBThread.execute {
@@ -105,9 +107,10 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }
 
     fun createAd() {
+        MobileAds.initialize(this)
         adLoader = AdLoader.Builder(this, "ca-app-pub-3940256099942544/2247696110")
             .forUnifiedNativeAd { ad : UnifiedNativeAd ->
-                val template: TemplateView = findViewById(R.id.tpAdmob)
+                val template: TemplateView = exitView.findViewById(R.id.tpAdmob)
                 template.setNativeAd(ad)
             }
             .withAdListener(object : AdListener() {
@@ -117,10 +120,11 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             })
             .withNativeAdOptions(
                 NativeAdOptions.Builder()
-                // Methods in the NativeAdOptions.Builder class can be
-                // used here to specify individual options settings.
-                .build())
+                    // Methods in the NativeAdOptions.Builder class can be
+                    // used here to specify individual options settings.
+                    .build())
             .build()
+        adLoader?.loadAd(AdRequest.Builder().build())
     }
     fun CheckAppFirstExecute():Boolean {
         val pref = getSharedPreferences("IsFirst", Activity.MODE_PRIVATE)
@@ -288,20 +292,25 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     override fun onBackPressed() {
         if(supportFragmentManager.backStackEntryCount == 1 && supportFragmentManager.findFragmentByTag("name")!!.isVisible) {
-            adLoader?.loadAd(AdRequest.Builder().build())
-
-
-            val exitView: View = layoutInflater.inflate(R.layout.exit_layout, null)
+            if(!adLoader?.isLoading!!)
+                adLoader?.loadAd(AdRequest.Builder().build())
+            if (!NetworkIsValid(this))
+                exitView.tpAdmob.visibility = View.INVISIBLE
+            else
+                exitView.tpAdmob.visibility = View.VISIBLE
             val dlgBuilder: androidx.appcompat.app.AlertDialog.Builder = androidx.appcompat.app.AlertDialog.Builder(    // 확인 다이얼로그
                 this,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
             dlgBuilder.setCancelable(false)
             dlgBuilder.setView(exitView)
-            dlgBuilder.setTitle("정말 종료하시겠습니까?")
+            dlgBuilder.setTitle("Wimmy를 종료하시겠습니까?")
             val dlgexit = dlgBuilder.create()
+
             dlgexit.show()
 
             exitView.exit_cancel.setOnClickListener {
                 dlgexit.cancel()
+                val d = exitView.parent as ViewGroup
+                d.removeView(exitView)
             }
             exitView.exit_ok.setOnClickListener {
                 finishAffinity()

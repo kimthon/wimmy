@@ -14,7 +14,7 @@
 
         <com.google.android.ads.nativetemplates.TemplateView
             android:id="@+id/tpAdmob"
-            android:visibility="gone"
+            android:visibility="invisible"
             app:gnt_template_type="@layout/gnt_medium_template_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
