@@ -25,12 +25,13 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class similarImageDialog(v: View, vm: PhotoViewModel, location: String, date: String): DialogFragment() {
+class similarImageDialog(v: View, vm: PhotoViewModel, location: String, date: String, index: Int): DialogFragment() {
 
     private lateinit var recyclerAdapter : RecyclerAdapterDialog
     private lateinit var recyclerView : RecyclerView
     private val v = v
     private val vm = vm
+    private val index = index
     private val location = location
     private val date = date
     private val calendar = Calendar.getInstance()
@@ -47,8 +48,10 @@ class similarImageDialog(v: View, vm: PhotoViewModel, location: String, date: St
         val liveData = vm.getOpenLocationDirIdList(location)
         liveData.observe(this, androidx.lifecycle.Observer { idList ->
             DBThread.execute {
-                val list = vm.getThumbnailListByIdList(context!!, idList, calendar)
-                checkboxSet = recyclerAdapter.setThumbnailList(list)
+                val initlist = vm.getThumbnailListByIdList(context!!, idList, calendar)
+                if(initlist.isEmpty())
+                    initlist.add(list[index])
+                checkboxSet = recyclerAdapter.setThumbnailList(initlist)
             }
         })
 
@@ -131,7 +134,7 @@ class similarImageDialog(v: View, vm: PhotoViewModel, location: String, date: St
         recyclerAdapter =
             RecyclerAdapterDialog(activity, list) { thumbnailData ->
                 val similarImageSelectView: View = layoutInflater.inflate(R.layout.similar_image_select, null)
-                ImageLoder.execute(ImageLoad(context!!, similarImageSelectView.select_photo, thumbnailData.photo_id, 1))
+                ImageLoder.execute(ImageLoad(context!!, similarImageSelectView.select_photo, thumbnailData.photo_id, 0))
                 val dlgBuilder: androidx.appcompat.app.AlertDialog.Builder = androidx.appcompat.app.AlertDialog.Builder(    // 확인 다이얼로그
                     context!!,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
 

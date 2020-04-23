@@ -50,8 +50,8 @@ class ImageLoad(context: Context, imageView: ImageView, id : Long, type: Int) : 
         try {
             val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
             lateinit var img: Drawable
-            if(type == 0) { img = context.resources.getDrawable(R.drawable.dummy_image) }   // 뷰페이저
-            else { img = context.resources.getDrawable(R.drawable.dummy_image_white) }  // 맵, 유사이미지
+            if(type == 0) { img = context.resources.getDrawable(R.drawable.dummy_image) }   // 뷰페이저, 유사이미지
+            else { img = context.resources.getDrawable(R.drawable.dummy_image_white) }  // 맵
 
             handler.post {
                 Glide.with(context)
