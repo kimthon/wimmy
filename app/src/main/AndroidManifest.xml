@@ -23,6 +23,9 @@
         android:roundIcon="@mipmap/ic_launcher2_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-1532821601771222~6969847546"/>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.wimmy"

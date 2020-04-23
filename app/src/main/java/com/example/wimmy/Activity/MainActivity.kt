@@ -33,12 +33,20 @@ import com.example.wimmy.db.TagData
 import com.example.wimmy.fragment.LocationFragment
 import com.example.wimmy.fragment.NameFragment
 import com.example.wimmy.fragment.TagFragment
+import com.google.android.ads.nativetemplates.TemplateView
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdLoader
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.formats.NativeAdOptions
+import com.google.android.gms.ads.formats.UnifiedNativeAd
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.ml.naturallanguage.FirebaseNaturalLanguage
 import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslateLanguage
 import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslatorOptions
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
+import kotlinx.android.synthetic.main.exit_layout.view.*
 import kotlinx.android.synthetic.main.main_activity.*
 import java.io.File
 import java.io.IOException
@@ -55,8 +63,8 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     private var init : Boolean = false
     lateinit var mCurrentPhotoPath: String
     private val REQUEST_TAKE_PHOTO = 200
-    private var FINISH_INTERVAL_TIME: Long = 1500
-    private var backPressedTime: Long = 0
+
+    private var adLoader: AdLoader? = null
 
     companion object {
         var location_type: Int = 0
@@ -72,7 +80,8 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
         SetHeader()
         init()
-
+        MobileAds.initialize(this)
+        createAd()
         vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
         DBThread.execute {
@@ -95,6 +104,24 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         }
     }
 
+    fun createAd() {
+        adLoader = AdLoader.Builder(this, "ca-app-pub-3940256099942544/2247696110")
+            .forUnifiedNativeAd { ad : UnifiedNativeAd ->
+                val template: TemplateView = findViewById(R.id.tpAdmob)
+                template.setNativeAd(ad)
+            }
+            .withAdListener(object : AdListener() {
+                override fun onAdFailedToLoad(errorCode: Int) {
+                    // Handle the failure by logging, altering the UI, and so on.
+                }
+            })
+            .withNativeAdOptions(
+                NativeAdOptions.Builder()
+                // Methods in the NativeAdOptions.Builder class can be
+                // used here to specify individual options settings.
+                .build())
+            .build()
+    }
     fun CheckAppFirstExecute():Boolean {
         val pref = getSharedPreferences("IsFirst", Activity.MODE_PRIVATE)
         val isFirst = pref.getBoolean("isFirst", false)
@@ -255,26 +282,37 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         //transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
         transaction.commit()
         transaction.isAddToBackStackAllowed
+
         return true
     }
 
     override fun onBackPressed() {
         if(supportFragmentManager.backStackEntryCount == 1 && supportFragmentManager.findFragmentByTag("name")!!.isVisible) {
-            val tempTime = System.currentTimeMillis()
-            val intervalTime = tempTime - backPressedTime
-            if (!(0 > intervalTime || FINISH_INTERVAL_TIME < intervalTime)) {
+            adLoader?.loadAd(AdRequest.Builder().build())
+
+
+            val exitView: View = layoutInflater.inflate(R.layout.exit_layout, null)
+            val dlgBuilder: androidx.appcompat.app.AlertDialog.Builder = androidx.appcompat.app.AlertDialog.Builder(    // 확인 다이얼로그
+                this,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+            dlgBuilder.setCancelable(false)
+            dlgBuilder.setView(exitView)
+            dlgBuilder.setTitle("정말 종료하시겠습니까?")
+            val dlgexit = dlgBuilder.create()
+            dlgexit.show()
+
+            exitView.exit_cancel.setOnClickListener {
+                dlgexit.cancel()
+            }
+            exitView.exit_ok.setOnClickListener {
                 finishAffinity()
                 System.runFinalization()
                 System.exit(0)
-            } else {
-                backPressedTime = tempTime
-                Toast.makeText(this, "'뒤로' 버튼을 한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
-                return
             }
+        } else {
+            super.onBackPressed()
+            val bnv = findViewById<View>(R.id.bottomNavigationView) as BottomNavigationView
+            updateBottomMenu(bnv)
         }
-        super.onBackPressed()
-        val bnv = findViewById<View>(R.id.bottomNavigationView) as BottomNavigationView
-        updateBottomMenu(bnv)
     }
 
     private fun updateBottomMenu(navigation: BottomNavigationView) {
