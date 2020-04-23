@@ -360,7 +360,7 @@ class MarkerClusterRenderer(context: Context?, map: GoogleMap?, clusterManager: 
 
     override fun shouldRenderAsCluster(cluster: Cluster<LatLngData>?): Boolean {
         super.shouldRenderAsCluster(cluster)
-        return cluster != null && cluster.size >= 10
+        return cluster != null && cluster.size >= 5
     }
 
     override fun onClustersChanged(clusters: MutableSet<out Cluster<LatLngData>>?) {
