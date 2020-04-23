@@ -294,7 +294,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         if(!init) {
             val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
             val fragmentA = NameFragment(appbar)
-            transaction.replace(R.id.frame_layout, fragmentA, "name")
+            transaction.add(R.id.frame_layout, fragmentA, "name")
             transaction.addToBackStack("name")
             transaction.commit()
             transaction.isAddToBackStackAllowed
