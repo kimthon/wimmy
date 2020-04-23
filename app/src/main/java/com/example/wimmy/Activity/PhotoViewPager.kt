@@ -180,7 +180,7 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
 
     private fun similarImage() {
         val similarImageDialogView: View = layoutInflater.inflate(R.layout.similar_image_layout, null)
-        val dlg = similarImageDialog(similarImageDialogView, vm, location_name.text.toString(), date_name.text.toString())
+        val dlg = similarImageDialog(similarImageDialogView, vm, location_name.text.toString(), date_name.text.toString(), index)
         dlg.isCancelable = false
         dlg.show(supportFragmentManager, "similarImageDialog")
     }
