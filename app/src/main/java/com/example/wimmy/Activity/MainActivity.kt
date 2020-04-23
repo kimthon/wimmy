@@ -108,7 +108,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     fun createAd() {
         MobileAds.initialize(this)
-        adLoader = AdLoader.Builder(this, "ca-app-pub-3940256099942544/2247696110")
+        adLoader = AdLoader.Builder(this, "ca-app-pub-1532821601771222/8091357520")
             .forUnifiedNativeAd { ad : UnifiedNativeAd ->
                 val template: TemplateView = exitView.findViewById(R.id.tpAdmob)
                 template.setNativeAd(ad)
