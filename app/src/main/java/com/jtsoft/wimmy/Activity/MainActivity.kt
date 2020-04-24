@@ -304,7 +304,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             dlgBuilder.setView(exitView)
             dlgBuilder.setTitle("Wimmy를 종료하시겠습니까?")
             val dlgexit = dlgBuilder.create()
-
             dlgexit.show()
 
             exitView.exit_cancel.setOnClickListener {
@@ -435,6 +434,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     fun CheckChangeData() {
         ChangeCheckThread.shutdownNow()
         ChangeCheckThread = ThreadPoolExecutor(1, 3, 0L, TimeUnit.MILLISECONDS, LinkedBlockingQueue())
+        while (!NetworkIsValid(this)) { }
         ChangeCheckThread.execute {
             CheckAddedPhoto()
             CheckDeletedPhoto()
@@ -444,15 +444,17 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     private fun CheckAddedPhoto() {
         val pref = getSharedPreferences("pref", Context.MODE_PRIVATE)
         val editor = pref.edit()
-        var lastAddedDate = pref.getLong("lastAddedDate", Long.MAX_VALUE)
-        val cursor = vm.getNewlySortedCursor(this, lastAddedDate)
+        var lastAddedDate = pref.getLong("lastAddedDate", Long.MIN_VALUE)
+        val cursor = vm.getNewlySortedCursor(this, 0)
 
         if (MediaStore_Dao.cursorIsValid(cursor)) {
             do {
+                Log.d("데이트값: ", lastAddedDate.toString())
 
                 val id = cursor!!.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
                 // 인터넷이 끊길 시 스톱
-                if (!NetworkIsValid(this)) break
+
+                while (!NetworkIsValid(this)) { }
                 ChangeCheckThread.execute {
                     vm.getFullLocation(this, id)
                     vm.getFavorite(id)

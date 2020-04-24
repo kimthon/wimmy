@@ -298,7 +298,7 @@ object MediaStore_Dao {
             MediaStore.Images.ImageColumns._ID,
             MediaStore.Images.ImageColumns.DATE_ADDED
         )
-        val selection = MediaStore.Images.ImageColumns.DATE_ADDED + " <= " + date
+        val selection = MediaStore.Images.ImageColumns.DATE_ADDED + " >= " + date
         val sortOrder = MediaStore.Images.ImageColumns.DATE_ADDED + " ASC"
 
         return context.contentResolver.query(uri, projection, selection, null, sortOrder)
