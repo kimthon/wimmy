@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.wimmy">
+    package="com.jtsoft.wimmy">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="CAMERA"/>
@@ -28,7 +28,7 @@
             android:value="ca-app-pub-1532821601771222~6969847546"/>
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.example.wimmy"
+            android:authorities="com.jtsoft.wimmy"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -39,9 +39,9 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".Activity.MainActivity">
+        <activity android:name="com.jtsoft.wimmy.Activity.MainActivity">
         </activity>
-        <activity android:name=".Activity.SplashActivity"
+        <activity android:name="com.jtsoft.wimmy.Activity.SplashActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
@@ -50,14 +50,14 @@
 
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.Main_PhotoView">
+        <activity android:name="com.jtsoft.wimmy.Activity.Main_PhotoView">
         </activity>
         <activity
-            android:name=".Activity.PhotoViewPager"
+            android:name="com.jtsoft.wimmy.Activity.PhotoViewPager"
             android:theme="@style/PhotoTheme">
         </activity>
-        <activity android:name=".Activity.Main_Map"/>
-        <activity android:name=".Activity.SearchView">
+        <activity android:name="com.jtsoft.wimmy.Activity.Main_Map"/>
+        <activity android:name="com.jtsoft.wimmy.Activity.SearchView">
         </activity>
         <meta-data
             android:name="com.google.firebase.ml.vision.DEPENDENCIES"
