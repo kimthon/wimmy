@@ -287,8 +287,8 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
                                 ++i
                                 break
                             }
-                        } while (exitck == false)
-                        if (exitck == true)
+                        } while (!exitck)
+                        if (exitck)
                             break
                     }
                     MainHandler.post { loading_location_name.visibility = View.GONE }
@@ -318,8 +318,6 @@ class Main_Map: AppCompatActivity(), OnMapReadyCallback {
     override fun onDestroy() {
         super.onDestroy()
         exitck = true
-        latLngList.clear()
-        list.clear()
     }
 
     fun addLatLNgData(i : Int, id : Long, latlng : LatLng) {

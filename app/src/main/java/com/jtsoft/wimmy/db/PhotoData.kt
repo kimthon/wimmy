@@ -1,5 +1,6 @@
 package com.jtsoft.wimmy.db
 
+import android.widget.CheckBox
 import androidx.room.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterItem
@@ -11,6 +12,11 @@ class LatLngData(
         return latlng
     }
 }
+
+class checkboxData(
+    var id: Long,
+    var checkbox: CheckBox,
+    var checked: Boolean)
 
 @Entity(tableName = "extra_photo_data",
     primaryKeys = ["photo_id"])
@@ -30,4 +36,3 @@ class TagData(
 
 data class thumbnailData( var photo_id : Long,
                           var data : String)
-

@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.DisplayMetrics
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -22,6 +23,7 @@ import com.jtsoft.wimmy.MainHandler
 import com.jtsoft.wimmy.R
 import com.jtsoft.wimmy.db.*
 import kotlinx.android.synthetic.main.main_photoview.*
+import kotlinx.android.synthetic.main.thumbnail_imgview.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 import java.io.File
@@ -33,8 +35,10 @@ class Main_PhotoView: AppCompatActivity() {
     private var mLastClickTime: Long = 0
     private var delete_check: Int = 0
 
+
     companion object {
         var list = arrayListOf<thumbnailData>()
+        var checkboxList = arrayListOf<checkboxData>()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,9 +48,61 @@ class Main_PhotoView: AppCompatActivity() {
         recyclerView = findViewById<RecyclerView>(R.id.photo_recyclerView)
         setView(arrayListOf())
         getExtra()
+        checkboxList.clear()
 
         updown_Listener(recyclerView)
         updownEvent()
+
+        photolist_delete.setOnClickListener {
+            btck(1)
+        }
+        photolist_deletecancel.setOnClickListener {
+            btck(0)
+        }
+        radiobt.setOnClickListener {
+            btck2(1)
+        }
+        radiobt2.setOnClickListener {
+            btck2(2)
+        }
+        photolist_deleteok.setOnClickListener {
+
+        }
+    }
+    private fun btck(n: Int) {
+        appbar2.visibility = View.VISIBLE
+        appbar2.setExpanded(true,true)
+        DBThread.execute {
+            MainHandler.post {
+                recyclerAdapter.updateCheckbox(n)
+                recyclerAdapter.notifyDataSetChanged()
+            }
+        }
+        if(n==1) {
+            photolist_delete.visibility = View.GONE
+            photolist_deleteok.visibility = View.VISIBLE
+            photolist_deletecancel.visibility = View.VISIBLE
+            radiobt.visibility = View.VISIBLE
+            radiobt2.visibility = View.VISIBLE
+            title_name.visibility = View.INVISIBLE
+        }
+        else {
+            photolist_delete.visibility = View.VISIBLE
+            photolist_deleteok.visibility = View.GONE
+            photolist_deletecancel.visibility = View.GONE
+            radiobt.visibility = View.GONE
+            radiobt2.visibility = View.GONE
+            title_name.visibility = View.VISIBLE
+        }
+    }
+
+    private fun btck2(n: Int) {
+        DBThread.execute {
+            MainHandler.post {
+                recyclerAdapter.updateCheckbox2(n)
+                recyclerAdapter.notifyDataSetChanged()
+            }
+        }
     }
 
     private fun setView(lst: ArrayList<thumbnailData>) {
@@ -63,8 +119,6 @@ class Main_PhotoView: AppCompatActivity() {
         recyclerView.adapter = recyclerAdapter
         list = recyclerAdapter.getThumbnailList()
         val lm = GridLayoutManager(Main_PhotoView(), photo_type)
-
-
         recyclerView.layoutManager = lm
     }
 
@@ -269,4 +323,3 @@ class Main_PhotoView: AppCompatActivity() {
         Main_PhotoView.list = list
     }
 }
-

@@ -105,10 +105,11 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             captureCamera()
         }
     }
-
+    //ca-app-pub-3940256099942544/2247696110 테스트
+    //ca-app-pub-1532821601771222/8091357520 찐
     fun createAd() {
         MobileAds.initialize(this)
-        adLoader = AdLoader.Builder(this, "ca-app-pub-1532821601771222/8091357520")
+        adLoader = AdLoader.Builder(this, "ca-app-pub-3940256099942544/2247696110")
             .forUnifiedNativeAd { ad : UnifiedNativeAd ->
                 val template: TemplateView = exitView.findViewById(R.id.tpAdmob)
                 template.setNativeAd(ad)
