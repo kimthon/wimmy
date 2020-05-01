@@ -1,15 +1,17 @@
 package com.jtsoft.wimmy.Activity
 
 import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
 import android.database.Cursor
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.DisplayMetrics
-import android.view.LayoutInflater
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -19,11 +21,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jtsoft.wimmy.Activity.MainActivity.Companion.photo_type
 import com.jtsoft.wimmy.Adapter.RecyclerAdapterPhoto
 import com.jtsoft.wimmy.DBThread
+import com.jtsoft.wimmy.DeleteThread
 import com.jtsoft.wimmy.MainHandler
 import com.jtsoft.wimmy.R
 import com.jtsoft.wimmy.db.*
 import kotlinx.android.synthetic.main.main_photoview.*
-import kotlinx.android.synthetic.main.thumbnail_imgview.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 import java.io.File
@@ -34,6 +36,8 @@ class Main_PhotoView: AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private var mLastClickTime: Long = 0
     private var delete_check: Int = 0
+    var radiobtck: Boolean = false
+    private lateinit var vm: PhotoViewModel
 
 
     companion object {
@@ -44,11 +48,13 @@ class Main_PhotoView: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_photoview)
+        vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+        radiobtck = radiobt.isChecked
         SetHeader()
         recyclerView = findViewById<RecyclerView>(R.id.photo_recyclerView)
         setView(arrayListOf())
         getExtra()
-        checkboxList.clear()
+
 
         updown_Listener(recyclerView)
         updownEvent()
@@ -60,14 +66,55 @@ class Main_PhotoView: AppCompatActivity() {
             btck(0)
         }
         radiobt.setOnClickListener {
-            btck2(1)
-        }
-        radiobt2.setOnClickListener {
-            btck2(2)
+            btck2()
         }
         photolist_deleteok.setOnClickListener {
-
+            deletePhotoDlg()
         }
+    }
+
+    fun deletePhotoDlg() {
+        val warningBuilder: androidx.appcompat.app.AlertDialog.Builder =
+            androidx.appcompat.app.AlertDialog.Builder(
+                this,    // 경고 다이얼로그
+                android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth
+            )
+        warningBuilder.setTitle("알림") //제목
+        warningBuilder.setMessage("체크된 사진들을 모두 삭제합니다.\n정말 삭제하시겠습니까?") // 메시지
+        warningBuilder.setCancelable(false)
+        warningBuilder.setPositiveButton(
+            "확인",
+            DialogInterface.OnClickListener { dialog, which ->
+                    var i = 0
+                    var j = 0
+                    while (checkboxList.size != 0 && i < checkboxList.size) {
+                        if (checkboxList[i].checked) {
+                            val temp = checkboxList[i].id
+                            list.removeAt(i)
+                            checkboxList.removeAt(i)
+                            DeleteThread.execute {
+                                vm.Delete(this, temp)
+                                MainHandler.post {
+                                    recyclerAdapter.notifyDataSetChanged()
+                                }
+                            }
+                            j = 1
+                        } else
+                            i++
+                    }
+                    if(j==1)
+                        Toast.makeText(this, "사진이 삭제 완료 되었습니다.", Toast.LENGTH_SHORT).show()
+                    else
+                        Toast.makeText(this, "삭제할 사진을 체크해주세요.", Toast.LENGTH_SHORT).show()
+                }
+            )
+        warningBuilder.setNegativeButton(
+            "취소",
+            DialogInterface.OnClickListener { dialog, which ->
+                dialog.cancel()
+            })
+        val dlgWarning = warningBuilder.create()
+        dlgWarning.show()
     }
     private fun btck(n: Int) {
         appbar2.visibility = View.VISIBLE
@@ -83,25 +130,32 @@ class Main_PhotoView: AppCompatActivity() {
             photolist_deleteok.visibility = View.VISIBLE
             photolist_deletecancel.visibility = View.VISIBLE
             radiobt.visibility = View.VISIBLE
-            radiobt2.visibility = View.VISIBLE
-            title_name.visibility = View.INVISIBLE
         }
         else {
             photolist_delete.visibility = View.VISIBLE
             photolist_deleteok.visibility = View.GONE
             photolist_deletecancel.visibility = View.GONE
             radiobt.visibility = View.GONE
-            radiobt2.visibility = View.GONE
-            title_name.visibility = View.VISIBLE
         }
     }
 
-    private fun btck2(n: Int) {
-        DBThread.execute {
-            MainHandler.post {
-                recyclerAdapter.updateCheckbox2(n)
-                recyclerAdapter.notifyDataSetChanged()
+    private fun btck2() {
+        if(radiobtck == true) {
+            DBThread.execute {
+                MainHandler.post {
+                    recyclerAdapter.setCheckAll(false)
+                }
             }
+            radiobt.isChecked = false
+            radiobtck = false
+        }
+        else {
+            DBThread.execute {
+                MainHandler.post {
+                    recyclerAdapter.setCheckAll(true)
+                }
+            }
+            radiobtck = true
         }
     }
 
@@ -157,10 +211,11 @@ class Main_PhotoView: AppCompatActivity() {
     }
 
     fun getExtra() {
+        checkboxList.clear()
+        list.clear()
         val getname: String?
         val title_type: ImageView = findViewById(R.id.title_type)
         val title: TextView = findViewById(R.id.title_name)
-        val vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
         when {
             intent.hasExtra("dir_name") -> {

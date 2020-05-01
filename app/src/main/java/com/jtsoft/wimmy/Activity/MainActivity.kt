@@ -109,7 +109,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     //ca-app-pub-1532821601771222/8091357520 찐
     fun createAd() {
         MobileAds.initialize(this)
-        adLoader = AdLoader.Builder(this, "ca-app-pub-3940256099942544/2247696110")
+        adLoader = AdLoader.Builder(this, "ca-app-pub-1532821601771222/8091357520")
             .forUnifiedNativeAd { ad : UnifiedNativeAd ->
                 val template: TemplateView = exitView.findViewById(R.id.tpAdmob)
                 template.setNativeAd(ad)
@@ -433,7 +433,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     // 즉, 코드로 작성해야함.
 
     fun CheckChangeData() {
-        ChangeCheckThread.shutdownNow()
         ChangeCheckThread = ThreadPoolExecutor(1, 3, 0L, TimeUnit.MILLISECONDS, LinkedBlockingQueue())
         while (!NetworkIsValid(this)) { }
         ChangeCheckThread.execute {
@@ -526,7 +525,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                         for (label in labels) {
                             translator.translate(label.text)
                                 .addOnSuccessListener { translatedText ->
-                                    if(label.confidence >= 0.85) {
+                                    if(label.confidence >= 0.88) {
                                         DBThread.execute {
                                             vm.Insert(TagData(id, translatedText))
                                         }

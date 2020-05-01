@@ -12,6 +12,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.room.Delete
 import com.jtsoft.wimmy.*
 import com.jtsoft.wimmy.Activity.Main_Map.Companion.latLngList
 import com.jtsoft.wimmy.Activity.Main_Map.Companion.removelist
@@ -91,7 +92,7 @@ class similarImageDialog(v: View, vm: PhotoViewModel, location: String, date: St
                     "확인",
                     DialogInterface.OnClickListener { dialog, which ->
                         for (ckbox in checkboxSet) {
-                            DBThread.execute { vm.Delete(context!!, ckbox) }
+                            DeleteThread.execute { vm.Delete(context!!, ckbox) }
                             val index = list.indexOfFirst { it.photo_id == ckbox }
                             if (index >= 0) {
                                 if(latLngList.isNotEmpty() && latLngList[index].id == list[index].photo_id) {

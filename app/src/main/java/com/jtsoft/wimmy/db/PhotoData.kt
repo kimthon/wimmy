@@ -15,7 +15,6 @@ class LatLngData(
 
 class checkboxData(
     var id: Long,
-    var checkbox: CheckBox,
     var checked: Boolean)
 
 @Entity(tableName = "extra_photo_data",

@@ -227,7 +227,7 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
         dlg.setIcon(R.drawable.ic_delete)
         dlg.setPositiveButton("확인") { _, _ ->
             val id = list[index].photo_id
-            DBThread.execute { vm.Delete(this, id) }
+            DeleteThread.execute { vm.Delete(this, id) }
 
             list.removeAt(index)
             if(latLngList.isNotEmpty()) {

@@ -43,20 +43,15 @@ class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<thumbnail
                 checkbox.visibility = View.GONE
 
             if(num >= checkboxList.size)
-                checkboxList.add(num, checkboxData(data.photo_id, checkbox, false))
+                checkboxList.add(num, checkboxData(data.photo_id, false))
 
 
             thumbnail.setImageResource(0)
             ImageLoder.execute(ThumbnailLoad(this, thumbnail, data.photo_id))
 
-            if(ck2==0)
-                checkbox.isChecked = checkboxList[num].checked
-            else if(ck2==1) {
-                checkbox.isChecked = true
-            }
-            else if(ck2==2) {
-                checkbox.isChecked = false
-            }
+
+            checkbox.isChecked = checkboxList[num].checked
+
 
             checkbox.setOnClickListener {
                 if(checkbox.isChecked) {
@@ -71,7 +66,6 @@ class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<thumbnail
 
         }
     }
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         view = LayoutInflater.from(context).inflate(R.layout.thumbnail_imgview, parent, false)
@@ -93,9 +87,6 @@ class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<thumbnail
     }
 
     fun setThumbnailList(list : ArrayList<thumbnailData>?) {
-        val inflater =
-            context!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val mView = inflater.inflate(R.layout.thumbnail_imgview, null)
         if(list.isNullOrEmpty()) this.list = arrayListOf()
         else {
             var thisIndex = 0
@@ -127,9 +118,8 @@ class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<thumbnail
                     //삽입
                     else {
                         this.list.add(thisIndex, pData)
-                        val checkbox: CheckBox = mView.findViewById<CheckBox>(R.id.checkbox)
 
-                        checkboxList.add(thisIndex, checkboxData(pData.photo_id, checkbox, false))
+                        checkboxList.add(thisIndex, checkboxData(pData.photo_id, false))
                         MainHandler.post{ notifyItemInserted(thisIndex) }
                         ++thisIndex
                         break
@@ -139,12 +129,22 @@ class RecyclerAdapterPhoto(val context: Activity?, var list: ArrayList<thumbnail
         }
     }
 
+    fun setCheckAll(boolean: Boolean) {
+        for(ckbox in checkboxList){
+            if(ckbox.checked == !boolean)
+                ckbox.checked = boolean
+        }
+        MainHandler.post{ notifyDataSetChanged() }
+    }
+
     fun getThumbnailList() : ArrayList<thumbnailData> {
         return list
     }
 
     fun addThumbnailList(data : thumbnailData) {
+
         list.add(data)
+        checkboxList.add(checkboxData(data.photo_id, false))
     }
 
     fun getSize() : Int {
