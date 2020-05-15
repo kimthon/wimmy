@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.View
@@ -13,15 +14,18 @@ import android.view.ViewGroup
 import android.widget.GridView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.jtsoft.wimmy.Activity.Main_PhotoView
 import com.jtsoft.wimmy.Adapter.DateAdapter
 import com.jtsoft.wimmy.db.PhotoViewModel
-import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.jtsoft.wimmy.dialog.scheduleDialog
+import kotlinx.android.synthetic.main.fragment_cal.view.*
 import kotlinx.android.synthetic.main.main_activity.view.*
 import java.util.*
 import kotlin.collections.ArrayList
@@ -36,6 +40,7 @@ class DateFragment(val v: AppBarLayout) : Fragment() {
     private var calendar_allheader: View? = null
 
     companion object {
+        var CalendarCk: Boolean = false
         var calDate: Calendar = Calendar.getInstance()
     }
 
@@ -64,6 +69,19 @@ class DateFragment(val v: AppBarLayout) : Fragment() {
         val gesturedetector = GestureDetector(calendar_allheader!!.context, gestureListener)
         calendar_allheader!!.setOnTouchListener { v, event ->
             return@setOnTouchListener gesturedetector.onTouchEvent(event)
+        }
+
+        thisview?.scheduleOn?.setOnClickListener {
+            thisview?.scheduleOff!!.visibility = View.VISIBLE
+            thisview?.scheduleOn!!.visibility = View.GONE
+            CalendarCk = true
+            Toast.makeText(context!!, "날짜를 선택하여 일정을 등록해보세요", Toast.LENGTH_SHORT).show()
+        }
+        thisview?.scheduleOff?.setOnClickListener {
+            thisview?.scheduleOn!!.visibility = View.VISIBLE
+            thisview?.scheduleOff!!.visibility = View.GONE
+            CalendarCk = false
+            Toast.makeText(context!!, "등록이 완료되었습니다.", Toast.LENGTH_SHORT).show()
         }
         return thisview
     }
@@ -122,12 +140,26 @@ class DateFragment(val v: AppBarLayout) : Fragment() {
         } while(inputCalendar.get(Calendar.MONTH) == month)
 
         if(gridView.adapter == null ) {
-            gridView.adapter = DateAdapter(activity!!, size, cells, month) { Date ->
-                val intent = Intent(activity, Main_PhotoView::class.java)
+            gridView.adapter = DateAdapter(activity!!, size, cells, month) { Date, num ->
                 val cal = Calendar.getInstance()
                 cal.time = Date(Date.time)
-                intent.putExtra("date_name", cal.time)
-                startActivityForResult(intent, 204)
+                if(!CalendarCk && num == 0) {
+                    val intent = Intent(activity, Main_PhotoView::class.java)
+                    intent.putExtra("date_name", cal.time)
+                    startActivityForResult(intent, 204)
+                }
+                else {
+                    val scheduleDlg: View = layoutInflater.inflate(R.layout.schedule_insert, null)
+                    val dlg = scheduleDialog(scheduleDlg, vm, cal)
+                    dlg.setDialogListener(object : scheduleDialog.dialogListener {
+                        override fun refresh() {
+                            Log.d("야야","아")
+                            updateCalendar(thisview, calDate.clone() as Calendar)
+                        }
+                    })
+                    dlg.isCancelable = false
+                    dlg.show(fragmentManager!!, "scheduleDialog")
+                }
             }
         }
         else {

@@ -16,7 +16,7 @@ import com.jtsoft.wimmy.R
 import com.jtsoft.wimmy.db.PhotoViewModel
 import java.util.*
 
-class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : ArrayList<Date>, inputMonth : Int , val itemClick: (Date) -> Unit) :
+class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : ArrayList<Date>, inputMonth : Int , val itemClick: (Date, Int) -> Unit) :
     ArrayAdapter<Date>(context, R.layout.fragment_cal, days) {
     private val vm = ViewModelProviders.of(context).get(PhotoViewModel::class.java)
     private val inflater : LayoutInflater = LayoutInflater.from(context)
@@ -38,7 +38,9 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
 
         if (view == null) view = inflater.inflate(R.layout.calendar_day_layout, parent, false)
         val textView = view!!.findViewById<TextView>(R.id.calendar_day)
-        val titleView = view.findViewById<TextView>(R.id.calendar_day_title)
+        val titleView = view!!.findViewById<TextView>(R.id.calendar_day_title)
+        val memoView = view!!.findViewById<TextView>(R.id.calendar_day_memo)
+        val count = view!!.findViewById<TextView>(R.id.calendar_day_count)
 
 
         view.layoutParams.width = size!!.first
@@ -51,22 +53,31 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
 
         textView.text = calendar.get(Calendar.DATE).toString()
         titleView.text = ""
+        memoView.text = ""
         val ckNum = inputCheck
         DBThread.execute {
             val calData = vm.getCalendarData(calendar)
             val size = vm.getDateAmount(context, calendar)
             MainHandler.post{
-                var text = calData?.title ?: ""
+                var title = calData?.title ?: ""
+                var memo = calData?.memo ?: ""
                 if(size != 0) {
-                    text += "($size)"
+                    count.visibility = View.VISIBLE
+                } else
+                    count.visibility = View.GONE
                     view.setOnClickListener {
                         if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
-                            itemClick(date)
+                            itemClick(date, 0) // 1클릭
                         }
                         mLastClickTime = SystemClock.elapsedRealtime()
                     }
-                }
-                titleView.text = text
+                    view.setOnLongClickListener {
+                        itemClick(date, 1)
+                        true
+                    }
+                titleView.text = title
+                memoView.text = memo
+                count.text = size.toString()
             }
         }
 

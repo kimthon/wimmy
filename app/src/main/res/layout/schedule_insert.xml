@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_centerVertical="true">
+
+    <LinearLayout
+        android:id="@+id/linearLayout7"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="5dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:id="@+id/linearLayoudt7"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/title_typee"
+                android:src="@drawable/ic_scheduledlg"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="5dp"/>
+            <TextView
+                android:id="@+id/schedule_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textAllCaps="false"
+                android:textSize="26dp" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_gravity="center_horizontal">
+
+    <TableRow
+        android:id="@+id/scheduleTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:gravity="center"
+            android:textSize="18dp"
+            android:layout_marginLeft="5dp"
+            android:layout_height="wrap_content"
+            android:text="주제: " />
+
+        <EditText
+            android:id="@+id/scheduleTitle_text"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:hint="Input topic" />
+
+    </TableRow>
+    </TableLayout>
+<TableLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    android:layout_gravity="center_horizontal">
+    <TableRow
+        android:id="@+id/scheduleMemo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:gravity="center"
+            android:textSize="18dp"
+            android:layout_marginLeft="5dp"
+            android:layout_height="wrap_content"
+            android:text="내용: "/>
+
+        <EditText
+            android:id="@+id/scheduleMemo_text"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:hint="Input depiction"/>
+
+    </TableRow>
+</TableLayout>
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:ignore="MissingConstraints"
+        android:layout_weight="10">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/schedule_RecycleView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <Button
+            android:id="@+id/schedule_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="15dp"
+            android:gravity="center_horizontal"
+            android:text="취소"
+            android:textAllCaps="false"
+            android:textSize="20dp" />
+
+
+        <Button
+            android:id="@+id/schedule_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:gravity="center_horizontal"
+            android:text="저장"
+            android:textAllCaps="false"
+            android:textSize="20dp" />
+
+    </LinearLayout>
+</LinearLayout>

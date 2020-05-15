@@ -112,6 +112,15 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
             cursor.count
         }else 0
     }
+
+    fun getTagAmount(tag : String) : Int {
+        return repo.getTagAmount(tag)
+    }
+
+    fun getLocationAmount(location: String): Int {
+        return repo.getLocationAmount(location)
+    }
+
     fun getFullName(context: Context, id: Long) : String {
         return repo.getName(context , id)
     }
