@@ -153,7 +153,6 @@ class DateFragment(val v: AppBarLayout) : Fragment() {
                     val dlg = scheduleDialog(scheduleDlg, vm, cal)
                     dlg.setDialogListener(object : scheduleDialog.dialogListener {
                         override fun refresh() {
-                            Log.d("야야","아")
                             updateCalendar(thisview, calDate.clone() as Calendar)
                         }
                     })
