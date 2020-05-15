@@ -20,9 +20,11 @@ class PhotoRepository(application: Application) {
    fun insert(tag : TagData) {
       photoDao.insert(tag)
    }
-
    fun insert(extraPhotoData: ExtraPhotoData) {
       photoDao.insert(extraPhotoData)
+   }
+   fun insert(calendarData: CalendarData) {
+      photoDao.insert(calendarData)
    }
 
    fun deleteById(context: Context, id: Long) {
@@ -33,16 +35,16 @@ class PhotoRepository(application: Application) {
       context.contentResolver.delete(uri, null, null)
       context.contentResolver.notifyChange( MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null)
    }
-
    fun deleteTag(id: Long) {
       photoDao.deleteTagById(id)
    }
+   fun deleteCalData(date: Date) {
+      photoDao.deleteCalendarData(date)
+   }
 
    // 폴더 생성
-   //TODO idlist가 길어지면 too many SQL variables 에러 발생
-   fun getCalendarTag(context: Context, inputCalendar: Calendar) : List<String> {
-      val list = MediaStore_Dao.getDateIdInfo(context, inputCalendar)
-      return photoDao.getDateInfo(list)
+   fun getCalendarData(date : Date) : CalendarData? {
+      return photoDao.getDateInfo(date)
    }
 
    fun getLocationDir() : LiveData<List<thumbnailData>> {

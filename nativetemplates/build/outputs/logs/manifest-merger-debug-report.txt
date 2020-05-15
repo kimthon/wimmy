@@ -1,47 +1,47 @@
 -- Merging decision tree log ---
 manifest
-ADDED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:1:1-10:12
-INJECTED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:1:1-10:12
-INJECTED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:1:1-10:12
-INJECTED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:1:1-10:12
-INJECTED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:1:1-10:12
-INJECTED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:1:1-10:12
-INJECTED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:1:1-10:12
+ADDED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:1:1-10:12
+INJECTED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:1:1-10:12
+INJECTED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:1:1-10:12
+INJECTED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:1:1-10:12
+INJECTED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:1:1-10:12
+INJECTED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:1:1-10:12
+INJECTED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:1:1-10:12
 	package
-		ADDED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:2:3-51
-		INJECTED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
-		INJECTED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
+		ADDED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:2:3-51
+		INJECTED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
 	android:versionName
-		INJECTED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
-		ADDED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:1:1-10:12
-		INJECTED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
+		ADDED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:1:1-10:12
+		INJECTED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
 	android:versionCode
-		INJECTED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
-		ADDED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:1:1-10:12
-		INJECTED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
+		ADDED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:1:1-10:12
+		INJECTED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
 	xmlns:android
-		ADDED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:1:11-69
+		ADDED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:1:11-69
 application
-ADDED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:3:3-7:17
+ADDED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:3:3-7:17
 	android:supportsRtl
-		ADDED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:3:16-42
+		ADDED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:3:16-42
 meta-data#com.google.android.gms.ads.APPLICATION_ID
-ADDED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:4:5-6:65
+ADDED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:4:5-6:65
 	android:value
-		ADDED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:6:9-63
+		ADDED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:6:9-63
 	android:name
-		ADDED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:5:9-65
+		ADDED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml:5:9-65
 uses-sdk
-INJECTED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml reason: use-sdk injection requested
-INJECTED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
-INJECTED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
-INJECTED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
-INJECTED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
+INJECTED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
+INJECTED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
+INJECTED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
+INJECTED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
 	android:targetSdkVersion
-		INJECTED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
-		ADDED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
-		INJECTED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
+		ADDED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
 	android:minSdkVersion
-		INJECTED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
-		ADDED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
-		INJECTED from C:\Users\jhlee\StudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
+		ADDED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\xoghk\AndroidStudioProjects\wimmy\nativetemplates\src\main\AndroidManifest.xml

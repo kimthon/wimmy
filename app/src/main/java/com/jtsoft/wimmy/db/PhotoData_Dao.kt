@@ -4,20 +4,25 @@ import android.database.Cursor
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
+import java.util.*
 
 @Dao
 interface PhotoData_Dao {
     @Insert(onConflict = REPLACE)
     fun insert(tagData: TagData)
-
     @Insert(onConflict = REPLACE)
     fun insert(extraPhotoData: ExtraPhotoData)
+    @Insert(onConflict = REPLACE)
+    fun insert(calendarData: CalendarData)
+
+
 
     @Update
     fun update(tagData: TagData)
-
     @Update
     fun update(tagData: ExtraPhotoData)
+    @Update
+    fun update(calendarData: CalendarData)
 
     @Query("UPDATE extra_photo_data SET favorite =:favorite WHERE photo_id = :id")
     fun update(id: Long, favorite : Boolean)
@@ -26,12 +31,15 @@ interface PhotoData_Dao {
     fun deleteTagById(photo_id: Long)
     @Query("DELETE FROM extra_photo_data WHERE photo_id = :photo_id")
     fun deleteExtraById(photo_id: Long)
+    @Query("DELETE FROM cal_data WHERE  date = :date")
+    fun deleteCalendarData(date: Date)
+
 
     @Query("DELETE FROM tag_data WHERE photo_id = :photo_id AND tag = :tag")
     fun delete(photo_id : Long, tag : String)
 
-    @Query("SELECT tag FROM tag_data WHERE photo_id IN (:idList) GROUP BY tag ORDER BY count(*) DESC LIMIT 5")
-    fun getDateInfo(idList : List<Long>) : List<String>
+    @Query("SELECT * FROM cal_data WHERE date = :date")
+    fun getDateInfo(date: Date) : CalendarData?
     @Query("SELECT MAX(photo_id) as photo_id, tag as data FROM tag_data GROUP BY tag")
     fun getTagDir() : LiveData<List<thumbnailData>>
     @Query("SELECT MAX(photo_id) as photo_id, location as data FROM extra_photo_data GROUP BY location HAVING NOT location = '위치 정보 없음'")
