@@ -7,7 +7,6 @@ import android.database.Cursor
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -291,9 +290,17 @@ class Main_PhotoView: AppCompatActivity() {
 
             intent.hasExtra("favorite") -> {
                 val liveData = vm.getOpenFavoriteDirIdList()
+                var templist = listOf<Long>()
                 liveData.observe(this, androidx.lifecycle.Observer { idList ->
-                    DBThread.execute {
-                        getOpenDirByIdList(vm, idList)
+                    if(idList != templist) {
+                        templist = idList
+                        DBThread.execute {
+                            getOpenDirByIdList(vm, idList)
+                            MainHandler.post {
+                                setView(list)
+                                setPhotoSize(photo_type, 2)
+                            }
+                        }
                     }
                 })
 

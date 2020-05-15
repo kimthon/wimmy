@@ -64,6 +64,8 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     private var init : Boolean = false
     lateinit var mCurrentPhotoPath: String
     private val REQUEST_TAKE_PHOTO = 200
+    private var FINISH_INTERVAL_TIME: Long = 1500
+    private var backPressedTime: Long = 0
     private lateinit var exitView: View
 
     private var adLoader: AdLoader? = null
@@ -293,6 +295,26 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     override fun onBackPressed() {
         if(supportFragmentManager.backStackEntryCount == 1 && supportFragmentManager.findFragmentByTag("name")!!.isVisible) {
+            val tempTime = System.currentTimeMillis()
+            val intervalTime = tempTime - backPressedTime
+            if (!(0 > intervalTime || FINISH_INTERVAL_TIME < intervalTime)) {
+                finishAffinity()
+                System.runFinalization()
+                System.exit(0)
+            } else {
+                backPressedTime = tempTime
+                Toast.makeText(this, "'뒤로' 버튼을 한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+                return
+            }
+        }
+        super.onBackPressed()
+        val bnv = findViewById<View>(R.id.bottomNavigationView) as BottomNavigationView
+        updateBottomMenu(bnv)
+    }
+
+    /* 광고
+    override fun onBackPressed() {
+        if(supportFragmentManager.backStackEntryCount == 1 && supportFragmentManager.findFragmentByTag("name")!!.isVisible) {
             if(!adLoader?.isLoading!!)
                 adLoader?.loadAd(AdRequest.Builder().build())
             if (!NetworkIsValid(this))
@@ -322,7 +344,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             val bnv = findViewById<View>(R.id.bottomNavigationView) as BottomNavigationView
             updateBottomMenu(bnv)
         }
-    }
+    }*/
 
     private fun updateBottomMenu(navigation: BottomNavigationView) {
         val tag1: Fragment? = supportFragmentManager.findFragmentByTag("name")
