@@ -136,25 +136,6 @@ object MediaStore_Dao {
         return locString
     }
 
-    fun getDateIdInfo(context: Context, cal : Calendar) : ArrayList<Long>{
-        val idList = arrayListOf<Long>()
-
-        val projection = arrayOf(
-            MediaStore.Images.ImageColumns._ID //photo_id
-        )
-        val selection = MediaStore.Images.ImageColumns.DATE_TAKEN + " BETWEEN " + getDateStart(cal) + " AND " + getDateEnd(cal)
-        val cursor = context.contentResolver.query(uri, projection, selection, null, sortdate)
-        if(!cursorIsValid(cursor)) return idList
-
-        do {
-            val id = cursor!!.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID))
-            idList.add(id)
-        } while (cursor!!.moveToNext())
-        cursor.close()
-
-        return idList
-    }
-
     fun getNameDir(context: Context, path : String) : Cursor? {
         val selection = MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME + " = '" + path + "'"
         return getDir(context, selection)
@@ -371,20 +352,19 @@ object MediaStore_Dao {
         return (cursorIsValid(cursor))
     }
 
-    private fun getDateStart(cal : Calendar) : Long{
+    fun getDateStart(cal : Calendar) : Long{
         cal.set(Calendar.HOUR_OF_DAY, 0)
         cal.set(Calendar.MINUTE, 0)
         cal.set(Calendar.SECOND, 0)
         return cal.time.time
     }
 
-    private fun getDateEnd(cal : Calendar) : Long{
+    fun getDateEnd(cal : Calendar) : Long{
         cal.set(Calendar.HOUR_OF_DAY, 23)
         cal.set(Calendar.MINUTE, 59)
         cal.set(Calendar.SECOND, 59)
         return cal.time.time
     }
-
 
     private fun getDateEndSearch(cal : Calendar) : Long{
         cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH))

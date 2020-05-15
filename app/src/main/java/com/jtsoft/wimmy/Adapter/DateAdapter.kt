@@ -38,14 +38,8 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
 
         if (view == null) view = inflater.inflate(R.layout.calendar_day_layout, parent, false)
         val textView = view!!.findViewById<TextView>(R.id.calendar_day)
-        val tagView = view.findViewById<TextView>(R.id.calendar_day_tag)
+        val titleView = view.findViewById<TextView>(R.id.calendar_day_title)
 
-        view.setOnClickListener {
-            if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
-                itemClick(date)
-            }
-            mLastClickTime = SystemClock.elapsedRealtime()
-        }
 
         view.layoutParams.width = size!!.first
         if(view.layoutParams.height != size!!.second) {
@@ -56,22 +50,23 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
         setExtraDay(textView, month, week)
 
         textView.text = calendar.get(Calendar.DATE).toString()
-        tagView.text = ""
+        titleView.text = ""
         val ckNum = inputCheck
         DBThread.execute {
-            val textList = vm.getCalendarTags(this.context, calendar)
-            if(textList.isNullOrEmpty()) return@execute
-
-            else {
-                var text = ""
-                for (i in textList) {
-                    if (ckNum != inputCheck) {
-                        break
+            val calData = vm.getCalendarData(calendar)
+            val size = vm.getDateAmount(context, calendar)
+            MainHandler.post{
+                var text = calData?.title ?: ""
+                if(size != 0) {
+                    text += "($size)"
+                    view.setOnClickListener {
+                        if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
+                            itemClick(date)
+                        }
+                        mLastClickTime = SystemClock.elapsedRealtime()
                     }
-                    text += i + '\n'
                 }
-                if (ckNum == inputCheck)
-                    MainHandler.post{ tagView.text = text }
+                titleView.text = text
             }
         }
 

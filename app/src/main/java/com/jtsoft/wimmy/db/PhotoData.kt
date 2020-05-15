@@ -1,9 +1,9 @@
 package com.jtsoft.wimmy.db
 
-import android.widget.CheckBox
 import androidx.room.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterItem
+import java.util.*
 
 class LatLngData(
     var id : Long,
@@ -32,6 +32,25 @@ class TagData(
     var photo_id: Long,
     var tag: String)
 
+@Entity(tableName = "cal_data",
+    primaryKeys = ["date"]
+)
+class CalendarData(
+    var date : Date,
+    var title : String,
+    var memo : String?)
 
 data class thumbnailData( var photo_id : Long,
                           var data : String)
+
+class Converter {
+    @TypeConverter
+    fun fromTimestamp(value: Long?): Date? {
+        return value?.let { Date(it) }
+    }
+
+    @TypeConverter
+    fun dateToTimestamp(date: Date?): Long? {
+        return date?.time
+    }
+}
