@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.wimmy">
+    package="com.jtsoft.wimmy">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="CAMERA"/>
@@ -10,8 +10,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
 
-    <uses-feature android:name="android.hardware.camera" android:required="true" />
-    <uses-feature android:name="android.hardware.camera2" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera2" android:required="false"/>
 
 
     <!-- 하드웨어 가속 -->
@@ -23,9 +23,15 @@
         android:roundIcon="@mipmap/ic_launcher2_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data
+            android:name="firebase_analytics_collection_enabled"
+            android:value="false" />
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-1532821601771222~6969847546"/>
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.example.wimmy"
+            android:authorities="com.jtsoft.wimmy"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -36,9 +42,9 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".Activity.MainActivity">
+        <activity android:name="com.jtsoft.wimmy.Activity.MainActivity">
         </activity>
-        <activity android:name=".Activity.SplashActivity"
+        <activity android:name="com.jtsoft.wimmy.Activity.SplashActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
@@ -47,14 +53,14 @@
 
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.Main_PhotoView">
+        <activity android:name="com.jtsoft.wimmy.Activity.Main_PhotoView">
         </activity>
         <activity
-            android:name=".Activity.PhotoViewPager"
+            android:name="com.jtsoft.wimmy.Activity.PhotoViewPager"
             android:theme="@style/PhotoTheme">
         </activity>
-        <activity android:name=".Activity.Main_Map"/>
-        <activity android:name=".Activity.SearchView">
+        <activity android:name="com.jtsoft.wimmy.Activity.Main_Map"/>
+        <activity android:name="com.jtsoft.wimmy.Activity.SearchView">
         </activity>
         <meta-data
             android:name="com.google.firebase.ml.vision.DEPENDENCIES"
