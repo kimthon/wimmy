@@ -127,6 +127,18 @@ class PhotoRepository(application: Application) {
       return photoDao.getTagsById(id)
    }
 
+   fun getTagAmount(tag: String): Int? {
+      var n = photoDao.getTagCount(tag)
+      if (n==null) n = 0
+      return n
+   }
+
+   fun getLocationAmount(location: String): Int? {
+      var n = photoDao.getLocationCount(location)
+      if (n==null) n = 0
+      return n
+   }
+
    fun getFavorite(id: Long) : Boolean {
       val favorite = photoDao.getFavoriteById(id)
       return if(favorite == null) {

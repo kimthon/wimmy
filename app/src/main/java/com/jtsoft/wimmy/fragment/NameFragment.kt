@@ -62,7 +62,7 @@ class NameFragment(val v: AppBarLayout) : Fragment() {
     private fun setView(view : View?) {
         val recyclerView = view?.findViewById<RecyclerView>(R.id.fragment_RecycleView)
         recyclerAdapter =
-            RecyclerAdapterForder(activity, ArrayList())
+            RecyclerAdapterForder(activity, ArrayList(), 0)
             {thumbnailData ->
                 if(SystemClock.elapsedRealtime() - mLastClickTime > 300) {
                     val intent = Intent(activity, Main_PhotoView::class.java)
