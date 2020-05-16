@@ -292,7 +292,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
         return true
     }
-
+/*
     override fun onBackPressed() {
         if(supportFragmentManager.backStackEntryCount == 1 && supportFragmentManager.findFragmentByTag("name")!!.isVisible) {
             val tempTime = System.currentTimeMillis()
@@ -310,9 +310,9 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         super.onBackPressed()
         val bnv = findViewById<View>(R.id.bottomNavigationView) as BottomNavigationView
         updateBottomMenu(bnv)
-    }
+    }*/
 
-    /* 광고
+
     override fun onBackPressed() {
         if(supportFragmentManager.backStackEntryCount == 1 && supportFragmentManager.findFragmentByTag("name")!!.isVisible) {
             if(!adLoader?.isLoading!!)
@@ -344,7 +344,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             val bnv = findViewById<View>(R.id.bottomNavigationView) as BottomNavigationView
             updateBottomMenu(bnv)
         }
-    }*/
+    }
 
     private fun updateBottomMenu(navigation: BottomNavigationView) {
         val tag1: Fragment? = supportFragmentManager.findFragmentByTag("name")
