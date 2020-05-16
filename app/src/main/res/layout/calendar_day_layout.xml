@@ -19,25 +19,6 @@
         android:textStyle="bold"
         />
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/calendar_day_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="1dp"
-        android:layout_marginLeft="1dp"
-        android:textSize="5pt"
-        android:text=""
-        android:textStyle="bold"
-        />
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/calendar_day_memo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="1dp"
-        android:textSize="4pt"
-        android:text=""
-        />
 
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -46,6 +27,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/calendar_day_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:layout_marginLeft="1dp"
+            android:textSize="5pt"
+            android:textStyle="bold"
+            />
     <TextView
         android:id="@+id/calendar_day_count"
         android:background="@drawable/count_layout_schedule"

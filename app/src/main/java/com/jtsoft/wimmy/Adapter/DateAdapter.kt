@@ -39,7 +39,6 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
         if (view == null) view = inflater.inflate(R.layout.calendar_day_layout, parent, false)
         val textView = view!!.findViewById<TextView>(R.id.calendar_day)
         val titleView = view!!.findViewById<TextView>(R.id.calendar_day_title)
-        val memoView = view!!.findViewById<TextView>(R.id.calendar_day_memo)
         val count = view!!.findViewById<TextView>(R.id.calendar_day_count)
 
 
@@ -53,14 +52,12 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
 
         textView.text = calendar.get(Calendar.DATE).toString()
         titleView.text = ""
-        memoView.text = ""
         val ckNum = inputCheck
         DBThread.execute {
             val calData = vm.getCalendarData(calendar)
             val size = vm.getDateAmount(context, calendar)
             MainHandler.post{
                 var title = calData?.title ?: ""
-                var memo = calData?.memo ?: ""
                 if(size != 0) {
                     count.visibility = View.VISIBLE
                 } else
@@ -76,7 +73,6 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
                         true
                     }
                 titleView.text = title
-                memoView.text = memo
                 count.text = size.toString()
             }
         }

@@ -113,11 +113,11 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         }else 0
     }
 
-    fun getTagAmount(tag : String) : Int {
+    fun getTagAmount(tag : String) : Int? {
         return repo.getTagAmount(tag)
     }
 
-    fun getLocationAmount(location: String): Int {
+    fun getLocationAmount(location: String): Int? {
         return repo.getLocationAmount(location)
     }
 

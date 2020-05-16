@@ -51,15 +51,13 @@ class scheduleDialog(v: View, vm: PhotoViewModel, cal: Calendar): DialogFragment
         setView(ArrayList())
         val formatter = SimpleDateFormat("yyyy년 MM월 dd일", Locale.getDefault())
         val getdate = formatter.format(calendar.time) + " 일정"
-        DBThread.execute {
-            val calData = vm.getCalendarData(calendar)
-            if (calData?.title != null) v.scheduleTitle_text.setText(calData.title)
-            if (calData?.memo != null) v.scheduleMemo_text.setText(calData.memo)
-        }
 
         v.schedule_title.text = getdate
         DBThread.execute {
             getOpenDirByCursor(vm, vm.getOpenDateDirCursor(context!!, calendar))
+            val calData = vm.getCalendarData(calendar)
+            if (calData?.title != null) v.scheduleTitle_text.setText(calData.title)
+            if (calData?.memo != null) v.scheduleMemo_text.setText(calData.memo)
         }
 
         val maindlgBuilder: androidx.appcompat.app.AlertDialog.Builder = androidx.appcompat.app.AlertDialog.Builder(    // 메인 다이얼로그
@@ -76,7 +74,6 @@ class scheduleDialog(v: View, vm: PhotoViewModel, cal: Calendar): DialogFragment
                 Toast.makeText(context!!, "일정이 등록되었습니다.", Toast.LENGTH_LONG).show()
                 dlg.cancel()
                 interfaceDlg!!.refresh()
-
             }
         }
         v.schedule_cancel.setOnClickListener {

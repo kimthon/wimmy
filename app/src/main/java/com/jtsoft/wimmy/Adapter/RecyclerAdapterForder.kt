@@ -9,10 +9,7 @@ import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
-import com.jtsoft.wimmy.DBThread
-import com.jtsoft.wimmy.ImageLoder
-import com.jtsoft.wimmy.R
-import com.jtsoft.wimmy.ThumbnailLoad
+import com.jtsoft.wimmy.*
 import com.jtsoft.wimmy.db.PhotoViewModel
 import com.jtsoft.wimmy.db.thumbnailData
 import java.util.*
@@ -30,6 +27,7 @@ class RecyclerAdapterForder(val context: FragmentActivity?, var list: ArrayList<
         private var count = itemView.findViewById<TextView>(R.id.thumbnail_count)
         private var vm = ViewModelProviders.of(context!!).get(PhotoViewModel::class.java)
         var cal: Calendar = Calendar.getInstance()
+        var imgcount: String = ""
 
         fun bind(data : thumbnailData) {
             Log.d("값11", context.toString())
@@ -37,21 +35,22 @@ class RecyclerAdapterForder(val context: FragmentActivity?, var list: ArrayList<
             thumbnail.layoutParams.width = size
             thumbnail.layoutParams.height = size
             layoutParam.setMargins(padding_size, padding_size, padding_size, padding_size)
-            DBThread.execute {
-                when(fragmentNum) {
-                    0 -> count.text = vm.getOpenNameDirCursor(context!!, data.data)?.count.toString()   // 폴더
-                    1 -> count.text = vm.getTagAmount(data.data).toString()
-                    2 -> { cal.set(data.data.substring(0, 4).toInt(), data.data.substring(6, 8).toInt() - 1, data.data.substring(10, 12).toInt(), 0, 0, 0)
-                            count.text = vm.getDateAmount(context!!, cal).toString() }  // 날짜
-                    3 -> count.text = vm.getLocationAmount(data.data).toString()  // 위치
-                    4 -> count.text = vm.getOpenFileDirCursor(context!!, data.data)?.count.toString()  // 파일
-                }
 
-            }
             thumbnail.setImageResource(0)
             ImageLoder.execute(ThumbnailLoad(this, thumbnail, data.photo_id))
-
+            DBThread.execute {
+                when(fragmentNum) {
+                    0 -> imgcount = vm.getOpenNameDirCursor(context!!, data.data)?.count.toString()   // 폴더
+                    1 -> imgcount = vm.getTagAmount(data.data).toString()
+                    2 -> { cal.set(data.data.substring(0, 4).toInt(), data.data.substring(6, 8).toInt() - 1, data.data.substring(10, 12).toInt(), 0, 0, 0)
+                        imgcount = vm.getDateAmount(context!!, cal).toString() }  // 날짜
+                    3 -> imgcount = vm.getLocationAmount(data.data).toString()  // 위치
+                    4 -> imgcount = vm.getOpenFileDirCursor(context!!, data.data)?.count.toString()  // 파일
+                }
+                MainHandler.post { count.text = imgcount }
+            }
             text.text = data.data
+
             itemView.setOnClickListener { itemClick(data) }
         }
     }

@@ -72,10 +72,10 @@ interface PhotoData_Dao {
     fun getIdCursor() : Cursor
 
     @Query("SELECT Count(photo_id) FROM tag_data where tag = :tag")
-    fun getTagCount(tag : String) : Int
+    fun getTagCount(tag : String) : Int?
 
     @Query("SELECT Count(photo_id) FROM extra_photo_data where location = :location")
-    fun getLocationCount(location : String) : Int
+    fun getLocationCount(location : String) : Int?
 
     @Query("DELETE FROM extra_photo_data")
     fun dropExtraTable()

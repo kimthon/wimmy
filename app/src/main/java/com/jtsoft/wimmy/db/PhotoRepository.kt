@@ -127,12 +127,16 @@ class PhotoRepository(application: Application) {
       return photoDao.getTagsById(id)
    }
 
-   fun getTagAmount(tag: String): Int {
-      return photoDao.getTagCount(tag)
+   fun getTagAmount(tag: String): Int? {
+      var n = photoDao.getTagCount(tag)
+      if (n==null) n = 0
+      return n
    }
 
-   fun getLocationAmount(location: String): Int {
-      return photoDao.getLocationCount(location)
+   fun getLocationAmount(location: String): Int? {
+      var n = photoDao.getLocationCount(location)
+      if (n==null) n = 0
+      return n
    }
 
    fun getFavorite(id: Long) : Boolean {
