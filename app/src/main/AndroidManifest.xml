@@ -26,9 +26,9 @@
         <meta-data
             android:name="firebase_analytics_collection_enabled"
             android:value="false" />
-        <meta-data
+        <!-- <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-1532821601771222~6969847546"/>
+            android:value="ca-app-pub-1532821601771222~6969847546"/> -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.jtsoft.wimmy"
