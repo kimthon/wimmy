@@ -1,11 +1,10 @@
 package com.jtsoft.wimmy.db
 
 import android.content.Context
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
+import androidx.room.*
 
-@Database(entities = [TagData::class, ExtraPhotoData::class], version = 6)
+@Database(entities = [TagData::class, ExtraPhotoData::class, CalendarData::class], version = 6)
+@TypeConverters(Converter::class)
 abstract class PhotoDB: RoomDatabase() {
     abstract fun PhotoData_Dao() : PhotoData_Dao
 

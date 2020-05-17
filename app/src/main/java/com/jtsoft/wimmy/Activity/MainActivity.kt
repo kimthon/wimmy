@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     private var backPressedTime: Long = 0
     private lateinit var exitView: View
 
-    private var adLoader: AdLoader? = null
+    //private var adLoader: AdLoader? = null
 
     companion object {
         var location_type: Int = 0
@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         exitView = layoutInflater.inflate(R.layout.exit_layout, null)
         SetHeader()
         init()
-        createAd()
+        //createAd()
 
         vm = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
 
@@ -109,7 +109,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }
     //ca-app-pub-3940256099942544/2247696110 테스트
     //ca-app-pub-1532821601771222/8091357520 찐
-    fun createAd() {
+    /*fun createAd() {
         MobileAds.initialize(this)
         adLoader = AdLoader.Builder(this, "ca-app-pub-1532821601771222/8091357520")
             .forUnifiedNativeAd { ad : UnifiedNativeAd ->
@@ -128,7 +128,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                     .build())
             .build()
         adLoader?.loadAd(AdRequest.Builder().build())
-    }
+    }*/
     fun CheckAppFirstExecute():Boolean {
         val pref = getSharedPreferences("IsFirst", Activity.MODE_PRIVATE)
         val isFirst = pref.getBoolean("isFirst", false)
@@ -312,7 +312,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         updateBottomMenu(bnv)
     }
 
-    /* 광고
+/* 광고
     override fun onBackPressed() {
         if(supportFragmentManager.backStackEntryCount == 1 && supportFragmentManager.findFragmentByTag("name")!!.isVisible) {
             if(!adLoader?.isLoading!!)

@@ -16,7 +16,7 @@ import com.jtsoft.wimmy.R
 import com.jtsoft.wimmy.db.PhotoViewModel
 import java.util.*
 
-class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : ArrayList<Date>, inputMonth : Int , val itemClick: (Date) -> Unit) :
+class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : ArrayList<Date>, inputMonth : Int , val itemClick: (Date, Int) -> Unit) :
     ArrayAdapter<Date>(context, R.layout.fragment_cal, days) {
     private val vm = ViewModelProviders.of(context).get(PhotoViewModel::class.java)
     private val inflater : LayoutInflater = LayoutInflater.from(context)
@@ -38,14 +38,9 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
 
         if (view == null) view = inflater.inflate(R.layout.calendar_day_layout, parent, false)
         val textView = view!!.findViewById<TextView>(R.id.calendar_day)
-        val tagView = view.findViewById<TextView>(R.id.calendar_day_tag)
+        val titleView = view!!.findViewById<TextView>(R.id.calendar_day_title)
+        val count = view!!.findViewById<TextView>(R.id.calendar_day_count)
 
-        view.setOnClickListener {
-            if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
-                itemClick(date)
-            }
-            mLastClickTime = SystemClock.elapsedRealtime()
-        }
 
         view.layoutParams.width = size!!.first
         if(view.layoutParams.height != size!!.second) {
@@ -56,22 +51,29 @@ class DateAdapter(context : FragmentActivity, size : Pair<Int, Int>?, days : Arr
         setExtraDay(textView, month, week)
 
         textView.text = calendar.get(Calendar.DATE).toString()
-        tagView.text = ""
+        titleView.text = ""
         val ckNum = inputCheck
         DBThread.execute {
-            val textList = vm.getCalendarTags(this.context, calendar)
-            if(textList.isNullOrEmpty()) return@execute
-
-            else {
-                var text = ""
-                for (i in textList) {
-                    if (ckNum != inputCheck) {
-                        break
+            val calData = vm.getCalendarData(calendar)
+            val size = vm.getDateAmount(context, calendar)
+            MainHandler.post{
+                var title = calData?.title ?: ""
+                if(size != 0) {
+                    count.visibility = View.VISIBLE
+                } else
+                    count.visibility = View.GONE
+                    view.setOnClickListener {
+                        if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
+                            itemClick(date, 0) // 1클릭
+                        }
+                        mLastClickTime = SystemClock.elapsedRealtime()
                     }
-                    text += i + '\n'
-                }
-                if (ckNum == inputCheck)
-                    MainHandler.post{ tagView.text = text }
+                    view.setOnLongClickListener {
+                        itemClick(date, 1)
+                        true
+                    }
+                titleView.text = title
+                count.text = size.toString()
             }
         }
 

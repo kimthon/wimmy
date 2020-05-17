@@ -11,16 +11,45 @@
         android:id="@+id/calendar_day"
         android:layout_width="match_parent"
         android:layout_height="20dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginLeft="1dp"
         android:gravity="top"
         android:textSize="5pt"
+        android:text="1"
+        android:textStyle="bold"
         />
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/calendar_day_tag"
+
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="top"
-        android:textSize="5pt"
+        android:orientation="vertical">
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/calendar_day_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:layout_marginLeft="1dp"
+            android:textSize="5pt"
+            android:textStyle="bold"
+            />
+    <TextView
+        android:id="@+id/calendar_day_count"
+        android:background="@drawable/count_layout_schedule"
+        android:layout_width="20dp"
+        android:layout_height="15dp"
+        android:layout_marginTop="1dp"
+        android:gravity="center"
+        android:layout_gravity="bottom|end"
+        android:layout_marginRight="1dp"
+        android:layout_marginBottom="1dp"
+        android:textSize="4pt"
+        android:textColor="#000000"
+        android:text="16"
+        android:visibility="gone"
         />
-
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </LinearLayout>

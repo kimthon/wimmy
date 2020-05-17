@@ -44,8 +44,15 @@ class SearchView: AppCompatActivity() {
     }
 
     private fun setView(type : String) {
+        var inputnum = 0
+        when(type) {
+            "tag_name" -> { inputnum = 1 }
+            "date_name" -> { inputnum = 2 }
+            "location_name" -> { inputnum = 3 }
+            "file_name" -> { inputnum = 4 }
+        }
         recyclerView = findViewById(R.id.search_recyclerView)
-        recyclerAdapter = RecyclerAdapterForder(this, thumbnailList)
+        recyclerAdapter = RecyclerAdapterForder(this, thumbnailList, inputnum)
             {thumbnailData ->
                 if(SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
                     if((MainActivity.location_type == 0) && type == "location_name") {

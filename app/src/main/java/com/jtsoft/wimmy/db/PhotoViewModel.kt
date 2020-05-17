@@ -19,16 +19,29 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         repo.insert(tag)
     }
 
+    fun Insert(calendarData: CalendarData) {
+        var instance = Calendar.getInstance()
+        instance.time = calendarData.date
+        calendarData.date = Date(MediaStore_Dao.getDateStart(instance))
+        repo.insert(calendarData)
+    }
+
     fun Delete(context: Context, id : Long) {
         repo.deleteById(context, id)
+    }
+
+    fun Delete(inputCalendar: Calendar) {
+        var date = MediaStore_Dao.getDateStart(inputCalendar)
+        repo.deleteCalData(Date(date))
     }
 
     fun DeleteTag(id: Long) {
         repo.deleteTag(id)
     }
     // 폴더 보기
-    fun getCalendarTags(context: Context, inputCalendar: Calendar) : List<String> {
-        return repo.getCalendarTag(context, inputCalendar)
+    fun getCalendarData(inputCalendar: Calendar) : CalendarData? {
+        var date = MediaStore_Dao.getDateStart(inputCalendar)
+        return repo.getCalendarData(Date(date))
     }
 
     fun getLocationDir() : LiveData<List<thumbnailData>> {
@@ -93,6 +106,21 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // 기타 기능
+    fun getDateAmount(context: Context, cal: Calendar) : Int {
+        var cursor = repo.getOpenDateDirCursor(context, cal)
+        return if(cursor != null && cursor.moveToFirst()) {
+            cursor.count
+        }else 0
+    }
+
+    fun getTagAmount(tag : String) : Int? {
+        return repo.getTagAmount(tag)
+    }
+
+    fun getLocationAmount(location: String): Int? {
+        return repo.getLocationAmount(location)
+    }
+
     fun getFullName(context: Context, id: Long) : String {
         return repo.getName(context , id)
     }
