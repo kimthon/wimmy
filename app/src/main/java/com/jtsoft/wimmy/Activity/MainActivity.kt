@@ -162,7 +162,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             R.id.location_type -> {
                 val selectitem = arrayOf<String>("맵으로 보기", "목록으로 보기")
                 var select = location_type
-                val dlg: AlertDialog.Builder = AlertDialog.Builder(this,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+                val dlg: AlertDialog.Builder = AlertDialog.Builder(this)
                 dlg.setTitle("위치별 사진 설정")
                 dlg.setSingleChoiceItems(selectitem, location_type) { dialog, i ->
                     when(i) {
@@ -183,7 +183,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             R.id.folder_type -> {
                 val selectitem = arrayOf<String>("2개씩 보기", "3개씩 보기", "4개씩 보기")
                 var select = folder_type
-                val dlg: AlertDialog.Builder = AlertDialog.Builder(this,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+                val dlg: AlertDialog.Builder = AlertDialog.Builder(this)
                 dlg.setTitle("폴더 목록 설정")
                 dlg.setSingleChoiceItems(selectitem, folder_type - 2) { dialog, i ->
                     when(i) {
@@ -230,7 +230,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             R.id.photo_type -> {
                 val selectitem = arrayOf<String>("2개씩 보기", "3개씩 보기", "4개씩 보기", "5개씩 보기", "6개씩 보기")
                 var select = photo_type
-                val dlg: AlertDialog.Builder = AlertDialog.Builder(this,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+                val dlg: AlertDialog.Builder = AlertDialog.Builder(this)
                 dlg.setTitle("사진 목록 설정")
                 dlg.setSingleChoiceItems(selectitem, photo_type - 2) { dialog, i ->
                     when(i) {
@@ -322,7 +322,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             else
                 exitView.tpAdmob.visibility = View.VISIBLE
             val dlgBuilder: androidx.appcompat.app.AlertDialog.Builder = androidx.appcompat.app.AlertDialog.Builder(    // 확인 다이얼로그
-                this,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+                this)
             dlgBuilder.setCancelable(false)
             dlgBuilder.setView(exitView)
             dlgBuilder.setTitle("Wimmy를 종료하시겠습니까?")
@@ -371,7 +371,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         }
 
         if (CheckAppFirstExecute() == true) {
-            val dlg: AlertDialog.Builder = AlertDialog.Builder(this,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+            val dlg: AlertDialog.Builder = AlertDialog.Builder(this)
             dlg.setTitle("안녕하세요") //제목
             dlg.setMessage("Wimmy가 처음이신가요?\n특징, 위치 추출을 위해 데이터를 연결하세요.\n맵의 경우, 초기 값 설정 과정에서 원활하게 동작하지 않을 수 있습니다.") // 메시지
             dlg.setCancelable(false)
