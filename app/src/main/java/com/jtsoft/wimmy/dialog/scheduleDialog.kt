@@ -61,7 +61,7 @@ class scheduleDialog(v: View, vm: PhotoViewModel, cal: Calendar): DialogFragment
         }
 
         val maindlgBuilder: androidx.appcompat.app.AlertDialog.Builder = androidx.appcompat.app.AlertDialog.Builder(    // 메인 다이얼로그
-            context!!, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+            context!!)
         maindlgBuilder.setView(v)
         val dlg = maindlgBuilder.create()
         v.schedule_ok.setOnClickListener {
@@ -107,7 +107,7 @@ class scheduleDialog(v: View, vm: PhotoViewModel, cal: Calendar): DialogFragment
                 val ImageSelectView: View = layoutInflater.inflate(R.layout.similar_image_select, null)
                 ImageLoder.execute(ImageLoad(context!!, ImageSelectView.select_photo, thumbnailData.photo_id, 0))
                 val dlgBuilder: AlertDialog.Builder = AlertDialog.Builder(    // 확인 다이얼로그
-                    context!!,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+                    context!!)
 
                 dlgBuilder.setView(ImageSelectView)
                 val dlgselect = dlgBuilder.create()

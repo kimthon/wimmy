@@ -57,7 +57,7 @@ class similarImageDialog(v: View, vm: PhotoViewModel, location: String, date: St
         })
 
         val maindlgBuilder: androidx.appcompat.app.AlertDialog.Builder = androidx.appcompat.app.AlertDialog.Builder(    // 메인 다이얼로그
-            context!!, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+            context!!)
         maindlgBuilder.setView(v)
 
         val dlg = maindlgBuilder.create()
@@ -82,8 +82,7 @@ class similarImageDialog(v: View, vm: PhotoViewModel, location: String, date: St
             } else {
                 val warningBuilder: androidx.appcompat.app.AlertDialog.Builder =
                     androidx.appcompat.app.AlertDialog.Builder(
-                        context!!,    // 경고 다이얼로그
-                        android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth
+                        context!!    // 경고 다이얼로그
                     )
                 warningBuilder.setTitle("알림") //제목
                 warningBuilder.setMessage("체크된 사진들을 삭제합니다.\n정말 삭제하시겠습니까?\n\n (체크된 사진: ${checkboxSet.size} 개)") // 메시지
@@ -137,7 +136,7 @@ class similarImageDialog(v: View, vm: PhotoViewModel, location: String, date: St
                 val similarImageSelectView: View = layoutInflater.inflate(R.layout.similar_image_select, null)
                 ImageLoder.execute(ImageLoad(context!!, similarImageSelectView.select_photo, thumbnailData.photo_id, 0))
                 val dlgBuilder: androidx.appcompat.app.AlertDialog.Builder = androidx.appcompat.app.AlertDialog.Builder(    // 확인 다이얼로그
-                    context!!,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+                    context!!)
 
                 dlgBuilder.setView(similarImageSelectView)
                 val dlgselect = dlgBuilder.create()

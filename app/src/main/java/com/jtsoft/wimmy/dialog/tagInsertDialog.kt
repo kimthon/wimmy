@@ -40,7 +40,7 @@ class tagInsertDialog(v: View, vm: PhotoViewModel, index: Int, tag_name : AppCom
         }
 
         val dlgBuilder: androidx.appcompat.app.AlertDialog.Builder = androidx.appcompat.app.AlertDialog.Builder(
-            context!!,  android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+            context!!)
         dlgBuilder.setTitle("태그 삽입")
         dlgBuilder.setMessage("삽입할 사진의 특징을 입력해주세요. \n태그를 수정하거나 삭제할 수도 있습니다.")
         dlgBuilder.setIcon(R.drawable.ic_tag)

@@ -75,8 +75,7 @@ class Main_PhotoView: AppCompatActivity() {
     fun deletePhotoDlg() {
         val warningBuilder: androidx.appcompat.app.AlertDialog.Builder =
             androidx.appcompat.app.AlertDialog.Builder(
-                this,    // 경고 다이얼로그
-                android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth
+                this    // 경고 다이얼로그
             )
         warningBuilder.setTitle("알림") //제목
         warningBuilder.setMessage("체크된 사진들을 모두 삭제합니다.\n정말 삭제하시겠습니까?") // 메시지

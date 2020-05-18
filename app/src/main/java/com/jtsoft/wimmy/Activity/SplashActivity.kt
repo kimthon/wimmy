@@ -45,7 +45,7 @@ class SplashActivity : AppCompatActivity() {
 
     fun translation_api() {
         val intent = Intent(this, MainActivity::class.java)
-        val dlg: AlertDialog.Builder = AlertDialog.Builder(this@SplashActivity,  R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+        val dlg: AlertDialog.Builder = AlertDialog.Builder(this)
         val modelManager = FirebaseModelManager.getInstance()
         val Model = FirebaseTranslateRemoteModel.Builder(FirebaseTranslateLanguage.KO).build()
         val conditions = FirebaseModelDownloadConditions.Builder()
@@ -65,7 +65,7 @@ class SplashActivity : AppCompatActivity() {
                         loading()
                         modelManager.download(Model, conditions).addOnSuccessListener { modelManager.getDownloadedModels(
                             FirebaseTranslateRemoteModel::class.java).addOnSuccessListener { models ->
-                            Toast.makeText(this@SplashActivity, "설치가 완료 되었습니다.", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "설치가 완료 되었습니다.", Toast.LENGTH_SHORT).show()
                             startActivity(intent)
                             finish()
                             loadingEnd()
@@ -86,7 +86,7 @@ class SplashActivity : AppCompatActivity() {
         //로딩
         Handler().postDelayed(
             {
-                progressDialog = ProgressDialog(this@SplashActivity, R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+                progressDialog = ProgressDialog(this)
                 progressDialog!!.setIndeterminate(true)
                 progressDialog!!.setCancelable(false)
                 progressDialog!!.setMessage("필요한 파일을 다운로드 중입니다.\n잠시만 기다려 주세요.")
@@ -109,7 +109,7 @@ class SplashActivity : AppCompatActivity() {
             // 처음 호출시엔 if()안의 부분은 false로 리턴 됨 -> else{..}의 요청으로 넘어감
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))
             {
-                android.app.AlertDialog.Builder(this,  R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+                android.app.AlertDialog.Builder(this)
                     .setTitle("알림")
                     .setMessage("저장소 권한이 거부되었습니다. 사용을 원하시면 설정에서 해당 권한을 직접 허용하셔야 합니다.")
                     .setNeutralButton("설정", object: DialogInterface.OnClickListener {
