@@ -19,6 +19,7 @@ import com.jtsoft.wimmy.Activity.MainActivity.Companion.folder_type
 import com.jtsoft.wimmy.Activity.Main_PhotoView
 import com.jtsoft.wimmy.db.PhotoViewModel
 import com.google.android.material.appbar.AppBarLayout
+import com.jtsoft.wimmy.db.checkboxData
 import kotlinx.android.synthetic.main.main_activity.view.*
 
 class NameFragment(val v: AppBarLayout) : Fragment() {
