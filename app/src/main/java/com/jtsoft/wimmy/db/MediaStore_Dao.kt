@@ -4,12 +4,14 @@ import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
 import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.graphics.Matrix
 import android.location.Geocoder
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import android.util.Size
+import androidx.annotation.RequiresApi
 import androidx.exifinterface.media.ExifInterface
 import com.google.android.gms.maps.model.LatLng
 import java.io.FileNotFoundException
@@ -59,10 +61,11 @@ object MediaStore_Dao {
         )
         val selection = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             MediaStore.Images.ImageColumns._ID + " IN (SELECT " + MediaStore.Images.ImageColumns._ID +
-                    " FROM images GROUP BY " + MediaStore.Images.ImageColumns.TITLE + " LIKE '%" + name
+                    " FROM images GROUP BY " + MediaStore.Images.ImageColumns.TITLE + ") AND " + MediaStore.Images.ImageColumns.TITLE + " LIKE '%" +  name + "%'"
         }else {
             MediaStore.Images.ImageColumns.TITLE + " LIKE '%" + name + "%') GROUP BY (" + MediaStore.Images.ImageColumns.TITLE
         }
+        Log.d("값은??,", selection.toString())
         val sortOrder = MediaStore.Images.ImageColumns.TITLE + " ASC"
 
         val cursor = context.contentResolver.query(uri, projection, selection, null, sortOrder)
@@ -88,8 +91,7 @@ object MediaStore_Dao {
             MediaStore.Images.ImageColumns.DATE_TAKEN
         )
         val selection = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            MediaStore.Images.ImageColumns._ID + " IN (SELECT " + MediaStore.Images.ImageColumns._ID +
-                    " FROM images GROUP BY " + MediaStore.Images.ImageColumns.DATE_TAKEN + " BETWEEN " + cal.time.time + " AND " + getDateEndSearch(cal)
+            "SELECT " + MediaStore.Images.ImageColumns.DATE_TAKEN + " BETWEEN " + cal.time.time + " AND " + getDateEndSearch(cal)
         }else {
             MediaStore.Images.ImageColumns.DATE_TAKEN + " BETWEEN " + cal.time.time + " AND " + getDateEndSearch(cal)
         }
@@ -285,27 +287,32 @@ object MediaStore_Dao {
         return context.contentResolver.query(uri, projection, selection, null, sortOrder)
     }
 
-    @Suppress("DEPRECATION")
     fun LoadThumbnailById(context: Context, id : Long) : Bitmap?{
-        try {
-            val bitmap = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        while(true) {
+            try {
+                val bitmap = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    val uri =
+                        ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
+                    context.contentResolver.loadThumbnail(uri, Size(100, 100), null)
+                } else {
+                    MediaStore.Images.Thumbnails.getThumbnail(
+                        context.contentResolver,
+                        id,
+                        MediaStore.Images.Thumbnails.MINI_KIND,
+                        null
+                    )
+                }) ?: return null
+                return modifyOrientaionById(context, id, bitmap)
+            } catch (e: FileNotFoundException) {
+                e.printStackTrace()
                 val uri =
                     ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
-                context.contentResolver.loadThumbnail(uri, Size(100, 100), null)
-            } else {
-                MediaStore.Images.Thumbnails.getThumbnail(
-                    context.contentResolver,
-                    id,
-                    MediaStore.Images.Thumbnails.MINI_KIND,
-                    null
-                )
-            }) ?: return null
-            return modifyOrientaionById(context, id, bitmap)
-        } catch ( e: FileNotFoundException) {
-            e.printStackTrace()
-            val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
-            context.contentResolver.delete(uri, null, null)
-            return null
+                try { context.contentResolver.delete(uri, null, null) }
+                catch(e: SecurityException) { }
+                return null
+            } catch (e: Exception) {
+                continue
+            }
         }
     }
 
@@ -316,7 +323,6 @@ object MediaStore_Dao {
         val selection = MediaStore.Images.ImageColumns._ID + "=" + id
         val cursor = context.contentResolver.query(uri, projection, selection, null, sortdate)
         cursor!!.moveToFirst()
-
         val orientation = cursor.getFloat(cursor.getColumnIndex(MediaStore.Images.ImageColumns.ORIENTATION))
         cursor.close()
         return rotateBitmap(bitmap, orientation)
