@@ -1,11 +1,15 @@
 package com.jtsoft.wimmy.db
 
 import android.app.Application
+import android.app.RecoverableSecurityException
 import android.content.ContentUris
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.database.Cursor
+import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
+import androidx.core.app.ActivityCompat.startIntentSenderForResult
 import androidx.lifecycle.LiveData
 import java.util.*
 import kotlin.collections.ArrayList
@@ -32,7 +36,12 @@ class PhotoRepository(application: Application) {
       photoDao.deleteExtraById(id)
 
       val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
-      context.contentResolver.delete(uri, null, null)
+      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
+         context.contentResolver.delete(uri, null, null)
+      else {
+         try { context.contentResolver.delete(uri, null, null) }
+         catch (e: SecurityException) { }
+      }
       context.contentResolver.notifyChange( MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null)
    }
    fun deleteTag(id: Long) {
