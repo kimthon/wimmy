@@ -220,9 +220,8 @@ class PhotoViewPager : AppCompatActivity(), BottomNavigationView.OnNavigationIte
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun delete(view: View, toolbar: androidx.appcompat.widget.Toolbar, bottombar: View) {
         val dlg: AlertDialog.Builder = AlertDialog.Builder(this@PhotoViewPager)
-        dlg.setTitle("사진 삭제")
-
-        dlg.setMessage("정말 삭제하시겠습니까? ")
+        dlg.setTitle("알림")
+        dlg.setMessage("사진을 정말 삭제하시겠습니까? ")
         dlg.setCancelable(false)
         dlg.setIcon(R.drawable.ic_delete)
         dlg.setPositiveButton("확인") { _, _ ->

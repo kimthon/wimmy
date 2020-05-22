@@ -9,6 +9,7 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
 import androidx.core.app.ActivityCompat.startIntentSenderForResult
 import androidx.lifecycle.LiveData
 import java.util.*
@@ -48,12 +49,13 @@ class PhotoRepository(application: Application) {
       photoDao.deleteTagById(id)
    }
    fun deleteCalData(date: Date) {
-      photoDao.deleteCalendarData(date)
+      photoDao.deleteCalendarData(date.toString())
    }
 
    // 폴더 생성
    fun getCalendarData(date : Date) : CalendarData? {
-      return photoDao.getDateInfo(date)
+      Log.d("정보",date.time.toString())
+      return photoDao.getDateInfo(date.toString())
    }
 
    fun getLocationDir() : LiveData<List<thumbnailData>> {

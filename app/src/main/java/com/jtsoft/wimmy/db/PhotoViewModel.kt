@@ -19,11 +19,11 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         repo.insert(tag)
     }
 
-    fun Insert(calendarData: CalendarData) {
+    fun Insert(date: Date, title: String, memo: String) {
         var instance = Calendar.getInstance()
-        instance.time = calendarData.date
-        calendarData.date = Date(MediaStore_Dao.getDateStart(instance))
-        repo.insert(calendarData)
+        instance.time = date
+        val timeStr = Date(MediaStore_Dao.getDateStart(instance)).toString()
+        repo.insert(CalendarData(timeStr, title, memo))
     }
 
     fun Delete(context: Context, id : Long) {

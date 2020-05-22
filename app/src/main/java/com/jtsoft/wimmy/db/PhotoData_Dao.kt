@@ -31,15 +31,15 @@ interface PhotoData_Dao {
     fun deleteTagById(photo_id: Long)
     @Query("DELETE FROM extra_photo_data WHERE photo_id = :photo_id")
     fun deleteExtraById(photo_id: Long)
-    @Query("DELETE FROM cal_data WHERE  date = :date")
-    fun deleteCalendarData(date: Date)
+    @Query("DELETE FROM cal_data WHERE date = :date")
+    fun deleteCalendarData(date: String)
 
 
     @Query("DELETE FROM tag_data WHERE photo_id = :photo_id AND tag = :tag")
     fun delete(photo_id : Long, tag : String)
 
     @Query("SELECT * FROM cal_data WHERE date = :date")
-    fun getDateInfo(date: Date) : CalendarData?
+    fun getDateInfo(date: String) : CalendarData?
     @Query("SELECT MAX(photo_id) as photo_id, tag as data FROM tag_data GROUP BY tag")
     fun getTagDir() : LiveData<List<thumbnailData>>
     @Query("SELECT MAX(photo_id) as photo_id, location as data FROM extra_photo_data GROUP BY location HAVING NOT location = '위치 정보 없음'")

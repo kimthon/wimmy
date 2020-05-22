@@ -36,7 +36,7 @@ class TagData(
     primaryKeys = ["date"]
 )
 class CalendarData(
-    var date : Date,
+    var date : String,
     var title : String,
     var memo : String?)
 
