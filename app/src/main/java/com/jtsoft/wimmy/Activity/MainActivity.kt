@@ -505,7 +505,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     @Suppress("DEPRECATION")
     private fun NetworkIsValid(context: Context) : Boolean {
         var result = false
-        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val networkCapabilities = cm.activeNetwork ?: return false
             val actNw = cm.getNetworkCapabilities(networkCapabilities) ?: return false
